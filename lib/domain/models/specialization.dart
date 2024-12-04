@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 abstract class Specialization {
   final bool isMain;
@@ -35,4 +36,6 @@ abstract class Specialization {
   int get level => _level;
 
   void levelUp() => _level++;
+
+  List<StatKind> get chosenSaveThrows;
 }

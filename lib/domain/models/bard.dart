@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/specialization.dart';
+import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 final class Bard extends Specialization {
   Bard({
@@ -8,7 +9,7 @@ final class Bard extends Specialization {
   });
 
   @override
-  String get name => 'Бард';
+  String name = 'Бард';
 
   @override
   Dice hitDice = Dice.k8;
@@ -18,4 +19,10 @@ final class Bard extends Specialization {
 
   @override
   int startHealth = 8;
+
+  @override
+  List<StatKind> get chosenSaveThrows => [
+        StatKind.dexterity,
+        StatKind.charisma,
+      ];
 }
