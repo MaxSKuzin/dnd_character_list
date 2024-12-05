@@ -18,6 +18,7 @@ class Player {
   final List<Specialization> _classes;
   final List<Skill> _chosenSkills;
   late final int currentHits;
+  bool isDead;
 
   Player({
     required int strength,
@@ -29,6 +30,7 @@ class Player {
     required List<Specialization> classes,
     required List<Skill> chosenSkills,
     int? hits,
+    this.isDead = false,
   })  : assert(classes.isNotEmpty),
         _classes = classes,
         _strength = Stat(value: strength, kind: StatKind.strength),
@@ -57,20 +59,24 @@ class Player {
   int get maxHits => _classes.fold(0, (previous, spec) => previous + spec.hitPoints(this));
 
   Player takeDamage(int value) {
+    bool isDead = currentHits - value <= -maxHits;
     return _copyWith(
       currentHits: max(0, currentHits - value),
+      isDead: isDead,
     );
   }
 
   Player heal(int health) {
     return _copyWith(
-      currentHits: max(maxHits, currentHits + health),
+      currentHits: min(maxHits, currentHits + health),
+      isDead: false,
     );
   }
 
   Player healFull() {
     return _copyWith(
       currentHits: maxHits,
+      isDead: false,
     );
   }
 
@@ -152,6 +158,7 @@ class Player {
     isEqual &= _classes.equals(other._classes);
     isEqual &= _chosenSkills.equals(other._chosenSkills);
     isEqual &= currentHits == other.currentHits;
+    isEqual &= isDead == other.isDead;
 
     return isEqual;
   }
@@ -167,6 +174,7 @@ class Player {
         _classes,
         _chosenSkills,
         currentHits,
+        isDead,
       ]);
 
   Player _copyWith({
@@ -179,6 +187,7 @@ class Player {
     List<Specialization>? classes,
     List<Skill>? chosenSkills,
     int? currentHits,
+    bool? isDead,
   }) =>
       Player(
         strength: strength ?? this.strength.value,
@@ -190,5 +199,6 @@ class Player {
         classes: classes ?? this.classes,
         chosenSkills: chosenSkills ?? this.chosenSkills,
         hits: currentHits ?? this.currentHits,
+        isDead: isDead ?? this.isDead,
       );
 }

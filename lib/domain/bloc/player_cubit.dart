@@ -9,6 +9,10 @@ class PlayerCubit extends Cubit<Player> {
     emit(state.takeDamage(value));
   }
 
+  void heal(int health) {
+    emit(state.heal(health));
+  }
+
   void shortRest(int health) {
     emit(state.heal(health));
   }

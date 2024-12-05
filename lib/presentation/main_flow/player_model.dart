@@ -38,7 +38,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
           oldWidget.player.wisdom != player.wisdom;
     }
     if (dependencies.contains(PlayerAspect.health)) {
-      return oldWidget.player.currentHits != player.currentHits || oldWidget.player.maxHits != player.maxHits;
+      return oldWidget.player.currentHits != player.currentHits ||
+          oldWidget.player.maxHits != player.maxHits ||
+          oldWidget.player.isDead != player.isDead;
     }
     if (dependencies.contains(PlayerAspect.skills)) {
       return !oldWidget.player.skills.equals(player.skills);
@@ -72,5 +74,14 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
 
   static Player getPlayer(BuildContext context) {
     return context.getInheritedWidgetOfExactType<PlayerModel>()!.player;
+  }
+
+  static (int, int) health(BuildContext context) {
+    final player = InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.health)!.player;
+    return (player.currentHits, player.maxHits);
+  }
+
+  static bool isDead(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.health)!.player.isDead;
   }
 }

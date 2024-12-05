@@ -33,11 +33,28 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         extensions: [
           CustomColors(
-            cardColor: Color.fromARGB(255, 29, 31, 48),
+            cardColor: const Color.fromARGB(255, 29, 31, 48),
           ),
         ],
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            side: const BorderSide(
+              color: Colors.white,
+            ),
+            backgroundColor: const Color.fromARGB(255, 29, 31, 48),
+            foregroundColor: Colors.white,
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(
+              color: Colors.white,
+            ),
+            foregroundColor: Colors.white,
+          ),
+        ),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
+          seedColor: const Color.fromARGB(255, 29, 31, 48),
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
