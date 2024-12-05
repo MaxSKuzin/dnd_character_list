@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class PassiveWisdomWidget extends StatelessWidget {
   final int value;
@@ -37,7 +38,7 @@ class PassiveWisdomWidget extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const Gap(8),
             Text(
               '$value',
               style: context.theme.textTheme.bodyLarge?.copyWith(

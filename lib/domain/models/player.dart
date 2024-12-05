@@ -1,62 +1,62 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
+import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/specialization.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 class Player {
-  final Stat _strength;
-  final Stat _dexterity;
-  final Stat _constitution;
-  final Stat _intelligence;
-  final Stat _wisdom;
-  final Stat _charisma;
-  final List<Specialization> _classes;
-  final List<Skill> _chosenSkills;
+  final Stat strength;
+  final Stat dexterity;
+  final Stat constitution;
+  final Stat intelligence;
+  final Stat wisdom;
+  final Stat charisma;
+  final List<Specialization> classes;
+  final List<Skill> chosenSkills;
   late final int currentHits;
+  final Armor? armor;
+  final Shield? shield;
   bool isDead;
 
   Player({
-    required int strength,
-    required int dexterity,
-    required int constitution,
-    required int intelligence,
-    required int wisdom,
-    required int charisma,
-    required List<Specialization> classes,
-    required List<Skill> chosenSkills,
+    required strength,
+    required dexterity,
+    required constitution,
+    required intelligence,
+    required wisdom,
+    required charisma,
+    required this.classes,
+    required this.chosenSkills,
+    required this.armor,
+    required this.shield,
     int? hits,
     this.isDead = false,
   })  : assert(classes.isNotEmpty),
-        _classes = classes,
-        _strength = Stat(value: strength, kind: StatKind.strength),
-        _dexterity = Stat(value: dexterity, kind: StatKind.dexterity),
-        _constitution = Stat(value: constitution, kind: StatKind.constitution),
-        _intelligence = Stat(value: intelligence, kind: StatKind.intelligence),
-        _wisdom = Stat(value: wisdom, kind: StatKind.wisdom),
-        _charisma = Stat(value: charisma, kind: StatKind.charisma),
-        _chosenSkills = chosenSkills {
+        strength = Stat(value: strength, kind: StatKind.strength),
+        dexterity = Stat(value: dexterity, kind: StatKind.dexterity),
+        constitution = Stat(value: constitution, kind: StatKind.constitution),
+        intelligence = Stat(value: intelligence, kind: StatKind.intelligence),
+        wisdom = Stat(value: wisdom, kind: StatKind.wisdom),
+        charisma = Stat(value: charisma, kind: StatKind.charisma) {
     currentHits = hits ?? maxHits;
   }
 
-  Stat get strength => _strength;
-  Stat get dexterity => _dexterity;
-  Stat get constitution => _constitution;
-  Stat get intelligence => _intelligence;
-  Stat get wisdom => _wisdom;
-  Stat get charisma => _charisma;
+  List<Stat> get stats => [
+        strength,
+        dexterity,
+        constitution,
+        intelligence,
+        wisdom,
+        charisma,
+      ];
 
-  List<Stat> get stats => [_strength, _dexterity, _constitution, _intelligence, _wisdom, _charisma];
-
-  List<Specialization> get classes => _classes;
-
-  List<Skill> get chosenSkills => _chosenSkills;
-
-  int get maxHits => _classes.fold(0, (previous, spec) => previous + spec.hitPoints(this));
+  int get maxHits => classes.fold(0, (previous, spec) => previous + spec.hitPoints(this));
 
   Player takeDamage(int value) {
     bool isDead = currentHits - value <= -maxHits;
@@ -80,13 +80,17 @@ class Player {
     );
   }
 
-  String get hitDices => _classes.map((e) => '${e.level}${e.hitDice.name}').join(', ');
+  String get hitDices => classes.map((e) => '${e.level}${e.hitDice.name}').join(', ');
 
-  int get level => _classes.fold(0, (previous, spec) => previous + spec.level);
+  int get level => classes.fold(0, (previous, spec) => previous + spec.level);
 
   ///Does not modify the original object!
   Player levelUp<T extends Specialization>() {
-    final newClasses = _classes.map((e) => e is T ? e.levelUp() : e).toList();
+    final newClasses = classes
+        .map(
+          (e) => e is T && e.runtimeType != Specialization ? e.levelUp() : e,
+        )
+        .toList();
     return _copyWith(
       classes: newClasses,
     );
@@ -94,11 +98,11 @@ class Player {
 
   ///Does not modify the original object!
   Player addClass<T extends Specialization>(T spec) {
-    if (_classes.whereType<T>().isNotEmpty) {
+    if (classes.where((e) => e is T && e.runtimeType != Specialization).isNotEmpty) {
       throw "Can't duplicate existing class";
     }
     return _copyWith(
-      classes: [..._classes, spec],
+      classes: [...classes, spec],
     );
   }
 
@@ -107,7 +111,7 @@ class Player {
   List<PlayerSkill> get skills => Skill.values
       .map(
         (e) => PlayerSkill(
-          isChosen: _chosenSkills.contains(e),
+          isChosen: chosenSkills.contains(e),
           origin: e,
           bonus: e.getBonus(this),
         ),
@@ -142,6 +146,17 @@ class Player {
     return throws.toList();
   }
 
+  int get protection {
+    var maxProtection = 0;
+    for (var spec in classes) {
+      maxProtection = max(maxProtection, spec.getProtection(this));
+    }
+    if (shield != null) {
+      maxProtection += shield!.defense;
+    }
+    return maxProtection;
+  }
+
   @override
   bool operator ==(Object other) {
     if (other is! Player) {
@@ -149,32 +164,36 @@ class Player {
     }
 
     bool isEqual = true;
-    isEqual &= _strength == other._strength;
-    isEqual &= _dexterity == other._dexterity;
-    isEqual &= _constitution == other._constitution;
-    isEqual &= _intelligence == other._intelligence;
-    isEqual &= _wisdom == other._wisdom;
-    isEqual &= _charisma == other._charisma;
-    isEqual &= _classes.equals(other._classes);
-    isEqual &= _chosenSkills.equals(other._chosenSkills);
+    isEqual &= strength == other.strength;
+    isEqual &= dexterity == other.dexterity;
+    isEqual &= constitution == other.constitution;
+    isEqual &= intelligence == other.intelligence;
+    isEqual &= wisdom == other.wisdom;
+    isEqual &= charisma == other.charisma;
+    isEqual &= classes.equals(other.classes);
+    isEqual &= chosenSkills.equals(other.chosenSkills);
     isEqual &= currentHits == other.currentHits;
     isEqual &= isDead == other.isDead;
+    isEqual &= armor == other.armor;
+    isEqual &= shield == other.shield;
 
     return isEqual;
   }
 
   @override
   int get hashCode => Object.hashAll([
-        _strength,
-        _dexterity,
-        _constitution,
-        _intelligence,
-        _wisdom,
-        _charisma,
-        _classes,
-        _chosenSkills,
+        strength,
+        dexterity,
+        constitution,
+        intelligence,
+        wisdom,
+        charisma,
+        classes,
+        chosenSkills,
         currentHits,
         isDead,
+        armor,
+        shield,
       ]);
 
   Player _copyWith({
@@ -188,6 +207,8 @@ class Player {
     List<Skill>? chosenSkills,
     int? currentHits,
     bool? isDead,
+    Armor? Function()? armor,
+    Shield? Function()? shield,
   }) =>
       Player(
         strength: strength ?? this.strength.value,
@@ -200,5 +221,7 @@ class Player {
         chosenSkills: chosenSkills ?? this.chosenSkills,
         hits: currentHits ?? this.currentHits,
         isDead: isDead ?? this.isDead,
+        armor: armor != null ? armor.call() : this.armor,
+        shield: shield != null ? shield.call() : this.shield,
       );
 }

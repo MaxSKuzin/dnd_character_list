@@ -2,6 +2,7 @@ import 'package:dnd_character_list/domain/models/stat.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class StatWidget extends StatelessWidget {
   final Stat stat;
@@ -27,7 +28,7 @@ class StatWidget extends StatelessWidget {
                 stat.kind.name,
               ),
             ),
-            const SizedBox(height: 8),
+            const Gap(8),
             Text(
               '${stat.bonus >= 0 ? '+' : ''}${stat.bonus}',
               style: context.theme.textTheme.bodyLarge?.copyWith(

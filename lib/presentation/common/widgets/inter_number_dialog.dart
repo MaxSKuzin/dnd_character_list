@@ -1,6 +1,7 @@
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gap/gap.dart';
 
 class InterNumberDialog extends StatefulWidget {
   static Future<int?> show(
@@ -61,7 +62,7 @@ class _InterNumberDialogState extends State<InterNumberDialog> {
             widget.title,
             style: context.theme.textTheme.titleLarge,
           ),
-          const SizedBox(height: 24),
+          const Gap(24),
           TapRegion(
             onTapOutside: (_) => FocusScope.of(context).unfocus(),
             child: TextFormField(
@@ -75,7 +76,7 @@ class _InterNumberDialogState extends State<InterNumberDialog> {
               ],
             ),
           ),
-          const SizedBox(height: 32),
+          const Gap(32),
           ValueListenableBuilder(
             valueListenable: _controller,
             builder: (context, controllerValue, child) {

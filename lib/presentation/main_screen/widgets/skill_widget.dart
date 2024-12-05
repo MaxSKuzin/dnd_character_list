@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class SkillWidget extends StatelessWidget {
   final String title;
@@ -48,9 +49,7 @@ class SkillWidget extends StatelessWidget {
               maxLines: 1,
             ),
           ),
-          const SizedBox(
-            width: 4,
-          ),
+          const Gap(4),
           Flexible(
             child: Text(
               title,

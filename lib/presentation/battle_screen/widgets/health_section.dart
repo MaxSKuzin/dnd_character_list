@@ -5,6 +5,7 @@ import 'package:dnd_character_list/presentation/extensions/context_extensions.da
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 
 class HealthSection extends StatefulWidget {
   const HealthSection({
@@ -49,9 +50,7 @@ class _HealthSectionState extends State<HealthSection> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  const Gap(8),
                   Text(
                     isDead ? '💀' : '${hits.$1}',
                     style: context.theme.textTheme.bodyMedium?.copyWith(
@@ -59,17 +58,13 @@ class _HealthSectionState extends State<HealthSection> {
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  const Gap(8),
                 ],
               ),
             ),
           ),
         ),
-        const SizedBox(
-          width: 16,
-        ),
+        const Gap(16),
         Expanded(
           child: Theme(
             data: context.theme.copyWith(
@@ -95,9 +90,7 @@ class _HealthSectionState extends State<HealthSection> {
                   },
                   child: const Text('Урон'),
                 ),
-                const SizedBox(
-                  height: 16,
-                ),
+                const Gap(16),
                 FilledButton(
                   onPressed: () async {
                     final health = await InterNumberDialog.show(

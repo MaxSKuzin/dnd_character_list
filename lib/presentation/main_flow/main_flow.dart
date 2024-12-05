@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
+import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/bard.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
@@ -19,6 +20,8 @@ class MainFlow extends StatefulWidget {
 class _MainFlowState extends State<MainFlow> {
   Player setPlayer() {
     return Player(
+      shield: null,
+      armor: Armor.leather(),
       strength: 11,
       dexterity: 17,
       constitution: 15,

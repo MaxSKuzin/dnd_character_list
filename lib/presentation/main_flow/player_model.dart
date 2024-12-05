@@ -11,6 +11,7 @@ enum PlayerAspect {
   skills,
   saveThrows,
   profiencyBonus,
+  protection,
 }
 
 class PlayerModel extends InheritedModel<PlayerAspect> {
@@ -51,6 +52,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     if (dependencies.contains(PlayerAspect.profiencyBonus)) {
       return oldWidget.player.proficiencyBonus != player.proficiencyBonus;
     }
+    if (dependencies.contains(PlayerAspect.protection)) {
+      return oldWidget.player.protection != player.protection;
+    }
     return false;
   }
 
@@ -83,5 +87,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
 
   static bool isDead(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.health)!.player.isDead;
+  }
+
+  static int protection(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.protection)!.player.protection;
   }
 }

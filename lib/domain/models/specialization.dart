@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
@@ -16,6 +18,22 @@ abstract class Specialization {
   int get startHealth;
 
   int get healthPerLevel;
+
+  int getProtection(Player player) {
+    if (player.armor == null) {
+      return 10 + player.dexterity.bonus;
+    }
+
+    var protection = player.armor!.protection;
+    final limit = player.armor!.dexterityLimit;
+    if (limit != null) {
+      protection += min(player.dexterity.bonus, limit);
+    } else {
+      protection += player.dexterity.bonus;
+    }
+
+    return protection;
+  }
 
   int hitPoints(Player player) {
     return (isMain ? startHealth : 0) + player.constitution.bonus * level + healthPerLevel * (level - 1);
