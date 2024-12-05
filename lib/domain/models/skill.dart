@@ -1,18 +1,85 @@
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
-@freezed
-class Skill {
+enum Skill {
+  ///Акробатика
+  acrobatics(StatKind.dexterity),
+
+  ///Атлетика
+  athletics(StatKind.strength),
+
+  ///Магия
+  magic(StatKind.intelligence),
+
+  ///Обман
+  fraud(StatKind.charisma),
+
+  ///История
+  history(StatKind.intelligence),
+
+  ///Проницательность
+  insight(StatKind.wisdom),
+
+  ///Запугивание
+  harassment(StatKind.charisma),
+
+  ///Анализ
+  analysis(StatKind.intelligence),
+
+  ///Медицина
+  medicine(StatKind.wisdom),
+
+  ///Природа
+  nature(StatKind.wisdom),
+
+  ///Восприятие
+  perception(StatKind.wisdom),
+
+  ///Выступление
+  perfomance(StatKind.charisma),
+
+  ///Убеждение
+  conviction(StatKind.charisma),
+
+  ///Религия
+  religion(StatKind.intelligence),
+
+  ///Ловкость рук
+  manualDexterity(StatKind.dexterity),
+
+  ///Скрытность
+  stealth(StatKind.dexterity),
+
+  ///Выживание
+  surviving(StatKind.wisdom),
+
+  ///Обращение с животными
+  animalTaming(StatKind.wisdom);
+
+  const Skill(this.origin);
+
   final StatKind origin;
-  final bool isChosen;
-  final String name;
 
-  Skill({
-    required this.origin,
-    required this.name,
-    this.isChosen = false,
-  });
+  String get name => switch (this) {
+        acrobatics => 'Акробатика',
+        athletics => 'Атлетика',
+        magic => 'Магия',
+        fraud => 'Обман',
+        history => 'История',
+        insight => 'Проницательность',
+        harassment => 'Запугивание',
+        analysis => 'Анализ',
+        medicine => 'Медицина',
+        nature => 'Природа',
+        perception => 'Восприятие',
+        perfomance => 'Выступление',
+        conviction => 'Убеждение',
+        religion => 'Религия',
+        manualDexterity => 'Ловкость рук',
+        stealth => 'Скрытность',
+        surviving => 'Выживание',
+        animalTaming => 'Обращение с животными',
+      };
 
   int getBonus(Player player) {
     var mainBonus = switch (origin) {
@@ -24,7 +91,7 @@ class Skill {
       StatKind.charisma => player.charisma.bonus,
     };
 
-    if (isChosen) {
+    if (player.chosenSkills.contains(this)) {
       return mainBonus + player.proficiencyBonus;
     }
     return mainBonus;

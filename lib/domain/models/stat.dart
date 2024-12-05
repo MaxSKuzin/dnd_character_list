@@ -13,4 +13,15 @@ class Stat {
     final oddValue = value.isEven ? value : value - 1;
     return (oddValue - 10) ~/ 2;
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Stat) {
+      return value == other.value && kind == other.kind;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => Object.hashAll([value, kind]);
 }

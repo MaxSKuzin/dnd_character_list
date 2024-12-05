@@ -11,8 +11,20 @@ class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
         AdaptiveRoute(
-          page: MainRoute.page,
+          page: MainFlowRoute.page,
           initial: true,
+          children: [
+            AdaptiveRoute(
+              page: MainRoute.page,
+              initial: true,
+            ),
+            AdaptiveRoute(
+              page: BattleRoute.page,
+            ),
+            AdaptiveRoute(
+              page: PersonalityRoute.page,
+            ),
+          ],
         ),
       ];
 }

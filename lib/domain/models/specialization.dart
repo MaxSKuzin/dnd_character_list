@@ -1,17 +1,15 @@
-import 'dart:math';
-
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 abstract class Specialization {
   final bool isMain;
-  int _level;
+  final int level;
 
   Specialization({
-    required int level,
+    required this.level,
     required this.isMain,
-  }) : _level = level;
+  });
 
   String get name;
 
@@ -20,22 +18,30 @@ abstract class Specialization {
   int get healthPerLevel;
 
   int hitPoints(Player player) {
-    return (isMain ? startHealth : 0) + player.constitution.bonus * _level + healthPerLevel * (_level - 1);
+    return (isMain ? startHealth : 0) + player.constitution.bonus * level + healthPerLevel * (level - 1);
   }
 
-  int get hitsToRestore {
-    int value = 0;
-    for (int i = 0; i < _level; i++) {
-      value += max(hitDice.roll() ~/ 2, 1);
-    }
-    return value;
-  }
+  Specialization copyWith({
+    int? level,
+    bool? isMain,
+  });
 
   Dice get hitDice;
 
-  int get level => _level;
-
-  void levelUp() => _level++;
+  Specialization levelUp() => copyWith(
+        level: level + 1,
+      );
 
   List<StatKind> get chosenSaveThrows;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Specialization) {
+      return name == other.name && runtimeType == other.runtimeType && level == other.level && isMain == other.isMain;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => Object.hashAll([name, runtimeType, level, isMain]);
 }

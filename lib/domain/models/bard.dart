@@ -25,4 +25,10 @@ final class Bard extends Specialization {
         StatKind.dexterity,
         StatKind.charisma,
       ];
+
+  @override
+  Specialization copyWith({int? level, bool? isMain}) => Bard(
+        level: level ?? this.level,
+        isMain: isMain ?? this.isMain,
+      );
 }

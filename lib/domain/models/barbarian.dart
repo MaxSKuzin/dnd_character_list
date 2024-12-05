@@ -25,4 +25,10 @@ final class Barbarian extends Specialization {
         StatKind.strength,
         StatKind.constitution,
       ];
+
+  @override
+  Specialization copyWith({int? level, bool? isMain}) => Barbarian(
+        level: level ?? this.level,
+        isMain: isMain ?? this.isMain,
+      );
 }

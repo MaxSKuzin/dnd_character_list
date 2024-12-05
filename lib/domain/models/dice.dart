@@ -22,4 +22,10 @@ class Dice {
   String get name => 'k$value';
 
   int roll() => _random.nextInt(value) + 1;
+
+  @override
+  bool operator ==(Object other) => other is Dice && other.value == value;
+
+  @override
+  int get hashCode => Object.hashAll([value]);
 }
