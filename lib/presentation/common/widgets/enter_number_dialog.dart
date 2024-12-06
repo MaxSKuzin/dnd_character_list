@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
-class InterNumberDialog extends StatefulWidget {
+class EnterNumberDialog extends StatefulWidget {
   static Future<int?> show(
     BuildContext context, {
     required String title,
@@ -18,7 +18,7 @@ class InterNumberDialog extends StatefulWidget {
             ),
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
-          child: InterNumberDialog(
+          child: EnterNumberDialog(
             title: title,
             labelText: labelText,
           ),
@@ -28,17 +28,17 @@ class InterNumberDialog extends StatefulWidget {
   final String title;
   final String labelText;
 
-  const InterNumberDialog({
+  const EnterNumberDialog({
     required this.title,
     required this.labelText,
     super.key,
   });
 
   @override
-  State<InterNumberDialog> createState() => _InterNumberDialogState();
+  State<EnterNumberDialog> createState() => _EnterNumberDialogState();
 }
 
-class _InterNumberDialogState extends State<InterNumberDialog> {
+class _EnterNumberDialogState extends State<EnterNumberDialog> {
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -66,6 +66,7 @@ class _InterNumberDialogState extends State<InterNumberDialog> {
           TapRegion(
             onTapOutside: (_) => FocusScope.of(context).unfocus(),
             child: TextFormField(
+              autofocus: true,
               controller: _controller,
               decoration: InputDecoration(
                 labelText: widget.labelText,

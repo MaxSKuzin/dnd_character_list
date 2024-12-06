@@ -4,24 +4,16 @@ import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class HealthSection extends StatefulWidget {
-  const HealthSection({
-    super.key,
-  });
+class ManaSection extends StatelessWidget {
+  const ManaSection({super.key});
 
-  @override
-  State<HealthSection> createState() => _HealthSectionState();
-}
-
-class _HealthSectionState extends State<HealthSection> {
   @override
   Widget build(BuildContext context) {
-    final hits = PlayerModel.health(context);
-    final isDead = PlayerModel.isDead(context);
+    final mana = PlayerModel.mana(context);
 
     return LabeledBorder(
       backgroundColor: context.customColors?.cardColor,
-      text: 'ЗДОРОВЬЕ',
+      text: 'МАНА',
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Column(
@@ -29,9 +21,9 @@ class _HealthSectionState extends State<HealthSection> {
             RichText(
               text: TextSpan(
                 children: [
-                  const TextSpan(text: 'Здоровье макс. '),
+                  const TextSpan(text: 'Мана\nмакс. '),
                   TextSpan(
-                    text: '${hits.max}',
+                    text: '${mana.max}',
                     style: const TextStyle(
                       decoration: TextDecoration.underline,
                     ),
@@ -45,7 +37,7 @@ class _HealthSectionState extends State<HealthSection> {
             ),
             const Gap(8),
             Text(
-              isDead ? '💀' : '${hits.current}',
+              '${mana.current}',
               style: context.theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,

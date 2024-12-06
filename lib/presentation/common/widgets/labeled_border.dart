@@ -13,10 +13,12 @@ class LabeledBorder extends StatelessWidget {
   final Widget child;
   final Color? backgroundColor;
   final LabelBorderStyle labelBorderStyle;
+  final double? fontSize;
 
   const LabeledBorder({
     required this.text,
     required this.child,
+    this.fontSize,
     this.backgroundColor,
     this.borderRadius = 16,
     this.labelBorderStyle = LabelBorderStyle.rectangle,
@@ -31,7 +33,7 @@ class LabeledBorder extends StatelessWidget {
         text: text,
         style: TextStyle(
           color: Colors.white,
-          fontSize: labelBorderStyle == LabelBorderStyle.rectangle ? 8 : 12,
+          fontSize: fontSize ?? (labelBorderStyle == LabelBorderStyle.rectangle ? 8 : 12),
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -44,18 +46,24 @@ class LabeledBorder extends StatelessWidget {
         right: 1,
         left: 1,
       ),
-      child: CustomPaint(
-        painter: _Painter(
-          labelBorderStyle: labelBorderStyle,
-          backgroundColor: backgroundColor,
-          text: text,
-          borderRadius: borderRadius,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: textPainter.width + 48,
         ),
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: textPainter.height / 2 + 4,
+        child: CustomPaint(
+          painter: _Painter(
+            fontSize: fontSize,
+            labelBorderStyle: labelBorderStyle,
+            backgroundColor: backgroundColor,
+            text: text,
+            borderRadius: borderRadius,
           ),
-          child: child,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: textPainter.height / 2 + 4,
+            ),
+            child: child,
+          ),
         ),
       ),
     );
@@ -67,12 +75,14 @@ class _Painter extends CustomPainter {
   final String text;
   final Color? backgroundColor;
   final LabelBorderStyle labelBorderStyle;
+  final double? fontSize;
 
   _Painter({
     required this.backgroundColor,
     required this.text,
     required this.borderRadius,
     required this.labelBorderStyle,
+    required this.fontSize,
   });
 
   @override
@@ -80,10 +90,10 @@ class _Painter extends CustomPainter {
     final textPainter = TextPainter(
       textDirection: TextDirection.ltr,
       text: TextSpan(
-        text: text,
+        text: '  $text  ',
         style: TextStyle(
           color: Colors.white,
-          fontSize: labelBorderStyle == LabelBorderStyle.rectangle ? 8 : 12,
+          fontSize: fontSize ?? (labelBorderStyle == LabelBorderStyle.rectangle ? 8 : 12),
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -123,8 +133,8 @@ class _Painter extends CustomPainter {
 
     //bottom line
     if (labelBorderStyle == LabelBorderStyle.rectangle) {
-      final rightPoint = size.width / 2 + textPainter.width / 2 + 8;
-      final leftPoint = size.width / 2 - textPainter.width / 2 - 8;
+      final rightPoint = size.width / 2 + textPainter.width / 2;
+      final leftPoint = size.width / 2 - textPainter.width / 2;
       final topPoint = size.height - textPainter.height / 2 - 4;
       final bottomPoint = size.height + textPainter.height / 2 + 4;
       path.lineTo(rightPoint, size.height);
@@ -212,6 +222,7 @@ class _Painter extends CustomPainter {
   bool shouldRepaint(_Painter oldDelegate) {
     return labelBorderStyle != oldDelegate.labelBorderStyle ||
         text != oldDelegate.text ||
+        fontSize != oldDelegate.fontSize ||
         borderRadius != oldDelegate.borderRadius ||
         backgroundColor != oldDelegate.backgroundColor;
   }

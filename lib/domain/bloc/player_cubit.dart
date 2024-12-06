@@ -29,4 +29,12 @@ class PlayerCubit extends Cubit<Player> {
   void addClass<T extends Specialization>(T spec) {
     emit(state.addClass(spec));
   }
+
+  void spendMana(int mana) {
+    emit(state.spendMana(mana));
+  }
+
+  void recoverMana(int mana) {
+    emit(state.recoverMana(mana));
+  }
 }

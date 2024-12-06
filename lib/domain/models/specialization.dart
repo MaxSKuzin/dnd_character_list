@@ -54,6 +54,10 @@ abstract class Specialization {
 
   List<StatKind> get chosenSaveThrows;
 
+  double get magicLevelMultiplier;
+
+  StatKind? get spellKind => null;
+
   @override
   bool operator ==(Object other) {
     if (other is Specialization) {

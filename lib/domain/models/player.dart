@@ -7,6 +7,8 @@ import 'package:dnd_character_list/domain/models/save_throw.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/specialization.dart';
+import 'package:dnd_character_list/domain/models/spell_slot.dart';
+import 'package:dnd_character_list/domain/models/spell_stat.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
@@ -21,6 +23,7 @@ class Player {
   final List<Specialization> classes;
   final List<Skill> chosenSkills;
   late final int currentHits;
+  late final int currentMana;
   final Armor? armor;
   final Shield? shield;
   final List<Weapon> weapons;
@@ -39,6 +42,7 @@ class Player {
     required this.shield,
     required this.weapons,
     int? hits,
+    int? mana,
     this.isDead = false,
   })  : assert(classes.isNotEmpty),
         strength = Stat(value: strength, kind: StatKind.strength),
@@ -48,6 +52,7 @@ class Player {
         wisdom = Stat(value: wisdom, kind: StatKind.wisdom),
         charisma = Stat(value: charisma, kind: StatKind.charisma) {
     currentHits = hits ?? maxHits;
+    currentMana = mana ?? maxMana;
   }
 
   List<Stat> get stats => [
@@ -64,21 +69,21 @@ class Player {
   Player takeDamage(int value) {
     bool isDead = currentHits - value <= -maxHits;
     return _copyWith(
-      currentHits: max(0, currentHits - value),
+      currentHits: () => max(0, currentHits - value),
       isDead: isDead,
     );
   }
 
   Player heal(int health) {
     return _copyWith(
-      currentHits: min(maxHits, currentHits + health),
+      currentHits: () => min(maxHits, currentHits + health),
       isDead: false,
     );
   }
 
   Player healFull() {
     return _copyWith(
-      currentHits: maxHits,
+      currentHits: () => maxHits,
       isDead: false,
     );
   }
@@ -96,6 +101,9 @@ class Player {
         .toList();
     return _copyWith(
       classes: newClasses,
+      currentHits: () => null,
+      currentMana: () => null,
+      // charisma: charisma.value + 1,
     );
   }
 
@@ -164,6 +172,41 @@ class Player {
     return classes.fold(0, (prev, e) => prev + e.additionalDamage(this));
   }
 
+  int get maxMana {
+    final magicLevel = classes.fold(
+      0,
+      (prev, e) => prev + (e.level * e.magicLevelMultiplier).toInt(),
+    );
+    final spellCells = spellSlotsTable[magicLevel]!;
+    return spellCells.entries.fold(
+      0,
+      (prev, entry) => prev + entry.key.mana * entry.value,
+    );
+  }
+
+  List<SpellStat> get spellKinds => classes
+      .map(
+        (e) => SpellStat(
+          owner: e.name,
+          stat: stats.firstWhere((element) => element.kind == e.spellKind),
+          proficiencyBonus: proficiencyBonus,
+        ),
+      )
+      .whereNotNull()
+      .toList();
+
+  Player spendMana(int value) {
+    return _copyWith(
+      currentMana: () => max(0, currentMana - value),
+    );
+  }
+
+  Player recoverMana(int value) {
+    return _copyWith(
+      currentMana: () => min(maxMana, currentMana + value),
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (other is! Player) {
@@ -184,6 +227,7 @@ class Player {
     isEqual &= armor == other.armor;
     isEqual &= shield == other.shield;
     isEqual &= weapons.equals(other.weapons);
+    isEqual &= currentMana == other.currentMana;
 
     return isEqual;
   }
@@ -203,6 +247,7 @@ class Player {
         armor,
         shield,
         weapons,
+        currentMana,
       ]);
 
   Player _copyWith({
@@ -214,11 +259,12 @@ class Player {
     int? charisma,
     List<Specialization>? classes,
     List<Skill>? chosenSkills,
-    int? currentHits,
+    int? Function()? currentHits,
     bool? isDead,
     Armor? Function()? armor,
     Shield? Function()? shield,
     List<Weapon>? weapons,
+    int? Function()? currentMana,
   }) =>
       Player(
         strength: strength ?? this.strength.value,
@@ -229,10 +275,11 @@ class Player {
         charisma: charisma ?? this.charisma.value,
         classes: classes ?? this.classes,
         chosenSkills: chosenSkills ?? this.chosenSkills,
-        hits: currentHits ?? this.currentHits,
+        hits: currentHits != null ? currentHits() : this.currentHits,
         isDead: isDead ?? this.isDead,
-        armor: armor != null ? armor.call() : this.armor,
-        shield: shield != null ? shield.call() : this.shield,
+        armor: armor != null ? armor() : this.armor,
+        shield: shield != null ? shield() : this.shield,
         weapons: weapons ?? this.weapons,
+        mana: currentMana != null ? currentMana() : this.currentMana,
       );
 }

@@ -60,7 +60,8 @@ class WeaponsSection extends StatelessWidget {
                       Expanded(
                         child: LabeledBorder(
                           backgroundColor: context.theme.scaffoldBackgroundColor,
-                          text: e.type == WeaponType.universal ? WeaponType.oneHanded.name : e.type.name,
+                          text:
+                              (e.type == WeaponType.universal ? WeaponType.oneHanded.name : e.type.name).toUpperCase(),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                             child: Center(
@@ -91,7 +92,7 @@ class WeaponsSection extends StatelessWidget {
                       Expanded(
                         child: LabeledBorder(
                           backgroundColor: context.theme.scaffoldBackgroundColor,
-                          text: e.damageType.name,
+                          text: e.damageType.name.toUpperCase(),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                             child: Center(
@@ -108,7 +109,7 @@ class WeaponsSection extends StatelessWidget {
                         Expanded(
                           child: LabeledBorder(
                             backgroundColor: context.theme.scaffoldBackgroundColor,
-                            text: WeaponType.twoHanded.name,
+                            text: WeaponType.twoHanded.name.toUpperCase(),
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                               child: Center(
@@ -139,7 +140,7 @@ class WeaponsSection extends StatelessWidget {
                         Expanded(
                           child: LabeledBorder(
                             backgroundColor: context.theme.scaffoldBackgroundColor,
-                            text: e.damageType.name,
+                            text: e.damageType.name.toUpperCase(),
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                               child: Center(

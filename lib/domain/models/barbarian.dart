@@ -36,6 +36,9 @@ final class Barbarian extends Specialization {
   }
 
   @override
+  double magicLevelMultiplier = 0;
+
+  @override
   Specialization copyWith({int? level, bool? isMain}) => Barbarian(
         level: level ?? this.level,
         isMain: isMain ?? this.isMain,

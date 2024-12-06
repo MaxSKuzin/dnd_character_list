@@ -56,6 +56,17 @@ class _MainFlowState extends State<MainFlow> {
         builder: (context, state) => PlayerModel(
           player: state,
           child: AutoTabsScaffold(
+            // appBarBuilder: (context, tabsRouter) => AppBar(
+            //   title: const Text('DnD Character List'),
+            //   actions: [
+            //     IconButton(
+            //       icon: const Icon(Icons.arrow_upward),
+            //       onPressed: () {
+            //         context.read<PlayerCubit>().levelUp<Bard>();
+            //       },
+            //     ),
+            //   ],
+            // ),
             bottomNavigationBuilder: (context, tabsRouter) => BottomNavigationBar(
               items: const [
                 BottomNavigationBarItem(

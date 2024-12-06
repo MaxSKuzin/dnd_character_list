@@ -32,9 +32,9 @@ class ProtectionWidget extends StatelessWidget {
                   ),
                 ),
                 const Text(
-                  'Класс\nброни',
+                  'КЛАСС\nБРОНИ',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

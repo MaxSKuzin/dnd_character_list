@@ -19,6 +19,7 @@ dependencies:
   flutter_bloc: ^8.1.6
   collection: ^1.18.0
   gap: ^3.0.1
+  fading_edge_scrollview: ^4.1.1
 
 dev_dependencies:
   flutter_test:
