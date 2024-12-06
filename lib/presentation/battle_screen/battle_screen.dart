@@ -61,20 +61,38 @@ class _BattleScreenState extends State<BattleScreen> {
               },
             ),
             const Gap(16),
-            GridView(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
+            LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: constraints.maxWidth / 2 + 16,
+                      width: constraints.maxWidth,
+                      child: GridView(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 2,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                        ),
+                        shrinkWrap: true,
+                        children: const [
+                          HealthSection(),
+                          HealthButtons(),
+                          ManaSection(),
+                          HitDices(),
+                        ],
+                      ),
+                    ),
+
+                    //TODO: place inspirations, rages, ci and etc...
+                    const SizedBox(
+                      width: 120,
+                    )
+                  ],
+                ),
               ),
-              shrinkWrap: true,
-              children: const [
-                HealthSection(),
-                HealthButtons(),
-                ManaSection(),
-                HitDices(),
-              ],
             ),
             const Gap(16),
             Expanded(
