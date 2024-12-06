@@ -114,6 +114,8 @@ class Player {
     }
     return _copyWith(
       classes: [...classes, spec],
+      currentHits: () => null,
+      currentMana: () => null,
     );
   }
 
@@ -185,6 +187,7 @@ class Player {
   }
 
   List<SpellStat> get spellKinds => classes
+      .where((e) => e.spellKind != null)
       .map(
         (e) => SpellStat(
           owner: e.name,

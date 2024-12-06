@@ -2,8 +2,8 @@ import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/specialization.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
-final class Wisard extends Specialization {
-  Wisard({
+final class Wizard extends Specialization {
+  Wizard({
     required super.level,
     required super.isMain,
   });
@@ -33,7 +33,7 @@ final class Wisard extends Specialization {
       ];
 
   @override
-  Specialization copyWith({int? level, bool? isMain}) => Wisard(
+  Specialization copyWith({int? level, bool? isMain}) => Wizard(
         level: level ?? this.level,
         isMain: isMain ?? this.isMain,
       );

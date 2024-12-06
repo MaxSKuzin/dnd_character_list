@@ -3,24 +3,21 @@ import 'package:dnd_character_list/presentation/extensions/context_extensions.da
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:flutter/material.dart';
 
-class HealthSection extends StatelessWidget {
-  const HealthSection({
-    super.key,
-  });
+class ManaSection extends StatelessWidget {
+  const ManaSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final hits = PlayerModel.health(context);
-    final isDead = PlayerModel.isDead(context);
+    final mana = PlayerModel.mana(context);
 
     return LabeledBorder(
       backgroundColor: context.customColors?.cardColor,
-      text: 'ЗДОРОВЬЕ',
+      text: 'МАНА',
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
         child: Center(
           child: Text(
-            isDead ? '💀' : '${hits.current}/${hits.max}',
+            '${mana.current}/${mana.max}',
             style: context.theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 16,
