@@ -9,6 +9,7 @@ import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/specialization.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
+import 'package:dnd_character_list/domain/models/weapon.dart';
 
 class Player {
   final Stat strength;
@@ -22,6 +23,7 @@ class Player {
   late final int currentHits;
   final Armor? armor;
   final Shield? shield;
+  final List<Weapon> weapons;
   bool isDead;
 
   Player({
@@ -35,6 +37,7 @@ class Player {
     required this.chosenSkills,
     required this.armor,
     required this.shield,
+    required this.weapons,
     int? hits,
     this.isDead = false,
   })  : assert(classes.isNotEmpty),
@@ -157,6 +160,10 @@ class Player {
     return maxProtection;
   }
 
+  int get additionalDamage {
+    return classes.fold(0, (prev, e) => prev + e.additionalDamage(this));
+  }
+
   @override
   bool operator ==(Object other) {
     if (other is! Player) {
@@ -176,6 +183,7 @@ class Player {
     isEqual &= isDead == other.isDead;
     isEqual &= armor == other.armor;
     isEqual &= shield == other.shield;
+    isEqual &= weapons.equals(other.weapons);
 
     return isEqual;
   }
@@ -194,6 +202,7 @@ class Player {
         isDead,
         armor,
         shield,
+        weapons,
       ]);
 
   Player _copyWith({
@@ -209,6 +218,7 @@ class Player {
     bool? isDead,
     Armor? Function()? armor,
     Shield? Function()? shield,
+    List<Weapon>? weapons,
   }) =>
       Player(
         strength: strength ?? this.strength.value,
@@ -223,5 +233,6 @@ class Player {
         isDead: isDead ?? this.isDead,
         armor: armor != null ? armor.call() : this.armor,
         shield: shield != null ? shield.call() : this.shield,
+        weapons: weapons ?? this.weapons,
       );
 }

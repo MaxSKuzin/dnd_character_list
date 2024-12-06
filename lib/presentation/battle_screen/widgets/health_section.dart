@@ -58,7 +58,6 @@ class _HealthSectionState extends State<HealthSection> {
                       fontSize: 16,
                     ),
                   ),
-                  const Gap(8),
                 ],
               ),
             ),

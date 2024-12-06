@@ -15,9 +15,11 @@ class PlayerSkillsList extends StatelessWidget {
       backgroundColor: context.customColors?.cardColor,
       text: 'НАВЫКИ',
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 16,
+        padding: const EdgeInsets.fromLTRB(
+          8,
+          12,
+          8,
+          0,
         ),
         child: SingleChildScrollView(
           padding: EdgeInsets.zero,

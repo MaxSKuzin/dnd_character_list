@@ -35,6 +35,8 @@ abstract class Specialization {
     return protection;
   }
 
+  int additionalDamage(Player player) => 0;
+
   int hitPoints(Player player) {
     return (isMain ? startHealth : 0) + player.constitution.bonus * level + healthPerLevel * (level - 1);
   }

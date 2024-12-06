@@ -1,3 +1,4 @@
+import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -13,7 +14,9 @@ class ProtectionWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(4),
         child: CustomPaint(
-          painter: ShieldPainter(),
+          painter: ShieldPainter(
+            color: context.customColors?.cardColor,
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 20,
@@ -46,6 +49,12 @@ class ProtectionWidget extends StatelessWidget {
 }
 
 class ShieldPainter extends CustomPainter {
+  final Color? color;
+
+  ShieldPainter({
+    this.color,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
@@ -89,10 +98,16 @@ class ShieldPainter extends CustomPainter {
     path.close();
 
     canvas.drawPath(path, paint);
+    if (color != null) {
+      final Paint paint = Paint()
+        ..color = color!
+        ..style = PaintingStyle.fill;
+      canvas.drawPath(path, paint);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(ShieldPainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }

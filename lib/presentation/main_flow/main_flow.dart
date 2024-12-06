@@ -4,6 +4,7 @@ import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/bard.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
+import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,10 @@ class MainFlow extends StatefulWidget {
 class _MainFlowState extends State<MainFlow> {
   Player setPlayer() {
     return Player(
+      weapons: [
+        Weapon.rapier(),
+        Weapon.dagger(),
+      ],
       shield: null,
       armor: Armor.leather(),
       strength: 11,

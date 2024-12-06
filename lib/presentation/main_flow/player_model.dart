@@ -3,6 +3,7 @@ import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
+import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:flutter/material.dart';
 
 enum PlayerAspect {
@@ -12,6 +13,7 @@ enum PlayerAspect {
   saveThrows,
   profiencyBonus,
   protection,
+  weapons,
 }
 
 class PlayerModel extends InheritedModel<PlayerAspect> {
@@ -30,8 +32,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
 
   @override
   bool updateShouldNotifyDependent(PlayerModel oldWidget, Set<PlayerAspect> dependencies) {
+    bool update = false;
     if (dependencies.contains(PlayerAspect.stats)) {
-      return oldWidget.player.charisma != player.charisma ||
+      update |= oldWidget.player.charisma != player.charisma ||
           oldWidget.player.constitution != player.constitution ||
           oldWidget.player.dexterity != player.dexterity ||
           oldWidget.player.intelligence != player.intelligence ||
@@ -39,23 +42,26 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
           oldWidget.player.wisdom != player.wisdom;
     }
     if (dependencies.contains(PlayerAspect.health)) {
-      return oldWidget.player.currentHits != player.currentHits ||
+      update |= oldWidget.player.currentHits != player.currentHits ||
           oldWidget.player.maxHits != player.maxHits ||
           oldWidget.player.isDead != player.isDead;
     }
     if (dependencies.contains(PlayerAspect.skills)) {
-      return !oldWidget.player.skills.equals(player.skills);
+      update |= !oldWidget.player.skills.equals(player.skills);
     }
     if (dependencies.contains(PlayerAspect.saveThrows)) {
-      return !oldWidget.player.saveThrows.equals(player.saveThrows);
+      update |= !oldWidget.player.saveThrows.equals(player.saveThrows);
     }
     if (dependencies.contains(PlayerAspect.profiencyBonus)) {
-      return oldWidget.player.proficiencyBonus != player.proficiencyBonus;
+      update |= oldWidget.player.proficiencyBonus != player.proficiencyBonus;
     }
     if (dependencies.contains(PlayerAspect.protection)) {
-      return oldWidget.player.protection != player.protection;
+      update |= oldWidget.player.protection != player.protection;
     }
-    return false;
+    if (dependencies.contains(PlayerAspect.weapons)) {
+      update |= !oldWidget.player.weapons.equals(player.weapons);
+    }
+    return update;
   }
 
   static List<Stat> stats(BuildContext context) {
@@ -91,5 +97,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
 
   static int protection(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.protection)!.player.protection;
+  }
+
+  static List<Weapon> weapons(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.weapons)!.player.weapons;
   }
 }

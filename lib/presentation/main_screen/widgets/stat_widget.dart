@@ -19,7 +19,7 @@ class StatWidget extends StatelessWidget {
       backgroundColor: context.customColors?.cardColor,
       text: stat.value.toString(),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(4, 12, 4, 24),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

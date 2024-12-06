@@ -25,9 +25,21 @@ class LabeledBorder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textPainter = TextPainter(
+      textDirection: TextDirection.ltr,
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: labelBorderStyle == LabelBorderStyle.rectangle ? 8 : 12,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+    textPainter.layout();
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 15,
+      padding: EdgeInsets.only(
+        bottom: textPainter.height / 2 + 4,
         top: 1,
         right: 1,
         left: 1,
@@ -39,7 +51,12 @@ class LabeledBorder extends StatelessWidget {
           text: text,
           borderRadius: borderRadius,
         ),
-        child: child,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: textPainter.height / 2 + 4,
+          ),
+          child: child,
+        ),
       ),
     );
   }

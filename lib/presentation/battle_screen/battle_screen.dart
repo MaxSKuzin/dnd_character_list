@@ -3,6 +3,7 @@ import 'package:dnd_character_list/presentation/battle_screen/widgets/health_sec
 import 'package:dnd_character_list/presentation/battle_screen/widgets/initiative_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/protection_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/speed_widget.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/weapons_section.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -48,9 +49,15 @@ class _BattleScreenState extends State<BattleScreen> {
             ),
             const Gap(16),
             const HealthSection(),
+            const Gap(16),
             const Expanded(
               child: SingleChildScrollView(
-                child: Column(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    WeaponsSection(),
+                  ],
+                ),
               ),
             )
           ],

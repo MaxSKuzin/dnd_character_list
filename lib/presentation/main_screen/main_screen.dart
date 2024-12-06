@@ -35,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
                   ProficiencyWidget(),
                   Gap(16),
                   SaveThrowsWidget(),
-                  Gap(8),
+                  Gap(16),
                   Expanded(
                     child: PlayerSkillsList(),
                   ),
