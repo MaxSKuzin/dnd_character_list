@@ -134,7 +134,6 @@ class Weapon {
         damage: Dice.k8,
         damageType: DamageType.pricking,
         kind: WeaponKind.martialMelee,
-        twoHandedDamage: Dice.k10,
         type: WeaponType.oneHanded,
       );
 
@@ -157,5 +156,16 @@ class Weapon {
         kind: WeaponKind.martialRanged,
         type: WeaponType.twoHanded,
         weaponWeight: WeaponWeight.heavy,
+      );
+
+  factory Weapon.spear() => Weapon(
+        name: 'Копье',
+        damage: Dice.k6,
+        twoHandedDamage: Dice.k8,
+        minRange: 20,
+        maxRange: 60,
+        damageType: DamageType.pricking,
+        kind: WeaponKind.simpleMelee,
+        type: WeaponType.universal,
       );
 }

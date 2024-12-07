@@ -55,109 +55,127 @@ class DeathThrowsWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Row(
-                children: [
-                  const Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          'УСПЕХ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 8,
+              Expanded(
+                child: Row(
+                  children: [
+                    const Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'УСПЕХ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 8,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const Gap(8),
-                  Expanded(
-                    flex: 3,
-                    child: Row(
-                      children: [
-                        for (var i = 0; i < 5; i++)
-                          i.isOdd
-                              ? const Expanded(
-                                  child: Column(
-                                    children: [
-                                      Divider(
-                                        color: Colors.white,
-                                        thickness: 1,
-                                        height: 1,
+                    const Gap(8),
+                    Expanded(
+                      flex: 3,
+                      child: Row(
+                        children: [
+                          for (var i = 0; i < 5; i++)
+                            i.isOdd
+                                ? Expanded(
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () => context.read<PlayerCubit>().changeDeadThrow(
+                                            life: (i ~/ 2) + 1,
+                                          ),
+                                      child: const Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Divider(
+                                            color: Colors.white,
+                                            thickness: 1,
+                                            height: 1,
+                                          ),
+                                          Gap(2),
+                                          Divider(
+                                            color: Colors.white,
+                                            thickness: 1,
+                                            height: 1,
+                                          ),
+                                        ],
                                       ),
-                                      Gap(2),
-                                      Divider(
-                                        color: Colors.white,
-                                        thickness: 1,
-                                        height: 1,
-                                      ),
-                                    ],
+                                    ),
+                                  )
+                                : GestureDetector(
+                                    onTap: () => context.read<PlayerCubit>().changeDeadThrow(
+                                          life: (i ~/ 2) + 1,
+                                        ),
+                                    child: (i ~/ 2) + 1 <= throws.life ? filledCircle : emptyCircle,
                                   ),
-                                )
-                              : GestureDetector(
-                                  onTap: () => context.read<PlayerCubit>().changeDeadThrow(
-                                        life: (i ~/ 2) + 1,
-                                      ),
-                                  child: (i ~/ 2) + 1 <= throws.life ? filledCircle : emptyCircle,
-                                ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              Row(
-                children: [
-                  const Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          'ПРОВАЛ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 10,
+              Expanded(
+                child: Row(
+                  children: [
+                    const Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'ПРОВАЛ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const Gap(8),
-                  Expanded(
-                    flex: 3,
-                    child: Row(
-                      children: [
-                        for (var i = 0; i < 5; i++)
-                          i.isOdd
-                              ? const Expanded(
-                                  child: Column(
-                                    children: [
-                                      Divider(
-                                        color: Colors.white,
-                                        thickness: 1,
-                                        height: 1,
+                    const Gap(8),
+                    Expanded(
+                      flex: 3,
+                      child: Row(
+                        children: [
+                          for (var i = 0; i < 5; i++)
+                            i.isOdd
+                                ? Expanded(
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () => context.read<PlayerCubit>().changeDeadThrow(
+                                            death: (i ~/ 2) + 1,
+                                          ),
+                                      child: const Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Divider(
+                                            color: Colors.white,
+                                            thickness: 1,
+                                            height: 1,
+                                          ),
+                                          Gap(2),
+                                          Divider(
+                                            color: Colors.white,
+                                            thickness: 1,
+                                            height: 1,
+                                          ),
+                                        ],
                                       ),
-                                      Gap(2),
-                                      Divider(
-                                        color: Colors.white,
-                                        thickness: 1,
-                                        height: 1,
-                                      ),
-                                    ],
+                                    ),
+                                  )
+                                : GestureDetector(
+                                    onTap: () => context.read<PlayerCubit>().changeDeadThrow(
+                                          death: (i ~/ 2) + 1,
+                                        ),
+                                    child: (i ~/ 2) + 1 <= throws.death ? filledCircle : emptyCircle,
                                   ),
-                                )
-                              : GestureDetector(
-                                  onTap: () => context.read<PlayerCubit>().changeDeadThrow(
-                                        death: (i ~/ 2) + 1,
-                                      ),
-                                  child: (i ~/ 2) + 1 <= throws.death ? filledCircle : emptyCircle,
-                                ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),

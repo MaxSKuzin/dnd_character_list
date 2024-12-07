@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/weapon_type.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/weapon_info_dialog.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/common/widgets/separated_column.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
@@ -55,61 +56,16 @@ class WeaponsSection extends StatelessWidget {
             ...weapons.map(
               (e) {
                 return [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: LabeledBorder(
-                          backgroundColor: context.theme.scaffoldBackgroundColor,
-                          text:
-                              (e.type == WeaponType.universal ? WeaponType.oneHanded.name : e.type.name).toUpperCase(),
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
-                            child: Center(
-                              child: Text(
-                                e.name,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Gap(8),
-                      Expanded(
-                        child: LabeledBorder(
-                          backgroundColor: context.theme.scaffoldBackgroundColor,
-                          text: '1${Dice.k20.name}',
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
-                            child: Center(
-                              child: Text(
-                                e.getHitString(player),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Gap(8),
-                      Expanded(
-                        child: LabeledBorder(
-                          backgroundColor: context.theme.scaffoldBackgroundColor,
-                          text: e.damageType.name.toUpperCase(),
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
-                            child: Center(
-                              child: Text(e.getDamageString()),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (e.type == WeaponType.universal)
-                    Row(
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => WeaponInfoDialog.show(context, weapon: e),
+                    child: Row(
                       children: [
                         Expanded(
                           child: LabeledBorder(
                             backgroundColor: context.theme.scaffoldBackgroundColor,
-                            text: WeaponType.twoHanded.name.toUpperCase(),
+                            text: (e.type == WeaponType.universal ? WeaponType.oneHanded.name : e.type.name)
+                                .toUpperCase(),
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                               child: Center(
@@ -144,14 +100,67 @@ class WeaponsSection extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                               child: Center(
-                                child: Text(
-                                  e.getDamageString(isTwoHanded: true),
-                                ),
+                                child: Text(e.getDamageString()),
                               ),
                             ),
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  if (e.type == WeaponType.universal)
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => WeaponInfoDialog.show(context, weapon: e),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: LabeledBorder(
+                              backgroundColor: context.theme.scaffoldBackgroundColor,
+                              text: WeaponType.twoHanded.name.toUpperCase(),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+                                child: Center(
+                                  child: Text(
+                                    e.name,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const Gap(8),
+                          Expanded(
+                            child: LabeledBorder(
+                              backgroundColor: context.theme.scaffoldBackgroundColor,
+                              text: '1${Dice.k20.name}',
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+                                child: Center(
+                                  child: Text(
+                                    e.getHitString(player),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const Gap(8),
+                          Expanded(
+                            child: LabeledBorder(
+                              backgroundColor: context.theme.scaffoldBackgroundColor,
+                              text: e.damageType.name.toUpperCase(),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+                                child: Center(
+                                  child: Text(
+                                    e.getDamageString(isTwoHanded: true),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                 ];
               },
