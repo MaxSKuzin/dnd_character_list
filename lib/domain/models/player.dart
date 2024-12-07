@@ -55,23 +55,48 @@ class Player {
     this.isDead = false,
   })  : assert(classes.isNotEmpty),
         strength = Stat(
-          value: strength + (race.statBonuses[StatKind.strength] ?? 0),
+          value: strength +
+              (race.statBonuses[StatKind.strength] ?? 0) +
+              classes.where((e) => e.statBonuses.containsKey(StatKind.strength)).fold(
+                    0,
+                    (p, e) => p + e.statBonuses[StatKind.strength]!,
+                  ),
           kind: StatKind.strength,
         ),
         dexterity = Stat(
-          value: dexterity + (race.statBonuses[StatKind.dexterity] ?? 0),
+          value: dexterity +
+              (race.statBonuses[StatKind.dexterity] ?? 0) +
+              classes.where((e) => e.statBonuses.containsKey(StatKind.dexterity)).fold(
+                    0,
+                    (p, e) => p + e.statBonuses[StatKind.dexterity]!,
+                  ),
           kind: StatKind.dexterity,
         ),
         constitution = Stat(
-          value: constitution + (race.statBonuses[StatKind.constitution] ?? 0),
+          value: constitution +
+              (race.statBonuses[StatKind.constitution] ?? 0) +
+              classes.where((e) => e.statBonuses.containsKey(StatKind.constitution)).fold(
+                    0,
+                    (p, e) => p + e.statBonuses[StatKind.constitution]!,
+                  ),
           kind: StatKind.constitution,
         ),
         intelligence = Stat(
-          value: intelligence + (race.statBonuses[StatKind.intelligence] ?? 0),
+          value: intelligence +
+              (race.statBonuses[StatKind.intelligence] ?? 0) +
+              classes.where((e) => e.statBonuses.containsKey(StatKind.intelligence)).fold(
+                    0,
+                    (p, e) => p + e.statBonuses[StatKind.intelligence]!,
+                  ),
           kind: StatKind.intelligence,
         ),
         wisdom = Stat(
-          value: wisdom + (race.statBonuses[StatKind.wisdom] ?? 0),
+          value: wisdom +
+              (race.statBonuses[StatKind.wisdom] ?? 0) +
+              classes.where((e) => e.statBonuses.containsKey(StatKind.wisdom)).fold(
+                    0,
+                    (p, e) => p + e.statBonuses[StatKind.wisdom]!,
+                  ),
           kind: StatKind.wisdom,
         ),
         deathThrows = deathThrows ??
@@ -137,10 +162,13 @@ class Player {
   int get level => classes.fold(0, (previous, spec) => previous + spec.level);
 
   ///Does not modify the original object!
-  Player levelUp<T extends Specialization>() {
+  Player levelUp<T extends Specialization>(T spec) {
+    if (classes.whereType<T>().isEmpty) {
+      throw "Can't level up non-existing class";
+    }
     final newClasses = classes
         .map(
-          (e) => e is T && e.runtimeType != Specialization ? e.levelUp() : e,
+          (e) => e is T && e.runtimeType != Specialization ? spec : e,
         )
         .toList();
     return _copyWith(

@@ -49,10 +49,6 @@ abstract class Specialization {
 
   Dice get hitDice;
 
-  Specialization levelUp() => copyWith(
-        level: level + 1,
-      );
-
   List<StatKind> get chosenSaveThrows;
 
   double get magicLevelMultiplier;
@@ -64,6 +60,8 @@ abstract class Specialization {
   String get classExtraDescription => '';
 
   int getClassExtrasCount(Player player) => 0;
+
+  Map<StatKind, int> get statBonuses;
 
   @override
   bool operator ==(Object other) {

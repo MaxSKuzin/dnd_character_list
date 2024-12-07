@@ -5,9 +5,13 @@ import 'package:dnd_character_list/domain/models/specialization.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 final class Barbarian extends Specialization {
+  @override
+  final Map<StatKind, int> statBonuses;
+
   Barbarian({
     required super.level,
     required super.isMain,
+    this.statBonuses = const {},
   });
 
   @override

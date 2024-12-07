@@ -5,10 +5,16 @@ import 'package:dnd_character_list/domain/models/specialization.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 final class Bard extends Specialization {
+  @override
+  final Map<StatKind, int> statBonuses;
+  final List<StatKind> doubledSaveThrows;
+
   Bard._({
     required super.level,
     required super.isMain,
     required this.inspirationDice,
+    this.statBonuses = const {},
+    this.doubledSaveThrows = const [],
   });
 
   @override
@@ -47,9 +53,10 @@ final class Bard extends Specialization {
   int getClassExtrasCount(Player player) => player.charisma.bonus;
 
   @override
-  List<StatKind> chosenSaveThrows = [
+  late List<StatKind> chosenSaveThrows = [
     StatKind.dexterity,
     StatKind.charisma,
+    ...doubledSaveThrows,
   ];
 
   @override
@@ -63,5 +70,35 @@ final class Bard extends Specialization {
         level: 1,
         isMain: isMain,
         inspirationDice: Dice.k6,
+      );
+
+  factory Bard.level2({required bool isMain}) => Bard._(
+        level: 2,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+      );
+
+  factory Bard.level3({
+    required bool isMain,
+    required List<StatKind> doubledSaveThrows,
+  }) =>
+      Bard._(
+        level: 3,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+        doubledSaveThrows: doubledSaveThrows,
+      );
+
+  factory Bard.level4({required bool isMain, required Map<StatKind, int> statBonuses}) => Bard._(
+        level: 4,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+        statBonuses: statBonuses,
+      );
+
+  factory Bard.level5({required bool isMain}) => Bard._(
+        level: 5,
+        isMain: isMain,
+        inspirationDice: Dice.k8,
       );
 }

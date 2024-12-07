@@ -19,12 +19,11 @@ class PlayerCubit extends Cubit<Player> {
   }
 
   void longRest() {
-    levelUp();
     emit(state.healFull());
   }
 
-  void levelUp<T extends Specialization>() {
-    emit(state.levelUp<T>());
+  void levelUp<T extends Specialization>(T spec) {
+    emit(state.levelUp<T>(spec));
   }
 
   void addClass<T extends Specialization>(T spec) {
