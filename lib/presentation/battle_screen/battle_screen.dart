@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:dnd_character_list/presentation/battle_screen/widgets/health_buttons.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/health_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/hit_dices.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/initiative_widget.dart';
@@ -21,10 +20,36 @@ class BattleScreen extends StatefulWidget {
 }
 
 class _BattleScreenState extends State<BattleScreen> {
+  final _gridController = ScrollController();
   final _scrollController = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () {
+        if (_gridController.position.maxScrollExtent == 0) return;
+        _gridController
+            .animateTo(
+              _gridController.position.maxScrollExtent,
+              duration: const Duration(seconds: 2),
+              curve: Curves.elasticOut,
+            )
+            .then(
+              (_) => _gridController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.linear,
+              ),
+            );
+      },
+    );
+  }
+
+  @override
   void dispose() {
+    _gridController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -62,34 +87,24 @@ class _BattleScreenState extends State<BattleScreen> {
             ),
             const Gap(16),
             LayoutBuilder(
-              builder: (context, constraints) => SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      height: constraints.maxWidth / 2 + 16,
-                      width: constraints.maxWidth,
-                      child: GridView(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 2,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                        ),
-                        shrinkWrap: true,
-                        children: const [
-                          HealthSection(),
-                          HealthButtons(),
-                          ManaSection(),
-                          HitDices(),
-                        ],
-                      ),
-                    ),
-
-                    //TODO: place inspirations, rages, ci and etc...
-                    const SizedBox(
-                      width: 120,
-                    )
+              builder: (context, constraints) => SizedBox(
+                height: constraints.maxWidth / 2 + 10,
+                width: constraints.maxWidth,
+                child: GridView(
+                  controller: _gridController,
+                  padding: const EdgeInsets.symmetric(vertical: 1),
+                  scrollDirection: Axis.horizontal,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.5,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                  ),
+                  shrinkWrap: true,
+                  children: const [
+                    HealthSection(),
+                    ManaSection(),
+                    HitDices(),
                   ],
                 ),
               ),

@@ -14,7 +14,7 @@ class HitDices extends StatelessWidget {
       backgroundColor: context.customColors?.cardColor,
       text: 'КУБЫ ЗДОРОВЬЯ',
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         child: Center(
           child: Text(
             hitDices,

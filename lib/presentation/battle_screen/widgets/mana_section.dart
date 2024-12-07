@@ -12,12 +12,12 @@ class ManaSection extends StatelessWidget {
 
     return LabeledBorder(
       backgroundColor: context.customColors?.cardColor,
-      text: 'МАНА',
+      text: 'МАНА (МАКС. ${mana.max})',
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         child: Center(
           child: Text(
-            '${mana.current}/${mana.max}',
+            '${mana.current}',
             style: context.theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 16,

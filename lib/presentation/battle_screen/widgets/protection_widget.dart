@@ -27,7 +27,7 @@ class ProtectionWidget extends StatelessWidget {
                 Text(
                   protection,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
