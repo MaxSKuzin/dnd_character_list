@@ -9,7 +9,7 @@ import 'package:dnd_character_list/domain/models/races/race.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
-import 'package:dnd_character_list/domain/models/specialization.dart';
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell_stat.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';

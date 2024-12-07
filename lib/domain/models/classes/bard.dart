@@ -1,7 +1,7 @@
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
-import 'package:dnd_character_list/domain/models/specialization.dart';
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 final class Bard extends Specialization {
