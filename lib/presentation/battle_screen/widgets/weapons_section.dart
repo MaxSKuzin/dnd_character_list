@@ -96,7 +96,7 @@ class WeaponsSection extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                             child: Center(
-                              child: Text(e.getDamageString(player)),
+                              child: Text(e.getDamageString()),
                             ),
                           ),
                         ),
@@ -145,10 +145,7 @@ class WeaponsSection extends StatelessWidget {
                               padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                               child: Center(
                                 child: Text(
-                                  e.getDamageString(
-                                    player,
-                                    isTwoHanded: true,
-                                  ),
+                                  e.getDamageString(isTwoHanded: true),
                                 ),
                               ),
                             ),

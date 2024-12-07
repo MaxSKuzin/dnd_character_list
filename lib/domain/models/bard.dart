@@ -3,7 +3,7 @@ import 'package:dnd_character_list/domain/models/specialization.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 final class Bard extends Specialization {
-  Bard({
+  Bard._({
     required super.level,
     required super.isMain,
   });
@@ -33,8 +33,13 @@ final class Bard extends Specialization {
       ];
 
   @override
-  Specialization copyWith({int? level, bool? isMain}) => Bard(
+  Specialization copyWith({int? level, bool? isMain}) => Bard._(
         level: level ?? this.level,
         isMain: isMain ?? this.isMain,
+      );
+
+  factory Bard.level1({required bool isMain}) => Bard._(
+        level: 1,
+        isMain: isMain,
       );
 }

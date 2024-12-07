@@ -37,4 +37,8 @@ class PlayerCubit extends Cubit<Player> {
   void recoverMana(int mana) {
     emit(state.recoverMana(mana));
   }
+
+  void changeDeadThrow({int? death, int? life}) {
+    emit(state.changeDeadThrow(death: death, life: life));
+  }
 }

@@ -34,10 +34,7 @@ class _MainFlowState extends State<MainFlow> {
       wisdom: 13,
       charisma: 16,
       classes: [
-        Bard(
-          level: 1,
-          isMain: true,
-        ),
+        Bard.level1(isMain: true),
       ],
       chosenSkills: [
         Skill.acrobatics,

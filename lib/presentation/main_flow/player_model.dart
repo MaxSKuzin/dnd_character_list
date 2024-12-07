@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/cur_max.dart';
+import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
@@ -18,6 +19,7 @@ enum PlayerAspect {
   weapons,
   mana,
   spellKinds,
+  deathThrows,
 }
 
 class PlayerModel extends InheritedModel<PlayerAspect> {
@@ -71,6 +73,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     if (dependencies.contains(PlayerAspect.spellKinds)) {
       update |= !oldWidget.player.spellKinds.equals(player.spellKinds);
     }
+    if (dependencies.contains(PlayerAspect.deathThrows)) {
+      update |= oldWidget.player.deathThrows != player.deathThrows;
+    }
     return update;
   }
 
@@ -120,5 +125,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
 
   static List<SpellStat> spellStats(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.spellKinds)!.player.spellKinds;
+  }
+
+  static DeathThrows deathThrows(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.deathThrows)!.player.deathThrows;
   }
 }

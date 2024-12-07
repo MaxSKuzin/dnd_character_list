@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/death_throws_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/health_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/hit_dices.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/initiative_widget.dart';
@@ -105,6 +106,7 @@ class _BattleScreenState extends State<BattleScreen> {
                     HealthSection(),
                     ManaSection(),
                     HitDices(),
+                    DeathThrowsWidget(),
                   ],
                 ),
               ),

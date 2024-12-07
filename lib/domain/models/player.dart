@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
+import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
@@ -27,6 +28,7 @@ class Player {
   final Armor? armor;
   final Shield? shield;
   final List<Weapon> weapons;
+  final DeathThrows deathThrows;
   bool isDead;
 
   Player({
@@ -41,6 +43,7 @@ class Player {
     required this.armor,
     required this.shield,
     required this.weapons,
+    DeathThrows? deathThrows,
     int? hits,
     int? mana,
     this.isDead = false,
@@ -50,6 +53,11 @@ class Player {
         constitution = Stat(value: constitution, kind: StatKind.constitution),
         intelligence = Stat(value: intelligence, kind: StatKind.intelligence),
         wisdom = Stat(value: wisdom, kind: StatKind.wisdom),
+        deathThrows = deathThrows ??
+            const DeathThrows(
+              death: 0,
+              life: 0,
+            ),
         charisma = Stat(value: charisma, kind: StatKind.charisma) {
     currentHits = hits ?? maxHits;
     currentMana = mana ?? maxMana;
@@ -70,6 +78,7 @@ class Player {
     bool isDead = currentHits - value <= -maxHits;
     return _copyWith(
       currentHits: () => max(0, currentHits - value),
+      deathThrows: () => isDead ? const DeathThrows(death: 3, life: 0) : null,
       isDead: isDead,
     );
   }
@@ -77,6 +86,7 @@ class Player {
   Player heal(int health) {
     return _copyWith(
       currentHits: () => min(maxHits, currentHits + health),
+      deathThrows: () => null,
       isDead: false,
     );
   }
@@ -84,6 +94,7 @@ class Player {
   Player healFull() {
     return _copyWith(
       currentHits: () => maxHits,
+      deathThrows: () => null,
       isDead: false,
     );
   }
@@ -144,15 +155,14 @@ class Player {
           StatKind.charisma => charisma.bonus,
         };
 
-        final bool isChosen = mainClass.chosenSaveThrows.contains(e);
+        final int chosenThrowsCount = mainClass.chosenSaveThrows.where((el) => el == e).length;
 
-        if (isChosen) {
-          mainBonus += proficiencyBonus;
-        }
+        mainBonus += chosenThrowsCount * proficiencyBonus;
+
         return SaveThrow(
           bonus: mainBonus,
           origin: e,
-          isChosen: isChosen,
+          isChosen: chosenThrowsCount > 0,
         );
       },
     );
@@ -210,6 +220,35 @@ class Player {
     );
   }
 
+  Player changeDeadThrow({
+    int? death,
+    int? life,
+  }) {
+    if (death == deathThrows.death) {
+      return _copyWith(
+        deathThrows: () => DeathThrows(
+          death: max(0, deathThrows.death - 1),
+          life: deathThrows.life,
+        ),
+      );
+    }
+    if (life == deathThrows.life) {
+      return _copyWith(
+        deathThrows: () => DeathThrows(
+          death: deathThrows.death,
+          life: max(0, deathThrows.life - 1),
+        ),
+      );
+    }
+    return _copyWith(
+      deathThrows: () => DeathThrows(
+        death: death ?? deathThrows.death,
+        life: life ?? deathThrows.life,
+      ),
+      isDead: death == 3,
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (other is! Player) {
@@ -231,6 +270,7 @@ class Player {
     isEqual &= shield == other.shield;
     isEqual &= weapons.equals(other.weapons);
     isEqual &= currentMana == other.currentMana;
+    isEqual &= deathThrows == other.deathThrows;
 
     return isEqual;
   }
@@ -251,6 +291,7 @@ class Player {
         shield,
         weapons,
         currentMana,
+        deathThrows,
       ]);
 
   Player _copyWith({
@@ -268,6 +309,7 @@ class Player {
     Shield? Function()? shield,
     List<Weapon>? weapons,
     int? Function()? currentMana,
+    DeathThrows? Function()? deathThrows,
   }) =>
       Player(
         strength: strength ?? this.strength.value,
@@ -284,5 +326,6 @@ class Player {
         shield: shield != null ? shield() : this.shield,
         weapons: weapons ?? this.weapons,
         mana: currentMana != null ? currentMana() : this.currentMana,
+        deathThrows: deathThrows != null ? deathThrows() : this.deathThrows,
       );
 }
