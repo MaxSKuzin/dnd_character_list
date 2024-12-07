@@ -1,17 +1,20 @@
+import 'package:dnd_character_list/domain/models/spell_stat.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/common/widgets/separated_column.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
-import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class SpellsStatsSection extends StatelessWidget {
-  const SpellsStatsSection({super.key});
+  final List<SpellStat> spellStats;
+
+  const SpellsStatsSection(
+    this.spellStats, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final spellStats = PlayerModel.spellStats(context);
-
     return SeparatedColumn(
       separatorBuilder: (context, index) => const Gap(16),
       children: spellStats

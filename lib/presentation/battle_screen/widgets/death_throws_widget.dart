@@ -58,11 +58,16 @@ class DeathThrowsWidget extends StatelessWidget {
               Row(
                 children: [
                   const Expanded(
-                    child: FittedBox(
-                      child: Text(
-                        'УСПЕХ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'УСПЕХ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 8,
+                          ),
                         ),
                       ),
                     ),
@@ -105,11 +110,16 @@ class DeathThrowsWidget extends StatelessWidget {
               Row(
                 children: [
                   const Expanded(
-                    child: FittedBox(
-                      child: Text(
-                        'ПРОВАЛ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'ПРОВАЛ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 10,
+                          ),
                         ),
                       ),
                     ),

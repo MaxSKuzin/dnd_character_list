@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
+import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
@@ -29,6 +30,7 @@ class Player {
   final Shield? shield;
   final List<Weapon> weapons;
   final DeathThrows deathThrows;
+  late final Map<ClassExtras, int> currentExtras;
   bool isDead;
 
   Player({
@@ -43,6 +45,7 @@ class Player {
     required this.armor,
     required this.shield,
     required this.weapons,
+    Map<ClassExtras, int>? classExtras,
     DeathThrows? deathThrows,
     int? hits,
     int? mana,
@@ -61,7 +64,19 @@ class Player {
         charisma = Stat(value: charisma, kind: StatKind.charisma) {
     currentHits = hits ?? maxHits;
     currentMana = mana ?? maxMana;
+    currentExtras = classExtras ?? maxExtras;
   }
+
+  Map<ClassExtras, int> get maxExtras => classes.where((e) => e.classExtra != null).fold(
+        <ClassExtras, int>{},
+        (prev, e) {
+          final count = e.getClassExtrasCount(this);
+          if (count > 0) {
+            prev[e.classExtra!] = count;
+          }
+          return prev;
+        },
+      );
 
   List<Stat> get stats => [
         strength,
@@ -114,7 +129,7 @@ class Player {
       classes: newClasses,
       currentHits: () => null,
       currentMana: () => null,
-      // charisma: charisma.value + 1,
+      classExtras: () => null,
     );
   }
 
@@ -127,6 +142,7 @@ class Player {
       classes: [...classes, spec],
       currentHits: () => null,
       currentMana: () => null,
+      classExtras: () => null,
     );
   }
 
@@ -189,6 +205,9 @@ class Player {
       0,
       (prev, e) => prev + (e.level * e.magicLevelMultiplier).toInt(),
     );
+    if (magicLevel == 0) {
+      return 0;
+    }
     final spellCells = spellSlotsTable[magicLevel]!;
     return spellCells.entries.fold(
       0,
@@ -249,6 +268,33 @@ class Player {
     );
   }
 
+  Player useExtra(ClassExtras extra) {
+    if (currentExtras[extra] == null) {
+      return this;
+    }
+    return _copyWith(
+      classExtras: () {
+        final newExtras = Map<ClassExtras, int>.from(currentExtras);
+        newExtras[extra] = max(0, newExtras[extra]! - 1);
+        return newExtras;
+      },
+    );
+  }
+
+  Player restoreExtra(ClassExtras extra) {
+    final maxExtra = maxExtras[extra];
+    if (currentExtras[extra] == null || maxExtra == null) {
+      return this;
+    }
+    return _copyWith(
+      classExtras: () {
+        final newExtras = Map<ClassExtras, int>.from(currentExtras);
+        newExtras[extra] = min(maxExtra, newExtras[extra]! + 1);
+        return newExtras;
+      },
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (other is! Player) {
@@ -271,6 +317,11 @@ class Player {
     isEqual &= weapons.equals(other.weapons);
     isEqual &= currentMana == other.currentMana;
     isEqual &= deathThrows == other.deathThrows;
+    currentExtras.forEach((key, value) {
+      if (other.currentExtras[key] != value) {
+        isEqual = false;
+      }
+    });
 
     return isEqual;
   }
@@ -292,6 +343,7 @@ class Player {
         weapons,
         currentMana,
         deathThrows,
+        currentExtras,
       ]);
 
   Player _copyWith({
@@ -310,6 +362,7 @@ class Player {
     List<Weapon>? weapons,
     int? Function()? currentMana,
     DeathThrows? Function()? deathThrows,
+    Map<ClassExtras, int>? Function()? classExtras,
   }) =>
       Player(
         strength: strength ?? this.strength.value,
@@ -327,5 +380,6 @@ class Player {
         weapons: weapons ?? this.weapons,
         mana: currentMana != null ? currentMana() : this.currentMana,
         deathThrows: deathThrows != null ? deathThrows() : this.deathThrows,
+        classExtras: classExtras != null ? classExtras() : currentExtras,
       );
 }

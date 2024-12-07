@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/cur_max.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
@@ -20,6 +21,7 @@ enum PlayerAspect {
   mana,
   spellKinds,
   deathThrows,
+  extras,
 }
 
 class PlayerModel extends InheritedModel<PlayerAspect> {
@@ -76,6 +78,11 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     if (dependencies.contains(PlayerAspect.deathThrows)) {
       update |= oldWidget.player.deathThrows != player.deathThrows;
     }
+    if (dependencies.contains(PlayerAspect.extras)) {
+      player.currentExtras.forEach((key, value) {
+        update |= oldWidget.player.currentExtras[key] != value;
+      });
+    }
     return update;
   }
 
@@ -129,5 +136,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
 
   static DeathThrows deathThrows(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.deathThrows)!.player.deathThrows;
+  }
+
+  static Map<ClassExtras, int> extras(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.extras)!.player.currentExtras;
   }
 }

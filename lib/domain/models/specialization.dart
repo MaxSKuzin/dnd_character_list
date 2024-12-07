@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
@@ -57,6 +58,12 @@ abstract class Specialization {
   double get magicLevelMultiplier;
 
   StatKind? get spellKind => null;
+
+  ClassExtras? get classExtra => null;
+
+  String get classExtraDescription => '';
+
+  int getClassExtrasCount(Player player) => 0;
 
   @override
   bool operator ==(Object other) {

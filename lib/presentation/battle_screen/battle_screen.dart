@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/class_extra_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/death_throws_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/health_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/hit_dices.dart';
@@ -8,6 +9,7 @@ import 'package:dnd_character_list/presentation/battle_screen/widgets/protection
 import 'package:dnd_character_list/presentation/battle_screen/widgets/speed_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/spells_stats_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/weapons_section.dart';
+import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -88,50 +90,72 @@ class _BattleScreenState extends State<BattleScreen> {
             ),
             const Gap(16),
             LayoutBuilder(
-              builder: (context, constraints) => SizedBox(
-                height: constraints.maxWidth / 2 + 10,
-                width: constraints.maxWidth,
-                child: GridView(
-                  controller: _gridController,
-                  padding: const EdgeInsets.symmetric(vertical: 1),
-                  scrollDirection: Axis.horizontal,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.5,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
+              builder: (context, constraints) {
+                final mana = PlayerModel.mana(context);
+                final extras = PlayerModel.extras(context);
+                return SizedBox(
+                  height: constraints.maxWidth / 2 + 10,
+                  width: constraints.maxWidth,
+                  child: GridView(
+                    controller: _gridController,
+                    padding: const EdgeInsets.symmetric(vertical: 1),
+                    scrollDirection: Axis.horizontal,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.5,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                    ),
+                    shrinkWrap: true,
+                    children: [
+                      const HealthSection(),
+                      const HitDices(),
+                      const DeathThrowsWidget(),
+                      if (mana.max > 0) ManaSection(mana),
+                      ...extras.entries.map(
+                        (e) => ClassExtraWidget(
+                          extra: e.key,
+                          count: e.value,
+                        ),
+                      ),
+                    ],
                   ),
-                  shrinkWrap: true,
-                  children: const [
-                    HealthSection(),
-                    ManaSection(),
-                    HitDices(),
-                    DeathThrowsWidget(),
-                  ],
-                ),
-              ),
+                );
+              },
             ),
             const Gap(16),
             Expanded(
               child: FadingEdgeScrollView.fromSingleChildScrollView(
                 child: SingleChildScrollView(
                   controller: _scrollController,
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
+                      const Text(
                         'ОРУЖИЕ',
                         textAlign: TextAlign.center,
                       ),
-                      Gap(8),
-                      WeaponsSection(),
-                      Gap(16),
-                      Text(
-                        'МАГИЯ',
-                        textAlign: TextAlign.center,
+                      const Gap(8),
+                      const WeaponsSection(),
+                      Builder(
+                        builder: (context) {
+                          final spellStats = PlayerModel.spellStats(context);
+                          if (spellStats.isEmpty) {
+                            return const SizedBox();
+                          }
+                          return Column(
+                            children: [
+                              const Gap(16),
+                              const Text(
+                                'МАГИЯ',
+                                textAlign: TextAlign.center,
+                              ),
+                              const Gap(8),
+                              SpellsStatsSection(spellStats),
+                            ],
+                          );
+                        },
                       ),
-                      Gap(8),
-                      SpellsStatsSection(),
                     ],
                   ),
                 ),
