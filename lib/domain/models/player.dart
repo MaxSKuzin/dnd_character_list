@@ -5,6 +5,7 @@ import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
+import 'package:dnd_character_list/domain/models/races/race.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
@@ -16,6 +17,7 @@ import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 
 class Player {
+  final Race race;
   final Stat strength;
   final Stat dexterity;
   final Stat constitution;
@@ -34,6 +36,7 @@ class Player {
   bool isDead;
 
   Player({
+    required this.race,
     required strength,
     required dexterity,
     required constitution,
@@ -51,11 +54,26 @@ class Player {
     int? mana,
     this.isDead = false,
   })  : assert(classes.isNotEmpty),
-        strength = Stat(value: strength, kind: StatKind.strength),
-        dexterity = Stat(value: dexterity, kind: StatKind.dexterity),
-        constitution = Stat(value: constitution, kind: StatKind.constitution),
-        intelligence = Stat(value: intelligence, kind: StatKind.intelligence),
-        wisdom = Stat(value: wisdom, kind: StatKind.wisdom),
+        strength = Stat(
+          value: strength + (race.statBonuses[StatKind.strength] ?? 0),
+          kind: StatKind.strength,
+        ),
+        dexterity = Stat(
+          value: dexterity + (race.statBonuses[StatKind.dexterity] ?? 0),
+          kind: StatKind.dexterity,
+        ),
+        constitution = Stat(
+          value: constitution + (race.statBonuses[StatKind.constitution] ?? 0),
+          kind: StatKind.constitution,
+        ),
+        intelligence = Stat(
+          value: intelligence + (race.statBonuses[StatKind.intelligence] ?? 0),
+          kind: StatKind.intelligence,
+        ),
+        wisdom = Stat(
+          value: wisdom + (race.statBonuses[StatKind.wisdom] ?? 0),
+          kind: StatKind.wisdom,
+        ),
         deathThrows = deathThrows ??
             const DeathThrows(
               death: 0,
@@ -317,6 +335,7 @@ class Player {
     isEqual &= weapons.equals(other.weapons);
     isEqual &= currentMana == other.currentMana;
     isEqual &= deathThrows == other.deathThrows;
+    isEqual &= race == other.race;
     currentExtras.forEach((key, value) {
       if (other.currentExtras[key] != value) {
         isEqual = false;
@@ -344,6 +363,7 @@ class Player {
         currentMana,
         deathThrows,
         currentExtras,
+        race,
       ]);
 
   Player _copyWith({
@@ -381,5 +401,6 @@ class Player {
         mana: currentMana != null ? currentMana() : this.currentMana,
         deathThrows: deathThrows != null ? deathThrows() : this.deathThrows,
         classExtras: classExtras != null ? classExtras() : currentExtras,
+        race: race,
       );
 }

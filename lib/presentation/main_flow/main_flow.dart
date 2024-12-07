@@ -3,6 +3,7 @@ import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/bard.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/domain/models/races/tiefling.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
@@ -21,18 +22,19 @@ class MainFlow extends StatefulWidget {
 class _MainFlowState extends State<MainFlow> {
   Player setPlayer() {
     return Player(
+      race: Tiefling.faerun(),
       weapons: [
         Weapon.rapier(),
         Weapon.dagger(),
       ],
       shield: null,
       armor: Armor.leather(),
-      strength: 11,
-      dexterity: 17,
-      constitution: 15,
-      intelligence: 10,
-      wisdom: 13,
-      charisma: 16,
+      strength: 8,
+      dexterity: 15,
+      constitution: 14,
+      intelligence: 8,
+      wisdom: 10,
+      charisma: 15,
       classes: [
         Bard.level1(isMain: true),
       ],
