@@ -112,7 +112,7 @@ class _PersonalityScreenState extends State<PersonalityScreen> {
                                     classType: e.runtimeType.toString(),
                                   ),
                                 ),
-                                Text(e.name),
+                                Text('${e.name} (${e.level})'),
                               ],
                             ),
                           ),

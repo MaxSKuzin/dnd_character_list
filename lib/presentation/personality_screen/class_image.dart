@@ -46,7 +46,7 @@ class ClassImage extends StatelessWidget {
       future: getImage(),
       builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done
           ? CustomPaint(
-              painter: A(
+              painter: SpritePainter(
                 spriteRect: sprites[classType]!,
                 image: snapshot.data!,
               ),
@@ -59,11 +59,11 @@ class ClassImage extends StatelessWidget {
   }
 }
 
-class A extends CustomPainter {
+class SpritePainter extends CustomPainter {
   final Rect spriteRect;
   final ui.Image image;
 
-  A({
+  SpritePainter({
     super.repaint,
     required this.spriteRect,
     required this.image,
@@ -102,7 +102,7 @@ class A extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(SpritePainter oldDelegate) {
+    return image != oldDelegate.image || spriteRect != oldDelegate.spriteRect;
   }
 }

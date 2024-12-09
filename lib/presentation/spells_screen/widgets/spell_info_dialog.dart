@@ -61,8 +61,9 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.spell.description),
-                  if (widget.spell.slot != SpellSlot.conspiracy)
+                  Text(widget.spell.description.trim()),
+                  if (widget.spell.slot != SpellSlot.conspiracy) ...[
+                    const Gap(16),
                     BlocBuilder<PlayerCubit, Player>(
                       builder: (context, state) => FilledButton(
                         onPressed: state.currentMana >= widget.spell.slot.mana
@@ -71,6 +72,7 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
                         child: const Text('Использовать'),
                       ),
                     ),
+                  ],
                 ],
               ),
             ),
