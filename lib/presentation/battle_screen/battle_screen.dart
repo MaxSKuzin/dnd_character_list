@@ -29,25 +29,25 @@ class _BattleScreenState extends State<BattleScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-      const Duration(milliseconds: 500),
-      () {
-        if (_gridController.position.maxScrollExtent == 0) return;
-        _gridController
-            .animateTo(
-              _gridController.position.maxScrollExtent,
-              duration: const Duration(seconds: 2),
-              curve: Curves.elasticOut,
-            )
-            .then(
-              (_) => _gridController.animateTo(
-                0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.linear,
-              ),
-            );
-      },
-    );
+    // Future.delayed(
+    //   const Duration(milliseconds: 500),
+    //   () {
+    //     if (_gridController.position.maxScrollExtent == 0) return;
+    //     _gridController
+    //         .animateTo(
+    //           _gridController.position.maxScrollExtent,
+    //           duration: const Duration(seconds: 2),
+    //           curve: Curves.elasticOut,
+    //         )
+    //         .then(
+    //           (_) => _gridController.animateTo(
+    //             0,
+    //             duration: const Duration(milliseconds: 300),
+    //             curve: Curves.linear,
+    //           ),
+    //         );
+    //   },
+    // );
   }
 
   @override

@@ -3,13 +3,14 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
+import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/races/race.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
-import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell_stat.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
@@ -18,12 +19,12 @@ import 'package:dnd_character_list/domain/models/weapon.dart';
 
 class Player {
   final Race race;
-  final Stat strength;
-  final Stat dexterity;
-  final Stat constitution;
-  final Stat intelligence;
-  final Stat wisdom;
-  final Stat charisma;
+  late final Stat strength;
+  late final Stat dexterity;
+  late final Stat constitution;
+  late final Stat intelligence;
+  late final Stat wisdom;
+  late final Stat charisma;
   final List<Specialization> classes;
   final List<Skill> chosenSkills;
   late final int currentHits;
@@ -33,16 +34,25 @@ class Player {
   final List<Weapon> weapons;
   final DeathThrows deathThrows;
   late final Map<ClassExtras, int> currentExtras;
+  final Personality personality;
   bool isDead;
 
+  final int _rawStrength;
+  final int _rawDexterity;
+  final int _rawConstitution;
+  final int _rawIntelligence;
+  final int _rawWisdom;
+  final int _rawCharisma;
+
   Player({
+    required this.personality,
     required this.race,
-    required strength,
-    required dexterity,
-    required constitution,
-    required intelligence,
-    required wisdom,
-    required charisma,
+    required int strength,
+    required int dexterity,
+    required int constitution,
+    required int intelligence,
+    required int wisdom,
+    required int charisma,
     required this.classes,
     required this.chosenSkills,
     required this.armor,
@@ -54,57 +64,71 @@ class Player {
     int? mana,
     this.isDead = false,
   })  : assert(classes.isNotEmpty),
-        strength = Stat(
-          value: strength +
-              (race.statBonuses[StatKind.strength] ?? 0) +
-              classes.where((e) => e.statBonuses.containsKey(StatKind.strength)).fold(
-                    0,
-                    (p, e) => p + e.statBonuses[StatKind.strength]!,
-                  ),
-          kind: StatKind.strength,
-        ),
-        dexterity = Stat(
-          value: dexterity +
-              (race.statBonuses[StatKind.dexterity] ?? 0) +
-              classes.where((e) => e.statBonuses.containsKey(StatKind.dexterity)).fold(
-                    0,
-                    (p, e) => p + e.statBonuses[StatKind.dexterity]!,
-                  ),
-          kind: StatKind.dexterity,
-        ),
-        constitution = Stat(
-          value: constitution +
-              (race.statBonuses[StatKind.constitution] ?? 0) +
-              classes.where((e) => e.statBonuses.containsKey(StatKind.constitution)).fold(
-                    0,
-                    (p, e) => p + e.statBonuses[StatKind.constitution]!,
-                  ),
-          kind: StatKind.constitution,
-        ),
-        intelligence = Stat(
-          value: intelligence +
-              (race.statBonuses[StatKind.intelligence] ?? 0) +
-              classes.where((e) => e.statBonuses.containsKey(StatKind.intelligence)).fold(
-                    0,
-                    (p, e) => p + e.statBonuses[StatKind.intelligence]!,
-                  ),
-          kind: StatKind.intelligence,
-        ),
-        wisdom = Stat(
-          value: wisdom +
-              (race.statBonuses[StatKind.wisdom] ?? 0) +
-              classes.where((e) => e.statBonuses.containsKey(StatKind.wisdom)).fold(
-                    0,
-                    (p, e) => p + e.statBonuses[StatKind.wisdom]!,
-                  ),
-          kind: StatKind.wisdom,
-        ),
+        _rawStrength = strength,
+        _rawDexterity = dexterity,
+        _rawConstitution = constitution,
+        _rawIntelligence = intelligence,
+        _rawWisdom = wisdom,
+        _rawCharisma = charisma,
         deathThrows = deathThrows ??
             const DeathThrows(
               death: 0,
               life: 0,
-            ),
-        charisma = Stat(value: charisma, kind: StatKind.charisma) {
+            ) {
+    this.strength = Stat(
+      value: strength +
+          (race.statBonuses[StatKind.strength] ?? 0) +
+          classes.where((e) => e.statBonuses.containsKey(StatKind.strength)).fold(
+                0,
+                (p, e) => p + e.statBonuses[StatKind.strength]!,
+              ),
+      kind: StatKind.strength,
+    );
+    this.dexterity = Stat(
+      value: dexterity +
+          (race.statBonuses[StatKind.dexterity] ?? 0) +
+          classes.where((e) => e.statBonuses.containsKey(StatKind.dexterity)).fold(
+                0,
+                (p, e) => p + e.statBonuses[StatKind.dexterity]!,
+              ),
+      kind: StatKind.dexterity,
+    );
+    this.constitution = Stat(
+      value: constitution +
+          (race.statBonuses[StatKind.constitution] ?? 0) +
+          classes.where((e) => e.statBonuses.containsKey(StatKind.constitution)).fold(
+                0,
+                (p, e) => p + e.statBonuses[StatKind.constitution]!,
+              ),
+      kind: StatKind.constitution,
+    );
+    this.intelligence = Stat(
+      value: intelligence +
+          (race.statBonuses[StatKind.intelligence] ?? 0) +
+          classes.where((e) => e.statBonuses.containsKey(StatKind.intelligence)).fold(
+                0,
+                (p, e) => p + e.statBonuses[StatKind.intelligence]!,
+              ),
+      kind: StatKind.intelligence,
+    );
+    this.wisdom = Stat(
+      value: wisdom +
+          (race.statBonuses[StatKind.wisdom] ?? 0) +
+          classes.where((e) => e.statBonuses.containsKey(StatKind.wisdom)).fold(
+                0,
+                (p, e) => p + e.statBonuses[StatKind.wisdom]!,
+              ),
+      kind: StatKind.wisdom,
+    );
+    this.charisma = Stat(
+      value: charisma +
+          (race.statBonuses[StatKind.charisma] ?? 0) +
+          classes.where((e) => e.statBonuses.containsKey(StatKind.charisma)).fold(
+                0,
+                (p, e) => p + e.statBonuses[StatKind.charisma]!,
+              ),
+      kind: StatKind.charisma,
+    );
     currentHits = hits ?? maxHits;
     currentMana = mana ?? maxMana;
     currentExtras = classExtras ?? maxExtras;
@@ -413,12 +437,13 @@ class Player {
     Map<ClassExtras, int>? Function()? classExtras,
   }) =>
       Player(
-        strength: strength ?? this.strength.value,
-        dexterity: dexterity ?? this.dexterity.value,
-        constitution: constitution ?? this.constitution.value,
-        intelligence: intelligence ?? this.intelligence.value,
-        wisdom: wisdom ?? this.wisdom.value,
-        charisma: charisma ?? this.charisma.value,
+        personality: personality,
+        strength: strength ?? _rawStrength,
+        dexterity: dexterity ?? _rawDexterity,
+        constitution: constitution ?? _rawConstitution,
+        intelligence: intelligence ?? _rawIntelligence,
+        wisdom: wisdom ?? _rawWisdom,
+        charisma: charisma ?? _rawCharisma,
         classes: classes ?? this.classes,
         chosenSkills: chosenSkills ?? this.chosenSkills,
         hits: currentHits != null ? currentHits() : this.currentHits,

@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
+import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/races/tiefling.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
@@ -22,6 +23,16 @@ class MainFlow extends StatefulWidget {
 class _MainFlowState extends State<MainFlow> {
   Player setPlayer() {
     return Player(
+      personality: Personality(
+        eyesColor: 'Белый',
+        hairColor: 'Каштановый',
+        skinColor: 'Красный',
+        name: 'Фелая',
+        age: 24,
+        height: 160,
+        weight: 50,
+        story: 'Всю свою жизнь я путешествовала с труппой бардов тифлингов. Вечно гонимые мы были вынуждены жить кочевым образом жизни. Из-за такого уклада я привыкла к нападкам от "недемонизированных" и стараюсь избегать неприятностей, но пылкий нрав не дает мне покоя, и переодически мы попали в беду из-за моего острого языка. Но однажды произошло нечто, что перевернуло мою жизнь на до и после. Наша труппа наткнулась на проклятое место и теперь вынуждены бродить по миру в одиночку, в поисках лучших целителей нашего мира. Так и я прибыла на северные земли, чтобы найти исцеление для своих близких, чтобы мы могли продолжить наш и без того тяжелый путь',
+      ),
       race: Tiefling.faerun(),
       weapons: [
         Weapon.rapier(),
