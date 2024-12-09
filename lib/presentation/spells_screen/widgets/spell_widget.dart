@@ -1,4 +1,5 @@
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
+import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_info_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -55,12 +56,9 @@ class SpellWidget extends StatelessWidget {
                           text: spell.components.map((e) => e.name).join(', '),
                         ),
                       ],
+                      style: context.theme.textTheme.bodyMedium,
                     ),
                   ),
-                  // const Gap(16),
-                  // Text(
-                  //   spell.description,
-                  // ),
                 ],
               ),
             ),

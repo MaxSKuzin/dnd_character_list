@@ -110,7 +110,7 @@ class _DescriptionDialog extends StatelessWidget {
         children: [
           Text(
             extra.name,
-            style: const TextStyle(
+            style: context.theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 20,
             ),

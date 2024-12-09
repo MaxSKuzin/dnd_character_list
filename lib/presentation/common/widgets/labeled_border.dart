@@ -32,6 +32,7 @@ class LabeledBorder extends StatelessWidget {
       text: TextSpan(
         text: text,
         style: TextStyle(
+          fontFamily: 'Inkulinati',
           color: Colors.white,
           fontSize: fontSize ?? (labelBorderStyle == LabelBorderStyle.rectangle ? 8 : 12),
           fontWeight: FontWeight.w600,
@@ -92,6 +93,7 @@ class _Painter extends CustomPainter {
       text: TextSpan(
         text: '  $text  ',
         style: TextStyle(
+          fontFamily: 'Inkulinati',
           color: Colors.white,
           fontSize: fontSize ?? (labelBorderStyle == LabelBorderStyle.rectangle ? 8 : 12),
           fontWeight: FontWeight.w600,
