@@ -11,8 +11,9 @@ import 'package:dnd_character_list/domain/models/races/race.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
-import 'package:dnd_character_list/domain/models/spell_slot.dart';
-import 'package:dnd_character_list/domain/models/spell_stat.dart';
+import 'package:dnd_character_list/domain/models/spell/spell.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_stat.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
@@ -365,6 +366,10 @@ class Player {
     );
   }
 
+  List<Spell> get spells => classes
+      .expand((e) => e.knownSpells)
+      .toList();
+
   @override
   bool operator ==(Object other) {
     if (other is! Player) {
@@ -388,6 +393,7 @@ class Player {
     isEqual &= currentMana == other.currentMana;
     isEqual &= deathThrows == other.deathThrows;
     isEqual &= race == other.race;
+    isEqual &= spells.equals(other.spells);
     currentExtras.forEach((key, value) {
       if (other.currentExtras[key] != value) {
         isEqual = false;
@@ -416,6 +422,7 @@ class Player {
         deathThrows,
         currentExtras,
         race,
+        spells,
       ]);
 
   Player _copyWith({

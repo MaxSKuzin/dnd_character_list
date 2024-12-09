@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 abstract class Specialization {
@@ -42,11 +43,6 @@ abstract class Specialization {
     return (isMain ? startHealth : 0) + player.constitution.bonus * level + healthPerLevel * (level - 1);
   }
 
-  Specialization copyWith({
-    int? level,
-    bool? isMain,
-  });
-
   Dice get hitDice;
 
   List<StatKind> get chosenSaveThrows;
@@ -62,6 +58,10 @@ abstract class Specialization {
   int getClassExtrasCount(Player player) => 0;
 
   Map<StatKind, int> get statBonuses;
+
+  int get knownConspiracies => 0;
+
+  List<Spell> get knownSpells => [];
 
   @override
   bool operator ==(Object other) {

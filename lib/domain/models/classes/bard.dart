@@ -1,7 +1,8 @@
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
-import 'package:dnd_character_list/domain/models/classes/specialization.dart';
+import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 final class Bard extends Specialization {
@@ -10,6 +11,7 @@ final class Bard extends Specialization {
   final List<StatKind> doubledSaveThrows;
 
   Bard._({
+    required this.knownSpells,
     required super.level,
     required super.isMain,
     required this.inspirationDice,
@@ -60,19 +62,49 @@ final class Bard extends Specialization {
   ];
 
   @override
-  Specialization copyWith({int? level, bool? isMain}) => Bard._(
-        level: level ?? this.level,
-        isMain: isMain ?? this.isMain,
-        inspirationDice: inspirationDice,
-      );
+  final List<Spell> knownSpells;
 
-  factory Bard.level1({required bool isMain}) => Bard._(
+  @override
+  int get knownConspiracies => {
+        1: 2,
+        2: 2,
+        3: 2,
+        4: 3,
+        5: 3,
+        6: 3,
+        7: 3,
+        8: 3,
+        9: 3,
+        10: 4,
+        11: 4,
+        12: 4,
+        13: 4,
+        14: 4,
+        15: 4,
+        16: 4,
+        17: 4,
+        18: 4,
+        19: 4,
+        20: 4,
+      }[level]!;
+
+  factory Bard.level1({
+    required bool isMain,
+    required List<Spell> knownSpells,
+  }) =>
+      Bard._(
+        knownSpells: knownSpells,
         level: 1,
         isMain: isMain,
         inspirationDice: Dice.k6,
       );
 
-  factory Bard.level2({required bool isMain}) => Bard._(
+  factory Bard.level2({
+    required bool isMain,
+    required List<Spell> knownSpells,
+  }) =>
+      Bard._(
+        knownSpells: knownSpells,
         level: 2,
         isMain: isMain,
         inspirationDice: Dice.k6,
@@ -81,22 +113,35 @@ final class Bard extends Specialization {
   factory Bard.level3({
     required bool isMain,
     required List<StatKind> doubledSaveThrows,
+    required List<Spell> knownSpells,
   }) =>
       Bard._(
+        knownSpells: knownSpells,
         level: 3,
         isMain: isMain,
         inspirationDice: Dice.k6,
         doubledSaveThrows: doubledSaveThrows,
       );
 
-  factory Bard.level4({required bool isMain, required Map<StatKind, int> statBonuses}) => Bard._(
+  factory Bard.level4({
+    required bool isMain,
+    required Map<StatKind, int> statBonuses,
+    required List<Spell> knownSpells,
+  }) =>
+      Bard._(
+        knownSpells: knownSpells,
         level: 4,
         isMain: isMain,
         inspirationDice: Dice.k6,
         statBonuses: statBonuses,
       );
 
-  factory Bard.level5({required bool isMain}) => Bard._(
+  factory Bard.level5({
+    required bool isMain,
+    required List<Spell> knownSpells,
+  }) =>
+      Bard._(
+        knownSpells: knownSpells,
         level: 5,
         isMain: isMain,
         inspirationDice: Dice.k8,

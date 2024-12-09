@@ -1,4 +1,4 @@
-import 'package:dnd_character_list/domain/models/spell_stat.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_stat.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/common/widgets/separated_column.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';

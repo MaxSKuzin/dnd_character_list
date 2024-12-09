@@ -22,6 +22,9 @@ class AppRouter extends RootStackRouter {
               page: BattleRoute.page,
             ),
             AdaptiveRoute(
+              page: SpellsRoute.page,
+            ),
+            AdaptiveRoute(
               page: PersonalityRoute.page,
             ),
           ],

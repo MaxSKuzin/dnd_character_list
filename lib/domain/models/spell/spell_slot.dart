@@ -1,4 +1,5 @@
 enum SpellSlot {
+  conspiracy(0),
   level1(2),
   level2(3),
   level3(5),
@@ -12,6 +13,21 @@ enum SpellSlot {
   final int mana;
 
   const SpellSlot(this.mana);
+
+  int compareTo(SpellSlot other) => index - other.index;
+
+  String get name => switch (this) {
+        SpellSlot.conspiracy => 'Заговор',
+        SpellSlot.level1 => '1 уровень',
+        SpellSlot.level2 => '2 уровень',
+        SpellSlot.level3 => '3 уровень',
+        SpellSlot.level4 => '4 уровень',
+        SpellSlot.level5 => '5 уровень',
+        SpellSlot.level6 => '6 уровень',
+        SpellSlot.level7 => '7 уровень',
+        SpellSlot.level8 => '8 уровень',
+        SpellSlot.level9 => '9 уровень',
+      };
 }
 
 const spellSlotsTable = {

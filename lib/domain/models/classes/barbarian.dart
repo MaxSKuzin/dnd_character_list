@@ -61,11 +61,6 @@ final class Barbarian extends Specialization {
   @override
   double magicLevelMultiplier = 0;
 
-  @override
-  Specialization copyWith({int? level, bool? isMain}) => Barbarian(
-        level: level ?? this.level,
-        isMain: isMain ?? this.isMain,
-      );
 
   static const _rageInfoTable = {
     1: (count: 2, damage: 2),
