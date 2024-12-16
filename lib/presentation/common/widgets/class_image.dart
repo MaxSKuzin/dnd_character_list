@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:flutter/material.dart';
 
 Completer<ImageInfo> completer = Completer();
@@ -10,6 +11,7 @@ Future<ui.Image> getImage() async {
   }
   var img = const AssetImage('assets/images/sprite_class.png');
   img.resolve(const ImageConfiguration()).addListener(ImageStreamListener((ImageInfo info, bool _) {
+    if (completer.isCompleted) return;
     completer.complete(info);
   }));
   ImageInfo imageInfo = await completer.future;
@@ -17,23 +19,23 @@ Future<ui.Image> getImage() async {
 }
 
 final sprites = {
-  'Bard': const Rect.fromLTWH(101, 376, 185, 163),
-  'Barbarian': const Rect.fromLTWH(406, 192, 188, 167),
-  'Warrior': const Rect.fromLTWH(725, 386, 164, 158),
-  'Wizard': const Rect.fromLTWH(106, 728, 194, 176),
-  'Driud': const Rect.fromLTWH(720, 185, 184, 172),
-  'Cliric': const Rect.fromLTWH(734, 0, 168, 175),
-  'Inventor': const Rect.fromLTWH(138, 214, 146, 148),
-  'Witch': const Rect.fromLTWH(1005, 546, 201, 172),
-  'Monk': const Rect.fromLTWH(110, 568, 187, 154),
-  'Paladin': const Rect.fromLTWH(410, 551, 194, 174),
-  'Thief': const Rect.fromLTWH(1045, 5, 145, 172),
-  'Ranger': const Rect.fromLTWH(698, 549, 200, 175),
-  'Sorcerer': const Rect.fromLTWH(1001, 364, 205, 177),
+  ClassKind.bard: const Rect.fromLTWH(101, 376, 185, 163),
+  ClassKind.barbarian: const Rect.fromLTWH(406, 192, 188, 167),
+  // 'Warrior': const Rect.fromLTWH(725, 386, 164, 158),
+  // 'Wizard': const Rect.fromLTWH(106, 728, 194, 176),
+  // 'Driud': const Rect.fromLTWH(720, 185, 184, 172),
+  // 'Cliric': const Rect.fromLTWH(734, 0, 168, 175),
+  // 'Inventor': const Rect.fromLTWH(138, 214, 146, 148),
+  // 'Witch': const Rect.fromLTWH(1005, 546, 201, 172),
+  // 'Monk': const Rect.fromLTWH(110, 568, 187, 154),
+  // 'Paladin': const Rect.fromLTWH(410, 551, 194, 174),
+  // 'Thief': const Rect.fromLTWH(1045, 5, 145, 172),
+  // 'Ranger': const Rect.fromLTWH(698, 549, 200, 175),
+  // 'Sorcerer': const Rect.fromLTWH(1001, 364, 205, 177),
 };
 
 class ClassImage extends StatelessWidget {
-  final String classType;
+  final ClassKind classType;
 
   const ClassImage({
     super.key,
@@ -50,9 +52,11 @@ class ClassImage extends StatelessWidget {
                 spriteRect: sprites[classType]!,
                 image: snapshot.data!,
               ),
-              child: LayoutBuilder(builder: (context, constraints) {
-                return const SizedBox.expand();
-              }),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return const SizedBox.expand();
+                },
+              ),
             )
           : const SizedBox(),
     );
@@ -103,6 +107,7 @@ class SpritePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(SpritePainter oldDelegate) {
-    return image != oldDelegate.image || spriteRect != oldDelegate.spriteRect;
+    // return image != oldDelegate.image || spriteRect != oldDelegate.spriteRect;
+    return false;
   }
 }

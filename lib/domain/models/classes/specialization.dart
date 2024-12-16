@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
@@ -60,9 +61,9 @@ abstract class Specialization {
 
   Map<StatKind, int> get statBonuses;
 
-  int get knownConspiracies => 0;
-
   List<Spell> get knownSpells => [];
+
+  ClassKind get classKind;
 
   @override
   bool operator ==(Object other) {

@@ -1,4 +1,4 @@
-import 'package:dnd_character_list/domain/models/classes/bard.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
@@ -14,7 +14,7 @@ class Command extends Spell {
   int timeToCast = 1;
 
   @override
-  List<Type> allowedSpecializations = [Bard];
+  List<ClassKind> allowedSpecializations = [ClassKind.bard];
 
   @override
   List<SpellComponent> components = [

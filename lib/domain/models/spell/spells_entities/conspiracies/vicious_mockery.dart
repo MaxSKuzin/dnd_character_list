@@ -1,4 +1,4 @@
-import 'package:dnd_character_list/domain/models/classes/bard.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
@@ -27,7 +27,7 @@ class ViciousMockery extends Spell {
   bool isConcentration = false;
 
   @override
-  List<Type> allowedSpecializations = [Bard];
+  List<ClassKind> allowedSpecializations = [ClassKind.bard];
 
   @override
   SpellTime castTimeType = SpellTime.action;

@@ -1,27 +1,25 @@
-import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
-import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
-import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_info_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class SpellWidget extends StatelessWidget {
   final Spell spell;
-  final Specialization specialization;
+  final Function() onTap;
+  final Color? backgroundColor;
 
   const SpellWidget({
     super.key,
+    this.backgroundColor,
+    required this.onTap,
     required this.spell,
-    required this.specialization,
   });
 
   @override
   Widget build(BuildContext context) {
-    final player = PlayerModel.getPlayer(context);
     return DecoratedBox(
       decoration: ShapeDecoration(
-        color: context.customColors?.cardColor,
+        color: backgroundColor ?? context.customColors?.cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: Colors.white),
@@ -32,12 +30,7 @@ class SpellWidget extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => SpellInfoDialog.show(
-              context,
-              spell: spell,
-              player: player,
-              spellOwner: specialization,
-            ),
+            onTap: onTap,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Column(

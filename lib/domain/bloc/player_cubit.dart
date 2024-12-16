@@ -1,6 +1,6 @@
 import 'package:dnd_character_list/domain/models/class_extras.dart';
-import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
+import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PlayerCubit extends Cubit<Player> {

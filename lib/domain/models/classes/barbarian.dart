@@ -1,10 +1,14 @@
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
-import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 final class Barbarian extends Specialization {
+  @override
+  ClassKind get classKind => ClassKind.barbarian;
+
   @override
   final Map<StatKind, int> statBonuses;
 
@@ -60,7 +64,6 @@ final class Barbarian extends Specialization {
 
   @override
   double magicLevelMultiplier = 0;
-
 
   static const _rageInfoTable = {
     1: (count: 2, damage: 2),

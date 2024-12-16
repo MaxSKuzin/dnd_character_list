@@ -137,6 +137,15 @@ class Weapon {
         type: WeaponType.oneHanded,
       );
 
+  factory Weapon.longSword() => Weapon(
+        name: 'Длинный меч',
+        damage: Dice.k8,
+        twoHandedDamage: Dice.k10,
+        damageType: DamageType.chopping,
+        kind: WeaponKind.martialMelee,
+        type: WeaponType.universal,
+      );
+
   ///Секира
   factory Weapon.ax() => Weapon(
         name: 'Секира',
@@ -169,3 +178,15 @@ class Weapon {
         type: WeaponType.universal,
       );
 }
+
+final availableWeapons = [
+  Weapon.dagger(),
+  Weapon.throwingSpear(),
+  Weapon.twoHandedSword(),
+  Weapon.bestNorthSword(),
+  Weapon.rapier(),
+  Weapon.longSword(),
+  Weapon.ax(),
+  Weapon.longBow(),
+  Weapon.spear(),
+];

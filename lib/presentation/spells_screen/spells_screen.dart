@@ -1,8 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
+import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_info_dialog.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -17,7 +19,7 @@ class SpellsScreen extends StatefulWidget {
 
 class _SpellsScreenState extends State<SpellsScreen> {
   SpellSlot? selectedSlot;
-  Type? selectedSpecialization;
+  ClassKind? selectedClass;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class _SpellsScreenState extends State<SpellsScreen> {
         .where(
           (e) =>
               (selectedSlot != null ? e.value.slot == selectedSlot : true) &&
-              (selectedSpecialization != null ? e.key.runtimeType == selectedSpecialization : true),
+              (selectedClass != null ? e.key.classKind == selectedClass : true),
         )
         .sorted(
           (a, b) => a.value.slot.compareTo(b.value.slot),
@@ -49,10 +51,10 @@ class _SpellsScreenState extends State<SpellsScreen> {
                     .map(
                       (e) => GestureDetector(
                         onTap: () => setState(() {
-                          if (e.runtimeType != selectedSpecialization) {
-                            selectedSpecialization = e.runtimeType;
+                          if (e.classKind != selectedClass) {
+                            selectedClass = e.classKind;
                           } else {
-                            selectedSpecialization = null;
+                            selectedClass = null;
                           }
                         }),
                         child: Padding(
@@ -61,13 +63,11 @@ class _SpellsScreenState extends State<SpellsScreen> {
                             label: Text(
                               e.name,
                               style: TextStyle(
-                                color: selectedSpecialization == e.runtimeType
-                                    ? context.theme.scaffoldBackgroundColor
-                                    : null,
+                                color: selectedClass == e.classKind ? context.theme.scaffoldBackgroundColor : null,
                               ),
                             ),
                             color: WidgetStatePropertyAll(
-                              selectedSpecialization == e.runtimeType ? Colors.white : null,
+                              selectedClass == e.classKind ? Colors.white : null,
                             ),
                           ),
                         ),
@@ -118,8 +118,13 @@ class _SpellsScreenState extends State<SpellsScreen> {
               itemBuilder: (context, index) {
                 final spell = availableSpells[index];
                 return SpellWidget(
+                  onTap: () => SpellInfoDialog.show(
+                    context,
+                    spell: spell.value,
+                    player: PlayerModel.getPlayer(context),
+                    spellOwner: spell.key,
+                  ),
                   spell: spell.value,
-                  specialization: spell.key,
                 );
               },
             ),

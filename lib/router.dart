@@ -12,7 +12,6 @@ class AppRouter extends RootStackRouter {
   List<AutoRoute> get routes => [
         AdaptiveRoute(
           page: MainFlowRoute.page,
-          initial: true,
           children: [
             AdaptiveRoute(
               page: MainRoute.page,
@@ -26,6 +25,34 @@ class AppRouter extends RootStackRouter {
             ),
             AdaptiveRoute(
               page: PersonalityRoute.page,
+            ),
+          ],
+        ),
+        AdaptiveRoute(
+          initial: true,
+          page: CreateCharacterRoute.page,
+          children: [
+            AdaptiveRoute(
+              page: SelectRaceRoute.page,
+              initial: true,
+            ),
+            AdaptiveRoute(
+              page: FillStatsRoute.page,
+            ),
+            AdaptiveRoute(
+              page: SelectClassRoute.page,
+            ),
+            AdaptiveRoute(
+              page: SelectSpellsRoute.page,
+            ),
+            AdaptiveRoute(
+              page: SelectSkillsRoute.page,
+            ),
+            AdaptiveRoute(
+              page: SelectWeaponsRoute.page,
+            ),
+            AdaptiveRoute(
+              page: SetPersonalityRoute.page,
             ),
           ],
         ),

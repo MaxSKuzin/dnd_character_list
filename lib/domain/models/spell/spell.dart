@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
@@ -21,7 +23,7 @@ abstract class Spell {
 
   List<SpellComponent> get components;
 
-  List<Type> get allowedSpecializations;
+  List<ClassKind> get allowedSpecializations;
 
   SpellTime get castTimeType;
 
@@ -39,7 +41,7 @@ abstract class Spell {
         other.distance == distance &&
         other.duration == duration &&
         other.isConcentration == isConcentration &&
-        other.components == components;
+        other.components.equals(components);
   }
 
   @override

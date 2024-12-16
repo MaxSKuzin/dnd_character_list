@@ -10,6 +10,7 @@ class Tiefling extends Race {
   final List<Peculiarity> specificPeculiarities;
 
   Tiefling({
+    this.name = 'Тифлинг',
     this.statBonuses = const {
       StatKind.charisma: 2,
       StatKind.intelligence: 1,
@@ -21,7 +22,7 @@ class Tiefling extends Race {
   List<String> languages = ['Общий', 'Инфернальный'];
 
   @override
-  String name = 'Тифлинг';
+  String name;
 
   List<Peculiarity> basePeculiarities = [
     const Peculiarity(
@@ -56,7 +57,6 @@ class Tiefling extends Race {
     bool isEqual = true;
     isEqual &= name == other.name;
     isEqual &= speed == other.speed;
-    isEqual &= statBonuses == other.statBonuses;
     isEqual &= peculiarities.equals(other.peculiarities);
     statBonuses.forEach((key, value) {
       if (other.statBonuses[key] != value) {
@@ -76,6 +76,7 @@ class Tiefling extends Race {
 
   factory Tiefling.faerun() {
     return Tiefling(
+      name: 'Тифлинг Фаэруна',
       statBonuses: {
         StatKind.dexterity: 2,
         StatKind.intelligence: 1,

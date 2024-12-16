@@ -1,4 +1,5 @@
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
@@ -7,7 +8,11 @@ import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 final class Bard extends Specialization {
   @override
+  ClassKind get classKind => ClassKind.bard;
+
+  @override
   final Map<StatKind, int> statBonuses;
+
   final List<StatKind> doubledSaveThrows;
 
   Bard._({
@@ -63,30 +68,6 @@ final class Bard extends Specialization {
 
   @override
   final List<Spell> knownSpells;
-
-  @override
-  int get knownConspiracies => {
-        1: 2,
-        2: 2,
-        3: 2,
-        4: 3,
-        5: 3,
-        6: 3,
-        7: 3,
-        8: 3,
-        9: 3,
-        10: 4,
-        11: 4,
-        12: 4,
-        13: 4,
-        14: 4,
-        15: 4,
-        16: 4,
-        17: 4,
-        18: 4,
-        19: 4,
-        20: 4,
-      }[level]!;
 
   factory Bard.level1({
     required bool isMain,
