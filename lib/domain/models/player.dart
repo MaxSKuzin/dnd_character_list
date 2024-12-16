@@ -146,14 +146,14 @@ class Player {
         },
       );
 
-  List<Stat> get stats => [
-        strength,
-        dexterity,
-        constitution,
-        intelligence,
-        wisdom,
-        charisma,
-      ];
+  Map<StatKind, Stat> get stats => {
+        StatKind.strength: strength,
+        StatKind.dexterity: dexterity,
+        StatKind.constitution: constitution,
+        StatKind.intelligence: intelligence,
+        StatKind.wisdom: wisdom,
+        StatKind.charisma: charisma,
+      };
 
   int get maxHits => classes.fold(0, (previous, spec) => previous + spec.hitPoints(this));
 
@@ -291,7 +291,7 @@ class Player {
       .map(
         (e) => SpellStat(
           owner: e.name,
-          stat: stats.firstWhere((element) => element.kind == e.spellKind),
+          stat: stats[e.spellKind]!,
           proficiencyBonus: proficiencyBonus,
         ),
       )
@@ -366,9 +366,14 @@ class Player {
     );
   }
 
-  List<Spell> get spells => classes
-      .expand((e) => e.knownSpells)
-      .toList();
+  Map<Specialization, List<Spell>> get spells => Map.fromEntries(
+        classes.where((e) => e.knownSpells.isNotEmpty).map(
+              (e) => MapEntry(
+                e,
+                e.knownSpells,
+              ),
+            ),
+      );
 
   @override
   bool operator ==(Object other) {
@@ -393,7 +398,6 @@ class Player {
     isEqual &= currentMana == other.currentMana;
     isEqual &= deathThrows == other.deathThrows;
     isEqual &= race == other.race;
-    isEqual &= spells.equals(other.spells);
     currentExtras.forEach((key, value) {
       if (other.currentExtras[key] != value) {
         isEqual = false;
@@ -422,7 +426,6 @@ class Player {
         deathThrows,
         currentExtras,
         race,
-        spells,
       ]);
 
   Player _copyWith({

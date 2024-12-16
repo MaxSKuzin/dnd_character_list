@@ -9,7 +9,7 @@ class InitiativeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stats = PlayerModel.stats(context);
-    final initiative = stats.firstWhere((e) => e.kind == StatKind.dexterity).bonus;
+    final initiative = stats[StatKind.dexterity]!.bonus;
 
     return DecoratedBox(
       decoration: ShapeDecoration(

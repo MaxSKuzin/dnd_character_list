@@ -17,21 +17,67 @@ class SpellsScreen extends StatefulWidget {
 
 class _SpellsScreenState extends State<SpellsScreen> {
   SpellSlot? selectedSlot;
+  Type? selectedSpecialization;
 
   @override
   Widget build(BuildContext context) {
-    final spells = PlayerModel.spells(context)
+    final spells = PlayerModel.spells(context);
+    final availableSpells = spells.entries
+        .expand(
+          (e) => e.value.map(
+            (el) => MapEntry(e.key, el),
+          ),
+        )
         .where(
-          (e) => selectedSlot != null ? e.slot == selectedSlot : true,
+          (e) =>
+              (selectedSlot != null ? e.value.slot == selectedSlot : true) &&
+              (selectedSpecialization != null ? e.key.runtimeType == selectedSpecialization : true),
         )
         .sorted(
-          (a, b) => a.slot.compareTo(b.slot),
+          (a, b) => a.value.slot.compareTo(b.value.slot),
         );
     return SafeArea(
       child: Column(
         children: [
+          if (spells.keys.length > 1)
+            SizedBox(
+              height: 48,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                children: spells.keys
+                    .map(
+                      (e) => GestureDetector(
+                        onTap: () => setState(() {
+                          if (e.runtimeType != selectedSpecialization) {
+                            selectedSpecialization = e.runtimeType;
+                          } else {
+                            selectedSpecialization = null;
+                          }
+                        }),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Chip(
+                            label: Text(
+                              e.name,
+                              style: TextStyle(
+                                color: selectedSpecialization == e.runtimeType
+                                    ? context.theme.scaffoldBackgroundColor
+                                    : null,
+                              ),
+                            ),
+                            color: WidgetStatePropertyAll(
+                              selectedSpecialization == e.runtimeType ? Colors.white : null,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
           SizedBox(
-            height: 64,
+            height: 48,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: SpellSlot.values
@@ -63,14 +109,18 @@ class _SpellsScreenState extends State<SpellsScreen> {
                   .toList(),
             ),
           ),
+          const Gap(8),
           Expanded(
             child: ListView.separated(
               separatorBuilder: (context, index) => const Gap(16),
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              itemCount: spells.length,
+              itemCount: availableSpells.length,
               itemBuilder: (context, index) {
-                final spell = spells[index];
-                return SpellWidget(spell: spell);
+                final spell = availableSpells[index];
+                return SpellWidget(
+                  spell: spell.value,
+                  specialization: spell.key,
+                );
               },
             ),
           ),

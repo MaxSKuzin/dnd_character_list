@@ -1,4 +1,5 @@
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
@@ -8,8 +9,15 @@ import 'package:gap/gap.dart';
 
 class SpellInfoDialog extends StatefulWidget {
   final Spell spell;
+  final Player player;
+  final Specialization spellOwner;
 
-  static Future<void> show(BuildContext context, Spell spell) async {
+  static Future<void> show(
+    BuildContext context, {
+    required Spell spell,
+    required Player player,
+    required Specialization spellOwner,
+  }) async {
     await showDialog(
       context: context,
       builder: (_) => BlocProvider.value(
@@ -23,13 +31,20 @@ class SpellInfoDialog extends StatefulWidget {
           ),
           child: SpellInfoDialog(
             spell: spell,
+            player: player,
+            spellOwner: spellOwner,
           ),
         ),
       ),
     );
   }
 
-  const SpellInfoDialog({super.key, required this.spell});
+  const SpellInfoDialog({
+    super.key,
+    required this.spell,
+    required this.player,
+    required this.spellOwner,
+  });
 
   @override
   State<SpellInfoDialog> createState() => _SpellInfoDialogState();
@@ -61,7 +76,12 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.spell.description.trim()),
+                  Text(widget.spell
+                      .description(
+                        widget.player,
+                        widget.spellOwner,
+                      )
+                      .trim()),
                   if (widget.spell.slot != SpellSlot.conspiracy) ...[
                     const Gap(16),
                     BlocBuilder<PlayerCubit, Player>(

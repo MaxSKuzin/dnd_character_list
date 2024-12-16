@@ -1,3 +1,5 @@
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
+import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 
@@ -7,7 +9,7 @@ class Spell {
   final int distance;
   final int duration;
   final bool isConcentration;
-  final String description;
+  final String Function(Player, Specialization) description;
   final List<SpellComponent> components;
 
   const Spell({
@@ -30,7 +32,6 @@ class Spell {
         other.distance == distance &&
         other.duration == duration &&
         other.isConcentration == isConcentration &&
-        other.description == description &&
         other.components == components;
   }
 
@@ -41,7 +42,6 @@ class Spell {
         distance.hashCode ^
         duration.hashCode ^
         isConcentration.hashCode ^
-        description.hashCode ^
         components.hashCode;
   }
 }

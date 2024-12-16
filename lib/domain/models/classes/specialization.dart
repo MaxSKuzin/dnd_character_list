@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
@@ -66,11 +67,23 @@ abstract class Specialization {
   @override
   bool operator ==(Object other) {
     if (other is Specialization) {
-      return name == other.name && runtimeType == other.runtimeType && level == other.level && isMain == other.isMain;
+      return name == other.name &&
+          runtimeType == other.runtimeType &&
+          level == other.level &&
+          isMain == other.isMain &&
+          spellKind == other.spellKind &&
+          knownSpells.equals(other.knownSpells);
     }
     return false;
   }
 
   @override
-  int get hashCode => Object.hashAll([name, runtimeType, level, isMain]);
+  int get hashCode => Object.hashAll([
+        name,
+        runtimeType,
+        level,
+        isMain,
+        spellKind,
+        knownSpells,
+      ]);
 }

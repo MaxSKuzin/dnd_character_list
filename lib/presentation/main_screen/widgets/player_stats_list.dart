@@ -26,9 +26,7 @@ class _PlayerStatsListState extends State<PlayerStatsList> {
   @override
   Widget build(BuildContext context) {
     final stats = PlayerModel.stats(context);
-    final wisdom = stats.firstWhere(
-      (e) => e.kind == StatKind.wisdom,
-    );
+    final wisdom = stats[StatKind.wisdom]!;
     return FadingEdgeScrollView.fromSingleChildScrollView(
       child: SingleChildScrollView(
         controller: _scrollController,
@@ -36,7 +34,7 @@ class _PlayerStatsListState extends State<PlayerStatsList> {
           separatorBuilder: (context, index) => const Gap(16),
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ...stats.map((e) => StatWidget(stat: e)),
+            ...stats.values.map((e) => StatWidget(stat: e)),
             PassiveWisdomWidget(value: 10 + wisdom.bonus),
           ],
         ),

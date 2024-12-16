@@ -9,6 +9,7 @@ import 'package:dnd_character_list/domain/models/save_throw.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_stat.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
+import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:flutter/material.dart';
 
@@ -83,7 +84,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
       update |= !oldWidget.player.classes.equals(player.classes);
     }
     if (dependencies.contains(PlayerAspect.spells)) {
-      update |= !oldWidget.player.spells.equals(player.spells);
+      player.spells.forEach((key, value) {
+        update |= !(oldWidget.player.spells[key] ?? []).equals(value);
+      });
     }
     if (dependencies.contains(PlayerAspect.deathThrows)) {
       update |= oldWidget.player.deathThrows != player.deathThrows;
@@ -96,7 +99,7 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     return update;
   }
 
-  static List<Stat> stats(BuildContext context) {
+  static Map<StatKind, Stat> stats(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.stats)!.player.stats;
   }
 
@@ -155,8 +158,8 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
   static List<Specialization> classes(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.classes)!.player.classes;
   }
-  
-  static List<Spell> spells(BuildContext context) {
+
+  static Map<Specialization, List<Spell>> spells(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.spells)!.player.spells;
   }
 }
