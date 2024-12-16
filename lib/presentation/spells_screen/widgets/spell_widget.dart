@@ -21,6 +21,7 @@ class SpellWidget extends StatelessWidget {
     final player = PlayerModel.getPlayer(context);
     return DecoratedBox(
       decoration: ShapeDecoration(
+        color: context.customColors?.cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: Colors.white),
@@ -49,12 +50,15 @@ class SpellWidget extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
+                  if (spell.isRitual) const Text('(Ритуал)'),
                   const Gap(8),
                   Text(spell.slot.name),
                   const Gap(8),
-                  Text('Длительность: ${spell.duration != 0 ? '${spell.duration} минут' : 'Мгновенная'}'),
+                  Text('Время наложения: $_castTime'),
                   const Gap(8),
-                  Text('Дистация: ${spell.distance} футов'),
+                  Text('Длительность: $_durationText'),
+                  const Gap(8),
+                  Text('Дистация: $_distanceText'),
                   const Gap(8),
                   RichText(
                     text: TextSpan(
@@ -76,5 +80,25 @@ class SpellWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String get _distanceText {
+    if (spell.distance != 0) {
+      return '${spell.distance} футов';
+    }
+    return 'На себя';
+  }
+
+  String get _castTime {
+    return '${spell.timeToCast} ${spell.castTimeType.name}';
+  }
+
+  String get _durationText {
+    if (spell.duration != null && spell.duration != Duration.zero) {
+      return '${spell.duration!.inMinutes} минут';
+    } else if (spell.durationInRounds != null) {
+      return '${spell.durationInRounds} раундов';
+    }
+    return 'Мгновенная';
   }
 }

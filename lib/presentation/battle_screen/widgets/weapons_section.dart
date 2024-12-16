@@ -22,7 +22,7 @@ class WeaponsSection extends StatelessWidget {
     final weapons = PlayerModel.weapons(context);
     return LabeledBorder(
       backgroundColor: context.customColors?.cardColor,
-      text: 'Атаки',
+      text: 'АТАКИ',
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: SeparatedColumn(

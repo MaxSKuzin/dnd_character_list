@@ -6,9 +6,13 @@ import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/races/tiefling.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
-import 'package:dnd_character_list/domain/models/spell/spell.dart';
-import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
-import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/true_strike.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/vicious_mockery.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/command.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/comprehend_languages.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/healing_word.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/speak_with_animals.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/thunder_wave.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/router.gr.dart';
@@ -54,71 +58,13 @@ class _MainFlowState extends State<MainFlow> {
         Bard.level1(
           isMain: true,
           knownSpells: [
-            Spell(
-              name: 'Злая насмешка',
-              distance: 60,
-              slot: SpellSlot.conspiracy,
-              components: [
-                SpellComponent.v(),
-              ],
-              duration: 0,
-              isConcentration: false,
-              description: (player, spec) {
-                final dice = spec.level >= 5
-                    ? '2к4'
-                    : spec.level >= 11
-                        ? '3к4'
-                        : spec.level >= 17
-                            ? '4к4'
-                            : '1к4';
-                return '''
-              Вы испускаете на существо, видимое в пределах дистанции, поток оскорблений вперемешку с тонкой магией. Если цель слышит вас (при этом она не обязана вас понимать), она должна преуспеть в спасброске Мудрости, иначе получит урон психической энергией $dice, и следующий бросок атаки до конца своего следующего хода совершит с помехой.
-              ''';
-              },
-            ),
-            Spell(
-              name: 'Меткий удар',
-              distance: 30,
-              slot: SpellSlot.conspiracy,
-              components: [
-                SpellComponent.s(),
-              ],
-              duration: 1,
-              isConcentration: true,
-              description: (player, spec) =>
-                  'Вы вытягиваете руку и указываете пальцем на цель, находящуюся в пределах дистанции. Ваша магия даёт краткое понимание защиты цели. В своем следующем ходу вы совершаете с преимуществом первый бросок атаки по цели, при условии, что заклинание к тому моменту не окончится.',
-            ),
-            Spell(
-              name: 'Волна грома',
-              distance: 15,
-              slot: SpellSlot.level1,
-              components: [
-                SpellComponent.v(),
-                SpellComponent.s(),
-              ],
-              duration: 0,
-              isConcentration: false,
-              description: (player, spec) => '''
-От вас исходит волна громовой силы. Все существа в кубе с длиной ребра 15 футов, исходящего от вас, должны совершить спасбросок Телосложения. При провале существо получает 2к8 урона звуком и отталкивается на 10 футов от вас. При успехе существо получает половину урона и не толкается.
-
-Кроме того, незакреплённые предметы, оказавшиеся полностью в области эффекта, автоматически толкаются на 10 футов от вас эффектом заклинания, и заклинание издает громовой рокот, слышимый на расстоянии 300 футов.
-''',
-            ),
-            Spell(
-              name: 'Лечащее слово',
-              distance: 60,
-              slot: SpellSlot.level1,
-              components: [
-                SpellComponent.v(),
-              ],
-              duration: 0,
-              isConcentration: false,
-              description: (player, spec) {
-                final stat = spec.spellKind!;
-                final bonus = player.stats[stat]!.bonus;
-                return 'Существо на ваш выбор, видимое в пределах дистанции, восстанавливает количество хитов, равное 1к4+$bonus (${stat.name.substring(0, 3)}). Это заклинание не оказывает никакого эффекта на Нежить и Конструктов.';
-              },
-            ),
+            ViciousMockery(),
+            TrueStrike(),
+            Command(),
+            ComprehendLanguages(),
+            HealingWord(),
+            SpeakWithAnimals(),
+            ThunderWave(),
           ],
         ),
       ],

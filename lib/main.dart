@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
             cardColor: const Color.fromARGB(255, 29, 31, 48),
           ),
         ],
-        fontFamily: 'Inkulinati',
+        // fontFamily: 'Inkulinati',
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
             side: const BorderSide(

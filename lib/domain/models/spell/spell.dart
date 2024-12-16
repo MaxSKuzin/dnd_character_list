@@ -2,25 +2,32 @@ import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_time.dart';
 
-class Spell {
-  final String name;
-  final SpellSlot slot;
-  final int distance;
-  final int duration;
-  final bool isConcentration;
-  final String Function(Player, Specialization) description;
-  final List<SpellComponent> components;
+abstract class Spell {
+  String get name;
 
-  const Spell({
-    required this.name,
-    required this.slot,
-    required this.distance,
-    required this.duration,
-    required this.isConcentration,
-    required this.description,
-    required this.components,
-  });
+  SpellSlot get slot;
+
+  int get distance;
+
+  Duration? get duration;
+
+  int? get durationInRounds;
+
+  bool get isConcentration;
+
+  String description(Player player, Specialization spec);
+
+  List<SpellComponent> get components;
+
+  List<Type> get allowedSpecializations;
+
+  SpellTime get castTimeType;
+
+  int get timeToCast;
+
+  bool get isRitual => false;
 
   @override
   bool operator ==(Object other) {
