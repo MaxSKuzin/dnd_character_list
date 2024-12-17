@@ -466,4 +466,36 @@ class Player {
         classExtras: classExtras != null ? classExtras() : currentExtras,
         race: race,
       );
+
+  Map<String, dynamic> toJson() => {
+        'classes': classes.map((e) => e.toJson()).toList(),
+        'personality': personality.toJson(),
+        'armor': armor?.toJson(),
+        'charisma': _rawCharisma,
+        'constitution': _rawConstitution,
+        'dexterity': _rawDexterity,
+        'intelligence': _rawIntelligence,
+        'strength': _rawStrength,
+        'wisdom': _rawWisdom,
+        'chosenSkills': chosenSkills.map((e) => e.index).toList(),
+        'race': race.toJson(),
+        'weapons': weapons.map((e) => e.toJson()).toList(),
+        'shield': shield?.toJson(),
+      };
+
+  factory Player.fromJson(Map<String, dynamic> json) => Player(
+        classes: (json['classes'] as List).map((e) => Specialization.fromJson(e)).toList(),
+        personality: Personality.fromJson(json['personality']),
+        armor: json['armor'] != null ? Armor.fromJson(json['armor']) : null,
+        charisma: json['charisma'],
+        constitution: json['constitution'],
+        dexterity: json['dexterity'],
+        intelligence: json['intelligence'],
+        strength: json['strength'],
+        wisdom: json['wisdom'],
+        chosenSkills: (json['chosenSkills'] as List).map((e) => Skill.values[e]).toList(),
+        race: Race.fromJson(json['race']),
+        weapons: (json['weapons'] as List).map((e) => Weapon.fromJson(e)).toList(),
+        shield: json['shield'] != null ? Shield.fromJson(json['shield']) : null,
+      );
 }

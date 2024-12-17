@@ -1,3 +1,4 @@
+import 'package:dnd_character_list/data/sp_source.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
@@ -10,8 +11,12 @@ import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class CreateCharacterCubit extends Cubit<Player?> {
+  final SpSource _source;
+
   Map<StatKind, int>? _stats;
   Race? _race;
   ClassKind? _selectedClass;
@@ -21,7 +26,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
   Armor? _armor;
   Personality? _personality;
 
-  CreateCharacterCubit() : super(null);
+  CreateCharacterCubit(this._source) : super(null);
 
   void setStats(Map<StatKind, int> stats) {
     _stats = {...stats};
@@ -73,7 +78,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
     );
   }
 
-  void createCharacter() {
+  Future<void> createCharacter() async {
     final spec = switch (_selectedClass!) {
       ClassKind.bard => Bard.level1(
           isMain: true,
@@ -99,6 +104,8 @@ class CreateCharacterCubit extends Cubit<Player?> {
       weapons: _selectedWeapons ?? [],
       shield: null,
     );
+
+    await _source.savePlayer(player);
 
     emit(player);
   }

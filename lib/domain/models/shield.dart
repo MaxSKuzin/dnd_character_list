@@ -3,11 +3,10 @@ class Shield {
   final int defense;
   final int weight;
 
-  const Shield(
-    {
+  const Shield({
     required this.name,
     required this.defense,
-    required this.weight, 
+    required this.weight,
   });
 
   factory Shield.regular() => const Shield(
@@ -26,4 +25,16 @@ class Shield {
         defense,
         weight,
       ]);
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'defense': defense,
+        'weight': weight,
+      };
+
+  factory Shield.fromJson(Map<String, dynamic> json) => Shield(
+        name: json['name'],
+        defense: json['defense'],
+        weight: json['weight'],
+      );
 }

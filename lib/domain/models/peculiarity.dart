@@ -17,4 +17,14 @@ class Peculiarity {
 
   @override
   int get hashCode => Object.hashAll([name, description]);
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'description': description,
+      };
+
+  factory Peculiarity.fromJson(Map<String, dynamic> json) => Peculiarity(
+        name: json['name'],
+        description: json['description'],
+      );
 }

@@ -29,7 +29,6 @@ class AppRouter extends RootStackRouter {
           ],
         ),
         AdaptiveRoute(
-          initial: true,
           page: CreateCharacterRoute.page,
           children: [
             AdaptiveRoute(
@@ -55,6 +54,10 @@ class AppRouter extends RootStackRouter {
               page: SetPersonalityRoute.page,
             ),
           ],
+        ),
+        AdaptiveRoute(
+          initial: true,
+          page: SelectCharacterRoute.page,
         ),
       ];
 }

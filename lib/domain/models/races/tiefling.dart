@@ -74,6 +74,20 @@ class Tiefling extends Race {
         ...peculiarities,
       ]);
 
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toJson(),
+        'name': name,
+        'statBonuses': statBonuses.map((key, value) => MapEntry(key.toJson(), value)),
+        'specificPeculiarities': specificPeculiarities.map((e) => e.toJson()).toList(),
+      };
+
+  factory Tiefling.fromJson(Map<String, dynamic> json) => Tiefling(
+        name: json['name'],
+        statBonuses: (json['statBonuses'] as Map).map((key, value) => MapEntry(StatKind.fromJson(key), value)),
+        specificPeculiarities: (json['specificPeculiarities'] as List).map((e) => Peculiarity.fromJson(e)).toList(),
+      );
+
   factory Tiefling.faerun() {
     return Tiefling(
       name: 'Тифлинг Фаэруна',

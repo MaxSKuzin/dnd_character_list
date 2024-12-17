@@ -65,6 +65,21 @@ final class Barbarian extends Specialization {
   @override
   double magicLevelMultiplier = 0;
 
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toJson(),
+        'knownSpells': knownSpells.map((e) => e.toJson()).toList(),
+        'level': level,
+        'isMain': isMain,
+        'statBonuses': statBonuses.map((key, value) => MapEntry(key.toJson(), value)),
+      };
+
+  static Barbarian fromJson(Map<String, dynamic> json) => Barbarian(
+        level: json['level'],
+        isMain: json['isMain'],
+        statBonuses: (json['statBonuses'] as Map).map((key, value) => MapEntry(StatKind.fromJson(key), value)),
+      );
+
   static const _rageInfoTable = {
     1: (count: 2, damage: 2),
     2: (count: 2, damage: 2),

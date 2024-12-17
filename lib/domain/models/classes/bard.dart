@@ -127,4 +127,24 @@ final class Bard extends Specialization {
         isMain: isMain,
         inspirationDice: Dice.k8,
       );
+
+  @override
+  Map<String, dynamic> toJson() => {
+        ...super.toJson(),
+        'knownSpells': knownSpells.map((e) => e.toJson()).toList(),
+        'level': level,
+        'isMain': isMain,
+        'inspirationDice': inspirationDice.toJson(),
+        'statBonuses': statBonuses.map((key, value) => MapEntry(key.toJson(), value)),
+        'doubledSaveThrows': doubledSaveThrows.map((e) => e.toJson()).toList(),
+      };
+
+  static Bard fromJson(Map<String, dynamic> json) => Bard._(
+        knownSpells: (json['knownSpells'] as List).map((e) => Spell.fromJson(e)).toList(),
+        level: json['level'],
+        isMain: json['isMain'],
+        inspirationDice: Dice.fromJson(json['inspirationDice']),
+        doubledSaveThrows: (json['doubledSaveThrows'] as List).map((e) => StatKind.fromJson(e)).toList(),
+        statBonuses: (json['statBonuses'] as Map).map((key, value) => MapEntry(StatKind.fromJson(key), value)),
+      );
 }

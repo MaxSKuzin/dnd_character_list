@@ -28,4 +28,10 @@ class Dice {
 
   @override
   int get hashCode => Object.hashAll([value]);
+
+  Map<String, dynamic> toJson() => {
+        'value': value,
+      };
+
+  factory Dice.fromJson(Map<String, dynamic> json) => Dice._(json['value'] as int);
 }

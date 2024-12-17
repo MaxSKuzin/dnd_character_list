@@ -5,8 +5,12 @@ import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_time.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/conspiracies.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/spells_level_1.dart';
 
 abstract class Spell {
+  Spell();
+
   String get name;
 
   SpellSlot get slot;
@@ -53,4 +57,13 @@ abstract class Spell {
         isConcentration.hashCode ^
         components.hashCode;
   }
+
+  Map<String, dynamic> toJson() => {
+        'type': runtimeType.toString(),
+      };
+
+  factory Spell.fromJson(Map<String, dynamic> json) => [
+        ...conspiracies,
+        ...spellsLevel1,
+      ].firstWhere((e) => e.runtimeType.toString() == json['type']);
 }

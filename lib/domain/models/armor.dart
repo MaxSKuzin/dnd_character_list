@@ -38,6 +38,24 @@ class Armor {
         stealthDisadvantage,
       ]);
 
+  Map<String, dynamic> toJson() => {
+        'kind': kind.index,
+        'weight': weight,
+        'name': name,
+        'protection': protection,
+        'dexterityLimit': dexterityLimit,
+        'stealthDisadvantage': stealthDisadvantage,
+      };
+
+  factory Armor.fromJson(Map<String, dynamic> json) => Armor._(
+        kind: ArmorKind.values[json['kind']],
+        weight: json['weight'],
+        name: json['name'],
+        protection: json['protection'],
+        dexterityLimit: json['dexterityLimit'],
+        stealthDisadvantage: json['stealthDisadvantage'],
+      );
+
   //light armor
   factory Armor.quilted() => const Armor._(
         name: 'Стеганый',

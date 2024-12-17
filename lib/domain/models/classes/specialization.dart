@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
+import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
@@ -87,4 +89,14 @@ abstract class Specialization {
         spellKind,
         knownSpells,
       ]);
+
+  Map<String, dynamic> toJson() => {
+        'type': runtimeType.toString(),
+      };
+
+  factory Specialization.fromJson(Map<String, dynamic> json) => switch (json['type']) {
+        'Bard' => Bard.fromJson(json),
+        'Barbarian'=> Barbarian.fromJson(json),
+        _ => throw 'No such class',
+      };
 }

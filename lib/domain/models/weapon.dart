@@ -85,6 +85,36 @@ class Weapon {
         isFencing,
       ]);
 
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'damage': damage.toJson(),
+        'damageType': damageType.index,
+        'kind': kind.index,
+        'type': type.index,
+        'fixedDamage': fixedDamage,
+        'damageMultiplier': damageMultiplier,
+        'isFencing': isFencing,
+        'weaponWeight': weaponWeight.index,
+        'twoHandedDamage': twoHandedDamage?.toJson(),
+        'minRange': minRange,
+        'maxRange': maxRange,
+      };
+
+  factory Weapon.fromJson(Map<String, dynamic> json) => Weapon(
+        name: json['name'],
+        damage: Dice.fromJson(json['damage']),
+        damageType: DamageType.values[json['damageType']],
+        kind: WeaponKind.values[json['kind']],
+        type: WeaponType.values[json['type']],
+        fixedDamage: json['fixedDamage'],
+        damageMultiplier: json['damageMultiplier'],
+        isFencing: json['isFencing'],
+        weaponWeight: WeaponWeight.values[json['weaponWeight']],
+        twoHandedDamage: json['twoHandedDamage'] == null ? null : Dice.fromJson(json['twoHandedDamage']),
+        minRange: json['minRange'],
+        maxRange: json['maxRange'],
+      );
+
   factory Weapon.dagger() => Weapon(
         name: 'Кинжал',
         damage: Dice.k4,
