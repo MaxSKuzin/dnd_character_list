@@ -6,21 +6,24 @@ import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_time.dart';
 
-class TrueStrike extends Spell {
+class SpareTheDying extends Spell {
   @override
-  String name = 'Меткий удар';
+  String name = 'Уход за умирающим';
 
   @override
-  int distance = 30;
+  int distance = 0;
 
   @override
   SpellSlot slot = SpellSlot.conspiracy;
 
   @override
-  List<SpellComponent> components = [SpellComponent.s()];
+  List<SpellComponent> components = [
+    SpellComponent.v(),
+    SpellComponent.s(),
+  ];
 
   @override
-  Duration duration = const Duration(minutes: 1);
+  Duration duration = Duration.zero;
 
   @override
   SpellTime castTimeType = SpellTime.action;
@@ -29,23 +32,21 @@ class TrueStrike extends Spell {
   int timeToCast = 1;
 
   @override
-  bool isConcentration = true;
+  bool isConcentration = false;
 
   @override
   List<ClassKind> allowedSpecializations = [
-    ClassKind.bard,
-    ClassKind.wizard,
-    ClassKind.witch,
-    ClassKind.sorcerer,
+    ClassKind.cliric,
+    ClassKind.inventor,
   ];
 
   @override
-  int? get durationInRounds => null;
+  int? durationInRounds;
 
   @override
   String description(Player player, Specialization spec) => rawDescription;
 
   @override
   String get rawDescription =>
-      '''Вы вытягиваете руку и указываете пальцем на цель, находящуюся в пределах дистанции. Ваша магия даёт краткое понимание защиты цели. В своем следующем ходу вы совершаете с преимуществом первый бросок атаки по цели, при условии, что заклинание к тому моменту не окончится.''';
+      '''Вы касаетесь живого существа, у которого 0 хитов. Оно становится стабилизированным. Это заклинание не оказывает никакого эффекта на Нежить и Конструктов.''';
 }

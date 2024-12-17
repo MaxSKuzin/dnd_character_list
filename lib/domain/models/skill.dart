@@ -54,7 +54,10 @@ enum Skill {
   surviving(StatKind.wisdom),
 
   ///Обращение с животными
-  animalTaming(StatKind.wisdom);
+  animalTaming(StatKind.wisdom),
+
+  ///Расследование
+  investigation(StatKind.intelligence);
 
   const Skill(this.origin);
 
@@ -79,6 +82,7 @@ enum Skill {
         stealth => 'Скрытность',
         surviving => 'Выживание',
         animalTaming => 'Обращение с животными',
+        investigation => 'Исследование',
       };
 
   int getBonus(Player player) {

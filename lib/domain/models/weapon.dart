@@ -207,6 +207,15 @@ class Weapon {
         kind: WeaponKind.simpleMelee,
         type: WeaponType.universal,
       );
+
+  factory Weapon.stuff() => Weapon(
+        name: 'Боевой посох',
+        damage: Dice.k6,
+        twoHandedDamage: Dice.k8,
+        damageType: DamageType.crushing,
+        kind: WeaponKind.simpleMelee,
+        type: WeaponType.universal,
+      );
 }
 
 final availableWeapons = [

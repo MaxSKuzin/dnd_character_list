@@ -6,18 +6,21 @@ import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_time.dart';
 
-class TrueStrike extends Spell {
+class Guidance extends Spell {
   @override
-  String name = 'Меткий удар';
+  String name = 'Указание';
 
   @override
-  int distance = 30;
+  int distance = 0;
 
   @override
   SpellSlot slot = SpellSlot.conspiracy;
 
   @override
-  List<SpellComponent> components = [SpellComponent.s()];
+  List<SpellComponent> components = [
+    SpellComponent.v(),
+    SpellComponent.s(),
+  ];
 
   @override
   Duration duration = const Duration(minutes: 1);
@@ -33,19 +36,18 @@ class TrueStrike extends Spell {
 
   @override
   List<ClassKind> allowedSpecializations = [
-    ClassKind.bard,
-    ClassKind.wizard,
-    ClassKind.witch,
-    ClassKind.sorcerer,
+    ClassKind.driud,
+    ClassKind.cliric,
+    ClassKind.inventor,
   ];
 
   @override
-  int? get durationInRounds => null;
+  int? durationInRounds;
 
   @override
   String description(Player player, Specialization spec) => rawDescription;
 
   @override
   String get rawDescription =>
-      '''Вы вытягиваете руку и указываете пальцем на цель, находящуюся в пределах дистанции. Ваша магия даёт краткое понимание защиты цели. В своем следующем ходу вы совершаете с преимуществом первый бросок атаки по цели, при условии, что заклинание к тому моменту не окончится.''';
+      '''Вы касаетесь одного согласного существа. Один раз, пока заклинание активно, цель может бросить 1к4 и добавить выпавшее число к одной проверке характеристики на свой выбор. Эту кость можно бросить до или после совершения проверки. После этого заклинание оканчивается.''';
 }

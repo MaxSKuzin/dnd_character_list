@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/stat.dart';
+import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -107,13 +109,20 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
               OutlinedButton(
                 onPressed: _selectedClass != null
                     ? () {
+                        final knownSpellsCount = _selectedClass!.knownSpellsCount(
+                          1,
+                          (StatKind statKind) => Stat(
+                            value: context.read<CreateCharacterCubit>().stats![statKind]!,
+                            kind: statKind,
+                          ).bonus,
+                        );
                         context.read<CreateCharacterCubit>().setClass(_selectedClass!);
-                        if (_selectedClass!.knownConspiracies(1) > 0 || _selectedClass!.knownSpellsCount(1) > 0) {
+                        if (_selectedClass!.knownConspiracies(1) > 0 || knownSpellsCount > 0) {
                           context.pushRoute(
                             SelectSpellsRoute(
                               classKind: _selectedClass!,
                               maxConspiracies: _selectedClass!.knownConspiracies(1),
-                              maxSpells: _selectedClass!.knownSpellsCount(1),
+                              maxSpells: knownSpellsCount,
                             ),
                           );
                         } else {

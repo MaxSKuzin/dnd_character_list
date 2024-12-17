@@ -121,8 +121,10 @@ class _SpellsScreenState extends State<SpellsScreen> {
                   onTap: () => SpellInfoDialog.show(
                     context,
                     spell: spell.value,
-                    player: PlayerModel.getPlayer(context),
-                    spellOwner: spell.key,
+                    spellDescription: spell.value.description(
+                      PlayerModel.getPlayer(context),
+                      spell.key,
+                    ),
                   ),
                   spell: spell.value,
                 );

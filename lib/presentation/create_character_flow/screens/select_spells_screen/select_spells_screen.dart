@@ -1,9 +1,13 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/conspiracies.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/spells_level_1.dart';
+import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
+import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_info_dialog.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_widget.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +21,12 @@ class SelectSpellsScreen extends StatefulWidget {
   final int maxSpells;
   final List<Spell> knownSpells;
   final Function(List<Spell> spells)? onSpellsSelected;
+  final List<SpellSlot> availableSlots;
 
   const SelectSpellsScreen({
     super.key,
     this.knownSpells = const [],
+    this.availableSlots = const [SpellSlot.conspiracy, SpellSlot.level1],
     this.onSpellsSelected,
     required this.maxSpells,
     required this.maxConspiracies,
@@ -34,21 +40,35 @@ class SelectSpellsScreen extends StatefulWidget {
 class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
   final _selectedConspiracies = <Spell>[];
   final _selectedSpells = <Spell>[];
+  SpellSlot? _selectedSpellSlot;
 
-  late final _availableSpells = spellsLevel1
+  late final _availableSpells = widget.availableSlots
+      .map((e) => switch (e) {
+            SpellSlot.conspiracy => conspiracies,
+            SpellSlot.level1 => spellsLevel1,
+            SpellSlot.level2 => throw UnimplementedError(),
+            SpellSlot.level3 => throw UnimplementedError(),
+            SpellSlot.level4 => throw UnimplementedError(),
+            SpellSlot.level5 => throw UnimplementedError(),
+            SpellSlot.level6 => throw UnimplementedError(),
+            SpellSlot.level7 => throw UnimplementedError(),
+            SpellSlot.level8 => throw UnimplementedError(),
+            SpellSlot.level9 => throw UnimplementedError(),
+          })
+      .expand((e) => e)
       .where(
         (e) => e.allowedSpecializations.contains(widget.classKind) && !widget.knownSpells.contains(e),
       )
-      .toList();
-
-  late final availableConspiracies = conspiracies
-      .where(
-        (e) => e.allowedSpecializations.contains(widget.classKind) && !widget.knownSpells.contains(e),
-      )
+      .sorted((a, b) => a.slot.compareTo(b.slot))
       .toList();
 
   @override
   Widget build(BuildContext context) {
+    final availableSpells = _availableSpells
+        .where(
+          (e) => _selectedSpellSlot == null || e.slot == _selectedSpellSlot,
+        )
+        .toList();
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -80,38 +100,84 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                 ),
               ),
               const Gap(16),
+              SizedBox(
+                height: 48,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: widget.availableSlots
+                      .map(
+                        (e) => GestureDetector(
+                          onTap: () => setState(() {
+                            if (e != _selectedSpellSlot) {
+                              _selectedSpellSlot = e;
+                            } else {
+                              _selectedSpellSlot = null;
+                            }
+                          }),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Chip(
+                              label: Text(
+                                e.name,
+                                style: TextStyle(
+                                  color: _selectedSpellSlot == e ? context.theme.scaffoldBackgroundColor : null,
+                                ),
+                              ),
+                              color: WidgetStatePropertyAll(
+                                _selectedSpellSlot == e ? Colors.white : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+              const Gap(16),
               Expanded(
                 child: ListView(
-                  children: [
-                    ...availableConspiracies.map(
-                      (e) => SpellWidget(
-                        onTap: () {
-                          if (_selectedConspiracies.contains(e)) {
-                            _selectedConspiracies.remove(e);
-                          } else if (_selectedConspiracies.length < widget.maxConspiracies) {
-                            _selectedConspiracies.add(e);
-                          }
-                          setState(() {});
-                        },
-                        backgroundColor: _selectedConspiracies.contains(e) ? null : Colors.transparent,
-                        spell: e,
-                      ),
-                    ),
-                    ..._availableSpells.map(
-                      (e) => SpellWidget(
-                        onTap: () {
-                          if (_selectedSpells.contains(e)) {
-                            _selectedSpells.remove(e);
-                          } else if (_selectedSpells.length < widget.maxSpells) {
-                            _selectedSpells.add(e);
-                          }
-                          setState(() {});
-                        },
-                        backgroundColor: _selectedSpells.contains(e) ? null : Colors.transparent,
-                        spell: e,
-                      ),
-                    ),
-                  ]
+                  children: availableSpells
+                      .map(
+                        (e) => Stack(
+                          children: [
+                            SpellWidget(
+                              onTap: () {
+                                if (e.slot != SpellSlot.conspiracy) {
+                                  if (_selectedSpells.contains(e)) {
+                                    _selectedSpells.remove(e);
+                                  } else if (_selectedSpells.length < widget.maxSpells) {
+                                    _selectedSpells.add(e);
+                                  }
+                                } else {
+                                  if (_selectedConspiracies.contains(e)) {
+                                    _selectedConspiracies.remove(e);
+                                  } else if (_selectedConspiracies.length < widget.maxConspiracies) {
+                                    _selectedConspiracies.add(e);
+                                  }
+                                }
+                                setState(() {});
+                              },
+                              backgroundColor: _selectedSpells.contains(e) || _selectedConspiracies.contains(e)
+                                  ? null
+                                  : Colors.transparent,
+                              spell: e,
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: IconButton(
+                                onPressed: () => SpellInfoDialog.show(
+                                  context,
+                                  canDrainMana: false,
+                                  spell: e,
+                                  spellDescription: e.rawDescription,
+                                ),
+                                icon: const Icon(Icons.info),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                       .map(
                         (e) => Padding(
                           padding: const EdgeInsets.symmetric(

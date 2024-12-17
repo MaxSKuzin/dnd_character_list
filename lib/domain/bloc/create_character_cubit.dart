@@ -17,7 +17,7 @@ import 'package:injectable/injectable.dart';
 class CreateCharacterCubit extends Cubit<Player?> {
   final SpSource _source;
 
-  Map<StatKind, int>? _stats;
+  Map<StatKind, int>? stats;
   Race? _race;
   ClassKind? _selectedClass;
   List<Spell>? _selectedSpells;
@@ -29,7 +29,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
   CreateCharacterCubit(this._source) : super(null);
 
   void setStats(Map<StatKind, int> stats) {
-    _stats = {...stats};
+    this.stats = {...stats};
   }
 
   void setRace(Race race) {
@@ -88,17 +88,18 @@ class CreateCharacterCubit extends Cubit<Player?> {
           level: 1,
           isMain: true,
         ),
+      _ => throw UnimplementedError(),
     };
     final player = Player(
       classes: [spec],
       personality: _personality!,
       armor: _armor,
-      charisma: _stats![StatKind.charisma]!,
-      constitution: _stats![StatKind.constitution]!,
-      dexterity: _stats![StatKind.dexterity]!,
-      intelligence: _stats![StatKind.intelligence]!,
-      strength: _stats![StatKind.strength]!,
-      wisdom: _stats![StatKind.wisdom]!,
+      charisma: stats![StatKind.charisma]!,
+      constitution: stats![StatKind.constitution]!,
+      dexterity: stats![StatKind.dexterity]!,
+      intelligence: stats![StatKind.intelligence]!,
+      strength: stats![StatKind.strength]!,
+      wisdom: stats![StatKind.wisdom]!,
       chosenSkills: _selectedSkills!,
       race: _race!,
       weapons: _selectedWeapons ?? [],

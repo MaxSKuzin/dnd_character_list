@@ -1,12 +1,27 @@
+import 'dart:math';
+
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/start_equipment.dart';
+import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/domain/models/weapon_kind.dart';
 
 enum ClassKind {
   bard,
-  barbarian;
+  barbarian,
+  warrior,
+  wizard,
+  driud,
+  cliric,
+  inventor,
+  witch,
+  monk,
+  paladin,
+  thief,
+  ranger,
+  sorcerer,
+  ;
 
   StartEquipment get equipment => switch (this) {
         ClassKind.bard => StartEquipment(
@@ -36,16 +51,38 @@ enum ClassKind {
             }.toList(),
             armor: null,
           ),
+        ClassKind.wizard => StartEquipment(
+            weapons: {
+              Weapon.stuff(),
+              Weapon.dagger(),
+            }.toList(),
+            secondWeapons: null,
+            armor: null,
+          ),
+        _ => throw UnimplementedError(),
       };
 
   String get name => switch (this) {
         ClassKind.bard => 'Бард',
         ClassKind.barbarian => 'Варвар',
+        ClassKind.warrior => 'Воин',
+        ClassKind.wizard => 'Волшебник',
+        ClassKind.driud => 'Друид',
+        ClassKind.cliric => 'Жрец',
+        ClassKind.inventor => 'Изобретатель',
+        ClassKind.witch => 'Колдун',
+        ClassKind.monk => 'Монах',
+        ClassKind.paladin => 'Паладин',
+        ClassKind.thief => 'Плут',
+        ClassKind.ranger => 'Следопыт',
+        ClassKind.sorcerer => 'Чародей',
       };
 
   int get startSkillCount => switch (this) {
         ClassKind.bard => 3,
         ClassKind.barbarian => 2,
+        ClassKind.wizard => 2,
+        _ => throw UnimplementedError(),
       };
 
   List<Skill> get availableSkills => switch (this) {
@@ -58,44 +95,46 @@ enum ClassKind {
             Skill.surviving,
             Skill.animalTaming,
           ],
+        ClassKind.wizard => [
+            Skill.history,
+            Skill.magic,
+            Skill.medicine,
+            Skill.insight,
+            Skill.investigation,
+            Skill.religion,
+          ],
+        _ => throw UnimplementedError(),
       };
 
-  int knownSpellsCount(int level) {
-    switch (this) {
-      case ClassKind.bard:
-        return 3 + level;
-      case ClassKind.barbarian:
-        return 0;
-    }
-  }
+  int knownSpellsCount(int level, int Function(StatKind) statBonus) => switch (this) {
+        ClassKind.bard => 3 + level,
+        ClassKind.barbarian => 0,
+        ClassKind.wizard => max(1, level + statBonus(StatKind.intelligence)),
+        _ => throw UnimplementedError(),
+      };
 
-  int knownConspiracies(int level) {
-    switch (this) {
-      case ClassKind.bard:
-        return {
-          1: 2,
-          2: 2,
-          3: 2,
-          4: 3,
-          5: 3,
-          6: 3,
-          7: 3,
-          8: 3,
-          9: 3,
-          10: 4,
-          11: 4,
-          12: 4,
-          13: 4,
-          14: 4,
-          15: 4,
-          16: 4,
-          17: 4,
-          18: 4,
-          19: 4,
-          20: 4,
-        }[level]!;
-      case ClassKind.barbarian:
-        return 0;
-    }
+  int knownConspiracies(int level) => switch (this) {
+        ClassKind.bard => {
+            1: 2,
+            4: 3,
+            10: 4,
+          }._getValue(level),
+        ClassKind.barbarian => 0,
+        ClassKind.wizard => {
+            1: 3,
+            4: 4,
+            10: 5,
+          }._getValue(level),
+        _ => throw UnimplementedError(),
+      };
+}
+
+extension on Map<int, int> {
+  int _getValue(int level) {
+    final key = keys.lastWhere(
+      (e) => e <= level,
+      orElse: () => 0,
+    );
+    return this[key] ?? 0;
   }
 }

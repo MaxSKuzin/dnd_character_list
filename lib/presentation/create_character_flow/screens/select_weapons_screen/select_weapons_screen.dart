@@ -68,16 +68,16 @@ class _SelectWeaponsScreenState extends State<SelectWeaponsScreen> {
                     ),
                   ),
                 ),
-                const Gap(16),
-                Text(
-                  'Второстепенное оружие ${_secondWeapon != null ? '1' : '0'}/1',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
                 if (widget.equipment.secondWeapons != null) ...[
+                  const Gap(16),
+                  Text(
+                    'Второстепенное оружие ${_secondWeapon != null ? '1' : '0'}/1',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const Gap(16),
                   ...widget.equipment.secondWeapons!.map(
                     (e) => Padding(
@@ -101,7 +101,8 @@ class _SelectWeaponsScreenState extends State<SelectWeaponsScreen> {
                 ],
                 const Gap(16),
                 OutlinedButton(
-                  onPressed: _selectedWeapon != null && _secondWeapon != null
+                  onPressed: _selectedWeapon != null &&
+                          (_secondWeapon != null || (widget.equipment.secondWeapons?.length ?? 0) == 0)
                       ? () {
                           context.read<CreateCharacterCubit>().setWeapons(
                             [

@@ -1,5 +1,4 @@
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
-import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
@@ -7,22 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class SpellInfoDialog extends StatefulWidget {
-  final Spell spell;
-  final Player player;
-  final Specialization spellOwner;
-
+class SpellInfoDialog extends StatelessWidget {
   static Future<void> show(
     BuildContext context, {
     required Spell spell,
-    required Player player,
-    required Specialization spellOwner,
+    required String spellDescription,
+    bool canDrainMana = true,
   }) async {
     await showDialog(
       context: context,
-      builder: (_) => BlocProvider.value(
-        value: context.read<PlayerCubit>(),
-        child: Dialog(
+      builder: (_) {
+        final child = Dialog(
           shape: const RoundedRectangleBorder(
             side: BorderSide(
               color: Colors.white,
@@ -31,26 +25,31 @@ class SpellInfoDialog extends StatefulWidget {
           ),
           child: SpellInfoDialog(
             spell: spell,
-            player: player,
-            spellOwner: spellOwner,
+            canDrainMana: canDrainMana,
+            spellDescription: spellDescription,
           ),
-        ),
-      ),
+        );
+        return canDrainMana
+            ? BlocProvider.value(
+                value: context.read<PlayerCubit>(),
+                child: child,
+              )
+            : child;
+      },
     );
   }
+
+  final Spell spell;
+  final String spellDescription;
+  final bool canDrainMana;
 
   const SpellInfoDialog({
     super.key,
     required this.spell,
-    required this.player,
-    required this.spellOwner,
+    required this.canDrainMana,
+    required this.spellDescription,
   });
 
-  @override
-  State<SpellInfoDialog> createState() => _SpellInfoDialogState();
-}
-
-class _SpellInfoDialogState extends State<SpellInfoDialog> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -59,15 +58,15 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            widget.spell.name,
+            spell.name,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
           ),
-          if (widget.spell.slot != SpellSlot.conspiracy)
+          if (spell.slot != SpellSlot.conspiracy)
             Text(
-              '${widget.spell.slot.mana} маны',
+              '${spell.slot.mana} маны',
             ),
           const Gap(8),
           Flexible(
@@ -76,18 +75,15 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.spell
-                      .description(
-                        widget.player,
-                        widget.spellOwner,
-                      )
-                      .trim()),
-                  if (widget.spell.slot != SpellSlot.conspiracy) ...[
+                  Text(
+                    spellDescription.trim(),
+                  ),
+                  if (canDrainMana && spell.slot != SpellSlot.conspiracy) ...[
                     const Gap(16),
                     BlocBuilder<PlayerCubit, Player>(
                       builder: (context, state) => FilledButton(
-                        onPressed: state.currentMana >= widget.spell.slot.mana
-                            ? () => context.read<PlayerCubit>().spendMana(widget.spell.slot.mana)
+                        onPressed: state.currentMana >= spell.slot.mana
+                            ? () => context.read<PlayerCubit>().spendMana(spell.slot.mana)
                             : null,
                         child: const Text('Использовать'),
                       ),

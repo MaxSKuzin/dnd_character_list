@@ -22,14 +22,6 @@ class HealingWord extends Spell {
   ];
 
   @override
-  String description(Player player, Specialization spec) {
-    final stat = spec.spellKind!;
-    final bonus = player.stats[stat]!.bonus;
-
-    return 'Существо на ваш выбор, видимое в пределах дистанции, восстанавливает количество хитов, равное 1к4+$bonus(${stat.name.substring(0, 3)}). Это заклинание не оказывает никакого эффекта на Нежить и Конструктов.';
-  }
-
-  @override
   int distance = 60;
 
   @override
@@ -46,4 +38,16 @@ class HealingWord extends Spell {
 
   @override
   SpellSlot slot = SpellSlot.level1;
+
+  @override
+  String description(Player player, Specialization spec) {
+    final stat = spec.spellKind!;
+    final bonus = player.stats[stat]!.bonus;
+
+    return 'Существо на ваш выбор, видимое в пределах дистанции, восстанавливает количество хитов, равное 1к4+$bonus(${stat.name.substring(0, 3)}). Это заклинание не оказывает никакого эффекта на Нежить и Конструктов.';
+  }
+
+  @override
+  String get rawDescription =>
+      '''Существо на ваш выбор, видимое в пределах дистанции, восстанавливает количество хитов, равное 1к4 + ваш модификатор базовой характеристики. Это заклинание не оказывает никакого эффекта на Нежить и Конструктов.''';
 }

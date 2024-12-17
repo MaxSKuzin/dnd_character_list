@@ -25,6 +25,8 @@ abstract class Spell {
 
   String description(Player player, Specialization spec);
 
+  String get rawDescription;
+
   List<SpellComponent> get components;
 
   List<ClassKind> get allowedSpecializations;

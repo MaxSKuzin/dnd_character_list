@@ -21,17 +21,17 @@ Future<ui.Image> getImage() async {
 final sprites = {
   ClassKind.bard: const Rect.fromLTWH(101, 376, 185, 163),
   ClassKind.barbarian: const Rect.fromLTWH(406, 192, 188, 167),
-  // 'Warrior': const Rect.fromLTWH(725, 386, 164, 158),
-  // 'Wizard': const Rect.fromLTWH(106, 728, 194, 176),
-  // 'Driud': const Rect.fromLTWH(720, 185, 184, 172),
-  // 'Cliric': const Rect.fromLTWH(734, 0, 168, 175),
-  // 'Inventor': const Rect.fromLTWH(138, 214, 146, 148),
-  // 'Witch': const Rect.fromLTWH(1005, 546, 201, 172),
-  // 'Monk': const Rect.fromLTWH(110, 568, 187, 154),
-  // 'Paladin': const Rect.fromLTWH(410, 551, 194, 174),
-  // 'Thief': const Rect.fromLTWH(1045, 5, 145, 172),
-  // 'Ranger': const Rect.fromLTWH(698, 549, 200, 175),
-  // 'Sorcerer': const Rect.fromLTWH(1001, 364, 205, 177),
+  ClassKind.warrior: const Rect.fromLTWH(725, 386, 164, 158),
+  ClassKind.wizard: const Rect.fromLTWH(106, 728, 194, 176),
+  ClassKind.driud: const Rect.fromLTWH(720, 185, 184, 172),
+  ClassKind.cliric: const Rect.fromLTWH(734, 0, 168, 175),
+  ClassKind.inventor: const Rect.fromLTWH(138, 214, 146, 148),
+  ClassKind.witch: const Rect.fromLTWH(1005, 546, 201, 172),
+  ClassKind.monk: const Rect.fromLTWH(110, 568, 187, 154),
+  ClassKind.paladin: const Rect.fromLTWH(410, 551, 194, 174),
+  ClassKind.thief: const Rect.fromLTWH(1045, 5, 145, 172),
+  ClassKind.ranger: const Rect.fromLTWH(698, 549, 200, 175),
+  ClassKind.sorcerer: const Rect.fromLTWH(1001, 364, 205, 177),
 };
 
 class ClassImage extends StatelessWidget {
