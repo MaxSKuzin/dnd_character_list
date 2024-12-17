@@ -1,7 +1,7 @@
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/acid_splash.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/blade_ward.dart';
-import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/chilld_touch.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/chill_touch.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/dancing_lights.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/druidcraft.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/eldritch_blast.dart';
@@ -31,7 +31,7 @@ import 'package:dnd_character_list/domain/models/spell/spells_entities/conspirac
 List<Spell> get conspiracies => [
       AcidSplash(),
       BladeWard(),
-      ChilldTouch(),
+      ChillTouch(),
       DancingLights(),
       Druidcraft(),
       EldritchBlast(),

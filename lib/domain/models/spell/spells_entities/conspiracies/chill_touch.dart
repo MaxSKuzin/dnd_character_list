@@ -7,7 +7,7 @@ import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_time.dart';
 
-class ChilldTouch extends Spell {
+class ChillTouch extends Spell {
   @override
   String name = 'Леденящее прикосновение';
 
