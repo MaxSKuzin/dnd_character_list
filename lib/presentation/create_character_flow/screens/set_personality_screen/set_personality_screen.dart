@@ -55,7 +55,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                           decoration: const InputDecoration(
                             labelText: 'Имя',
                           ),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.name,
                         ),
                       ),
                       const Gap(16),
@@ -67,7 +67,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                           decoration: const InputDecoration(
                             labelText: 'Цвет волос',
                           ),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.name,
                         ),
                       ),
                       const Gap(16),
@@ -79,7 +79,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                           decoration: const InputDecoration(
                             labelText: 'Цвет глаз',
                           ),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.name,
                         ),
                       ),
                       const Gap(16),
@@ -91,7 +91,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                           decoration: const InputDecoration(
                             labelText: 'Цвет кожи',
                           ),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.name,
                         ),
                       ),
                       const Gap(16),
@@ -103,7 +103,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                           decoration: const InputDecoration(
                             labelText: 'История',
                           ),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.name,
                         ),
                       ),
                       const Gap(16),
