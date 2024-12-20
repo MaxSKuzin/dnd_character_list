@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
@@ -159,7 +160,7 @@ class Player {
 
   Player takeDamage(int value) {
     bool isDead = currentHits - value <= -maxHits;
-    return _copyWith(
+    return copyWith(
       currentHits: () => max(0, currentHits - value),
       deathThrows: () => isDead ? const DeathThrows(death: 3, life: 0) : null,
       isDead: isDead,
@@ -167,7 +168,7 @@ class Player {
   }
 
   Player heal(int health) {
-    return _copyWith(
+    return copyWith(
       currentHits: () => min(maxHits, currentHits + health),
       deathThrows: () => null,
       isDead: false,
@@ -175,7 +176,7 @@ class Player {
   }
 
   Player healFull() {
-    return _copyWith(
+    return copyWith(
       currentHits: () => maxHits,
       deathThrows: () => null,
       isDead: false,
@@ -188,15 +189,15 @@ class Player {
 
   ///Does not modify the original object!
   Player levelUp<T extends Specialization>(T spec) {
-    if (classes.whereType<T>().isEmpty) {
+    if (classes.every((e) => e.classKind != spec.classKind)) {
       throw "Can't level up non-existing class";
     }
     final newClasses = classes
         .map(
-          (e) => e is T && e.runtimeType != Specialization ? spec : e,
+          (e) => e.classKind == spec.classKind ? spec : e,
         )
         .toList();
-    return _copyWith(
+    return copyWith(
       classes: newClasses,
       currentHits: () => null,
       currentMana: () => null,
@@ -206,10 +207,10 @@ class Player {
 
   ///Does not modify the original object!
   Player addClass<T extends Specialization>(T spec) {
-    if (classes.where((e) => e is T && e.runtimeType != Specialization).isNotEmpty) {
+    if (classes.any((e) => e.classKind == e.classKind)) {
       throw "Can't duplicate existing class";
     }
-    return _copyWith(
+    return copyWith(
       classes: [...classes, spec],
       currentHits: () => null,
       currentMana: () => null,
@@ -271,16 +272,23 @@ class Player {
     return classes.fold(0, (prev, e) => prev + e.additionalDamage(this));
   }
 
-  int get maxMana {
+  Map<SpellSlot, int> get spellCells {
     final magicLevel = classes.fold(
       0,
       (prev, e) => prev + (e.level * e.magicLevelMultiplier).toInt(),
     );
     if (magicLevel == 0) {
+      return {};
+    }
+    return spellSlotsTable[magicLevel]!;
+  }
+
+  int get maxMana {
+    final cells = spellCells;
+    if (cells.isEmpty) {
       return 0;
     }
-    final spellCells = spellSlotsTable[magicLevel]!;
-    return spellCells.entries.fold(
+    return cells.entries.fold(
       0,
       (prev, entry) => prev + entry.key.mana * entry.value,
     );
@@ -299,13 +307,13 @@ class Player {
       .toList();
 
   Player spendMana(int value) {
-    return _copyWith(
+    return copyWith(
       currentMana: () => max(0, currentMana - value),
     );
   }
 
   Player recoverMana(int value) {
-    return _copyWith(
+    return copyWith(
       currentMana: () => min(maxMana, currentMana + value),
     );
   }
@@ -315,7 +323,7 @@ class Player {
     int? life,
   }) {
     if (death == deathThrows.death) {
-      return _copyWith(
+      return copyWith(
         deathThrows: () => DeathThrows(
           death: max(0, deathThrows.death - 1),
           life: deathThrows.life,
@@ -323,14 +331,14 @@ class Player {
       );
     }
     if (life == deathThrows.life) {
-      return _copyWith(
+      return copyWith(
         deathThrows: () => DeathThrows(
           death: deathThrows.death,
           life: max(0, deathThrows.life - 1),
         ),
       );
     }
-    return _copyWith(
+    return copyWith(
       deathThrows: () => DeathThrows(
         death: death ?? deathThrows.death,
         life: life ?? deathThrows.life,
@@ -343,7 +351,7 @@ class Player {
     if (currentExtras[extra] == null) {
       return this;
     }
-    return _copyWith(
+    return copyWith(
       classExtras: () {
         final newExtras = Map<ClassExtras, int>.from(currentExtras);
         newExtras[extra] = max(0, newExtras[extra]! - 1);
@@ -357,7 +365,7 @@ class Player {
     if (currentExtras[extra] == null || maxExtra == null) {
       return this;
     }
-    return _copyWith(
+    return copyWith(
       classExtras: () {
         final newExtras = Map<ClassExtras, int>.from(currentExtras);
         newExtras[extra] = min(maxExtra, newExtras[extra]! + 1);
@@ -373,6 +381,11 @@ class Player {
                 e.knownSpells,
               ),
             ),
+      );
+
+  List<ClassAbility> get abilities => classes.fold(
+        <ClassAbility>[],
+        (prev, e) => [...prev, ...e.abilities],
       );
 
   @override
@@ -428,7 +441,7 @@ class Player {
         race,
       ]);
 
-  Player _copyWith({
+  Player copyWith({
     int? strength,
     int? dexterity,
     int? constitution,

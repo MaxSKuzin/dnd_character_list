@@ -63,9 +63,6 @@ final class Barbarian extends Specialization {
   }
 
   @override
-  double magicLevelMultiplier = 0;
-
-  @override
   Map<String, dynamic> toJson() => {
         ...super.toJson(),
         'knownSpells': knownSpells.map((e) => e.toJson()).toList(),

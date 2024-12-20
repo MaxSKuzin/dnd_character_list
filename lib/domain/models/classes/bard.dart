@@ -1,4 +1,6 @@
+import 'package:dnd_character_list/domain/models/bard_collegiums/bard_collegium.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
@@ -15,15 +17,26 @@ final class Bard extends Specialization {
 
   final List<StatKind> doubledSaveThrows;
 
+  final BardCollegium? collegium;
+
   Bard._({
     required this.knownSpells,
     required super.level,
     required super.isMain,
     required this.inspirationDice,
+    required this.collegium,
+    required this.baseAbilities,
     this.statBonuses = const {},
     this.doubledSaveThrows = const [],
   });
 
+  final List<ClassAbility> baseAbilities;
+
+  @override
+  List<ClassAbility> get abilities => [
+        ...baseAbilities,
+        ...collegium?.getAbilities(level) ?? [],
+      ];
   @override
   String name = 'Бард';
 
@@ -35,9 +48,6 @@ final class Bard extends Specialization {
 
   @override
   int startHealth = 8;
-
-  @override
-  double magicLevelMultiplier = 1;
 
   Dice inspirationDice;
 
@@ -69,65 +79,6 @@ final class Bard extends Specialization {
   @override
   final List<Spell> knownSpells;
 
-  factory Bard.level1({
-    required bool isMain,
-    required List<Spell> knownSpells,
-  }) =>
-      Bard._(
-        knownSpells: knownSpells,
-        level: 1,
-        isMain: isMain,
-        inspirationDice: Dice.k6,
-      );
-
-  factory Bard.level2({
-    required bool isMain,
-    required List<Spell> knownSpells,
-  }) =>
-      Bard._(
-        knownSpells: knownSpells,
-        level: 2,
-        isMain: isMain,
-        inspirationDice: Dice.k6,
-      );
-
-  factory Bard.level3({
-    required bool isMain,
-    required List<StatKind> doubledSaveThrows,
-    required List<Spell> knownSpells,
-  }) =>
-      Bard._(
-        knownSpells: knownSpells,
-        level: 3,
-        isMain: isMain,
-        inspirationDice: Dice.k6,
-        doubledSaveThrows: doubledSaveThrows,
-      );
-
-  factory Bard.level4({
-    required bool isMain,
-    required Map<StatKind, int> statBonuses,
-    required List<Spell> knownSpells,
-  }) =>
-      Bard._(
-        knownSpells: knownSpells,
-        level: 4,
-        isMain: isMain,
-        inspirationDice: Dice.k6,
-        statBonuses: statBonuses,
-      );
-
-  factory Bard.level5({
-    required bool isMain,
-    required List<Spell> knownSpells,
-  }) =>
-      Bard._(
-        knownSpells: knownSpells,
-        level: 5,
-        isMain: isMain,
-        inspirationDice: Dice.k8,
-      );
-
   @override
   Map<String, dynamic> toJson() => {
         ...super.toJson(),
@@ -137,14 +88,189 @@ final class Bard extends Specialization {
         'inspirationDice': inspirationDice.toJson(),
         'statBonuses': statBonuses.map((key, value) => MapEntry(key.toJson(), value)),
         'doubledSaveThrows': doubledSaveThrows.map((e) => e.toJson()).toList(),
+        'collegium': collegium?.toJson(),
+        'baseAbilities': baseAbilities.map((e) => e.toJson()).toList(),
       };
 
   static Bard fromJson(Map<String, dynamic> json) => Bard._(
+        baseAbilities: (json['baseAbilities'] as List).map((e) => ClassAbility.fromJson(e)).toList(),
+        collegium: json['collegium'] == null ? null : BardCollegium.fromJson(json['collegium']),
         knownSpells: (json['knownSpells'] as List).map((e) => Spell.fromJson(e)).toList(),
         level: json['level'],
         isMain: json['isMain'],
         inspirationDice: Dice.fromJson(json['inspirationDice']),
         doubledSaveThrows: (json['doubledSaveThrows'] as List).map((e) => StatKind.fromJson(e)).toList(),
         statBonuses: (json['statBonuses'] as Map).map((key, value) => MapEntry(StatKind.fromJson(key), value)),
+      );
+
+  factory Bard.level1({
+    required bool isMain,
+    required List<Spell> knownSpells,
+  }) =>
+      Bard._(
+        knownSpells: knownSpells,
+        level: 1,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+        collegium: null,
+        baseAbilities: [],
+      );
+
+  factory Bard.level2({
+    required bool isMain,
+    required List<Spell> knownSpells,
+  }) =>
+      Bard._(
+        collegium: null,
+        baseAbilities: [
+          const ClassAbility(
+            name: 'МАСТЕР НА ВСЕ РУКИ',
+            description:
+                '''Вы можете добавлять половину бонуса мастерства, округлённую в меньшую сторону, ко всем проверкам характеристики, куда этот бонус еще не включён.''',
+          ),
+          const ClassAbility(
+            name: 'ПЕСНЬ ОТДЫХА',
+            description: '''
+Вы с помощью успокаивающей музыки или речей можете помочь своим раненым союзникам восстановить их силы во время короткого отдыха. Если вы или любые союзные существа, способные слышать ваше исполнение, восстанавливаете хиты в конце короткого отдыха, используя Кости Хитов, каждое потратившее Кость Хитов существо восстанавливает дополнительно 1к6 хитов.
+
+Количество дополнительно восстанавливаемых хитов растёт с вашим уровнем в этом классе: 1к8 на 9-м уровне, 1к10 на 13 уровне и 1к12 на 17 уровне.
+''',
+          ),
+        ],
+        knownSpells: knownSpells,
+        level: 2,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+      );
+
+  factory Bard.level3({
+    required bool isMain,
+    required List<Spell> knownSpells,
+    required List<ClassAbility> abilities,
+    required BardCollegium collegium,
+  }) =>
+      Bard._(
+        collegium: collegium,
+        baseAbilities: abilities,
+        knownSpells: knownSpells,
+        level: 3,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+      );
+
+  factory Bard.level4({
+    required bool isMain,
+    required List<Spell> knownSpells,
+    required List<ClassAbility> abilities,
+    required BardCollegium collegium,
+    required Map<StatKind, int> statBonuses,
+  }) =>
+      Bard._(
+        statBonuses: statBonuses,
+        collegium: collegium,
+        baseAbilities: abilities,
+        knownSpells: knownSpells,
+        level: 4,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+      );
+
+  factory Bard.level5({
+    required bool isMain,
+    required List<Spell> knownSpells,
+    required List<ClassAbility> abilities,
+    required BardCollegium collegium,
+    required Map<StatKind, int> statBonuses,
+  }) =>
+      Bard._(
+        statBonuses: statBonuses,
+        collegium: collegium,
+        baseAbilities: [
+          ...abilities,
+          const ClassAbility(
+            name: 'ИСТОЧНИК ВДОХНОВЕНИЯ',
+            description:
+                'Вы восстанавливаете истраченные вдохновения барда и после короткого, и после продолжительного отдыха.',
+          ),
+        ],
+        knownSpells: knownSpells,
+        level: 5,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+      );
+
+  factory Bard.level6({
+    required bool isMain,
+    required List<Spell> knownSpells,
+    required List<ClassAbility> abilities,
+    required BardCollegium collegium,
+    required Map<StatKind, int> statBonuses,
+  }) =>
+      Bard._(
+        statBonuses: statBonuses,
+        collegium: collegium,
+        baseAbilities: [
+          ...abilities,
+          const ClassAbility(
+            name: 'КОНТРОЧАРОВАНИЕ',
+            description:
+                '''Вы получаете возможность использовать звуки или слова силы для разрушения воздействующих на разум эффектов. Вы можете действием начать исполнение, которое продлится до конца вашего следующего хода. В течение этого времени вы и все дружественные существа в пределах 30 футов от вас совершают спасброски от запугивания и очарования с преимуществом. Чтобы получить это преимущество, существа должны слышать вас. Исполнение заканчивается преждевременно, если вы оказываетесь недееспособны, теряете способность говорить, или прекращаете исполнение добровольно (на это не требуется действие).''',
+          ),
+        ],
+        knownSpells: knownSpells,
+        level: 6,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+      );
+
+  factory Bard.level7({
+    required bool isMain,
+    required List<Spell> knownSpells,
+    required List<ClassAbility> abilities,
+    required BardCollegium collegium,
+    required Map<StatKind, int> statBonuses,
+  }) =>
+      Bard._(
+        statBonuses: statBonuses,
+        collegium: collegium,
+        baseAbilities: abilities,
+        knownSpells: knownSpells,
+        level: 7,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+      );
+
+  factory Bard.level8({
+    required bool isMain,
+    required List<Spell> knownSpells,
+    required List<ClassAbility> abilities,
+    required BardCollegium collegium,
+    required Map<StatKind, int> statBonuses,
+  }) =>
+      Bard._(
+        statBonuses: statBonuses,
+        collegium: collegium,
+        baseAbilities: abilities,
+        knownSpells: knownSpells,
+        level: 8,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
+      );
+
+  factory Bard.level9({
+    required bool isMain,
+    required List<Spell> knownSpells,
+    required List<ClassAbility> abilities,
+    required BardCollegium collegium,
+    required Map<StatKind, int> statBonuses,
+  }) =>
+      Bard._(
+        statBonuses: statBonuses,
+        collegium: collegium,
+        baseAbilities: abilities,
+        knownSpells: knownSpells,
+        level: 9,
+        isMain: isMain,
+        inspirationDice: Dice.k6,
       );
 }

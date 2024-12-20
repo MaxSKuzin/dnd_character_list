@@ -21,6 +21,7 @@ dependencies:
   gap: ^3.0.1
   fading_edge_scrollview: ^4.1.1
   shared_preferences: ^2.3.3
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

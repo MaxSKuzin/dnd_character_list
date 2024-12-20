@@ -3,6 +3,7 @@ import 'package:dnd_character_list/presentation/common/widgets/class_image.dart'
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
+import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -26,6 +27,19 @@ class _PersonalityScreenState extends State<PersonalityScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              OutlinedButton(
+                onPressed: () => context.pushRoute(LevelUpFlowRoute(
+                  player: PlayerModel.getPlayer(context),
+                )),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.arrow_upward),
+                    Text('Новый уровень'),
+                  ],
+                ),
+              ),
+              const Gap(16),
               LabeledBorder(
                 backgroundColor: context.customColors?.cardColor,
                 text: personality.name.toUpperCase(),

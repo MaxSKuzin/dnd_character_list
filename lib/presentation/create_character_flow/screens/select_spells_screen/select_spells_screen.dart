@@ -6,6 +6,7 @@ import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/conspiracies.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/spells_level_1.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level2/spells_level_w.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_info_dialog.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_widget.dart';
@@ -26,12 +27,12 @@ class SelectSpellsScreen extends StatefulWidget {
   const SelectSpellsScreen({
     super.key,
     this.knownSpells = const [],
-    this.availableSlots = const [SpellSlot.conspiracy, SpellSlot.level1],
+    List<SpellSlot>? availableSlots,
     this.onSpellsSelected,
     required this.maxSpells,
     required this.maxConspiracies,
     required this.classKind,
-  });
+  }) : availableSlots = availableSlots ?? const [SpellSlot.conspiracy, SpellSlot.level1];
 
   @override
   State<SelectSpellsScreen> createState() => _SelectSpellsScreenState();
@@ -46,8 +47,8 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
       .map((e) => switch (e) {
             SpellSlot.conspiracy => conspiracies,
             SpellSlot.level1 => spellsLevel1,
-            SpellSlot.level2 => throw UnimplementedError(),
-            SpellSlot.level3 => throw UnimplementedError(),
+            SpellSlot.level2 => spellsLevel2,
+            SpellSlot.level3 => [],
             SpellSlot.level4 => throw UnimplementedError(),
             SpellSlot.level5 => throw UnimplementedError(),
             SpellSlot.level6 => throw UnimplementedError(),
@@ -85,20 +86,22 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                 ),
               ),
               const Gap(16),
-              Text(
-                'Заговоры: ${_selectedConspiracies.length}/${widget.maxConspiracies}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
+              if (widget.maxConspiracies > 0)
+                Text(
+                  'Заговоры: ${_selectedConspiracies.length}/${widget.maxConspiracies}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
                 ),
-              ),
-              Text(
-                'Заклинания: ${_selectedSpells.length}/${widget.maxSpells}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
+              if (widget.maxSpells > 0)
+                Text(
+                  'Заклинания: ${_selectedSpells.length}/${widget.maxSpells}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
                 ),
-              ),
               const Gap(16),
               SizedBox(
                 height: 48,

@@ -1,3 +1,5 @@
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+
 enum SpellSlot {
   conspiracy(0),
   level1(2),
@@ -28,6 +30,17 @@ enum SpellSlot {
         SpellSlot.level8 => '8 уровень',
         SpellSlot.level9 => '9 уровень',
       };
+
+  static Map<SpellSlot, int> getSpellCells(List<({ClassKind kind, int level})> classes) {
+    final magicLevel = classes.fold(
+      0,
+      (prev, e) => prev + (e.level * e.kind.magicLevelMultiplier).toInt(),
+    );
+    if (magicLevel == 0) {
+      return {};
+    }
+    return Map.fromEntries(spellSlotsTable[magicLevel]!.entries.where((element) => element.value > 0,));
+  }
 }
 
 const spellSlotsTable = {

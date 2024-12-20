@@ -59,5 +59,26 @@ class AppRouter extends RootStackRouter {
           initial: true,
           page: SelectCharacterRoute.page,
         ),
+        AdaptiveRoute(
+          page: LevelUpFlowRoute.page,
+          children: [
+            AdaptiveRoute(
+              page: LevelUpClassRoute.page,
+              initial: true,
+            ),
+            AdaptiveRoute(
+              page: SelectSpellsRoute.page,
+            ),
+            AdaptiveRoute(
+              page: SelectSkillsRoute.page,
+            ),
+            AdaptiveRoute(
+              page: SelectCollegiumRoute.page,
+            ),
+            AdaptiveRoute(
+              page: FillStatsRoute.page,
+            ),
+          ],
+        ),
       ];
 }

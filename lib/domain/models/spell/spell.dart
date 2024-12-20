@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_time.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/conspiracies.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/spells_level_1.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level2/spells_level_w.dart';
 
 abstract class Spell {
   Spell();
@@ -67,5 +68,6 @@ abstract class Spell {
   factory Spell.fromJson(Map<String, dynamic> json) => [
         ...conspiracies,
         ...spellsLevel1,
+        ...spellsLevel2,
       ].firstWhere((e) => e.runtimeType.toString() == json['type']);
 }

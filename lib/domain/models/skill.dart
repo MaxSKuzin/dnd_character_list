@@ -95,9 +95,8 @@ enum Skill {
       StatKind.charisma => player.charisma.bonus,
     };
 
-    if (player.chosenSkills.contains(this)) {
-      return mainBonus + player.proficiencyBonus;
-    }
-    return mainBonus;
+    final int containment = player.chosenSkills.where((e) => e == this).length;
+
+    return mainBonus + player.proficiencyBonus * containment;
   }
 }

@@ -127,6 +127,20 @@ enum ClassKind {
           }._getValue(level),
         _ => throw UnimplementedError(),
       };
+
+  double get magicLevelMultiplier => switch (this) {
+        ClassKind.bard => 1,
+        ClassKind.barbarian => 0,
+        ClassKind.wizard => 1,
+        _ => throw UnimplementedError(),
+      };
+
+  int getDoubledSkillPoints(int level) => switch (this) {
+        ClassKind.bard => level == 3 || level == 10 ? 2 : 0,
+        _ => 0,
+      };
+
+  int getStatsBonus(int level) => level % 4 == 0 ? 2 : 0; 
 }
 
 extension on Map<int, int> {

@@ -11,7 +11,11 @@ import 'package:gap/gap.dart';
 
 @RoutePage()
 class SelectClassScreen extends StatefulWidget {
-  const SelectClassScreen({super.key});
+  final Map<StatKind, int> stats;
+  const SelectClassScreen({
+    super.key,
+    required this.stats,
+  });
 
   @override
   State<SelectClassScreen> createState() => _SelectClassScreenState();
@@ -112,7 +116,7 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
                         final knownSpellsCount = _selectedClass!.knownSpellsCount(
                           1,
                           (StatKind statKind) => Stat(
-                            value: context.read<CreateCharacterCubit>().stats![statKind]!,
+                            value: widget.stats[statKind]!,
                             kind: statKind,
                           ).bonus,
                         );

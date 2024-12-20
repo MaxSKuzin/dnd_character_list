@@ -12,7 +12,7 @@ class FillStatsScreen extends StatefulWidget {
   final Map<StatKind, int> initialStats;
   final int maxPoints;
   final bool isInitial;
-  final Map<StatKind, int> Function()? onStatsFilled;
+  final Function(Map<StatKind, int> stats)? onStatsFilled;
 
   const FillStatsScreen({
     super.key,
@@ -69,13 +69,13 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                         (e) => EnterStatWidget(
                           statKind: e.key,
                           value: e.value,
-                          canAdd: e.value < 15,
-                          canSubtract: e.value > 8,
+                          canAdd: widget.isInitial ? e.value < 15 : e.value < 20,
+                          canSubtract: widget.isInitial ? e.value > 8 : e.value > widget.initialStats[e.key]!,
                           onAdd: () {
                             setState(() {
                               if (points > 0) {
                                 points--;
-                                if (e.value >= 13) {
+                                if (widget.isInitial && e.value >= 13) {
                                   points--;
                                 }
                                 stats[e.key] = e.value + 1;
@@ -86,7 +86,7 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                             setState(() {
                               if (points < 27) {
                                 points++;
-                                if (e.value > 13) {
+                                if (widget.isInitial && e.value > 13) {
                                   points++;
                                 }
                                 stats[e.key] = e.value - 1;
@@ -103,10 +103,14 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                 onPressed: points == 0
                     ? () {
                         if (widget.onStatsFilled != null) {
-                          widget.onStatsFilled!();
+                          widget.onStatsFilled!(
+                            stats.map(
+                              (key, value) => MapEntry(key, value - widget.initialStats[key]!),
+                            ),
+                          );
                         } else {
                           context.read<CreateCharacterCubit>().setStats(stats);
-                          context.pushRoute(const SelectClassRoute());
+                          context.pushRoute(SelectClassRoute(stats: stats));
                         }
                       }
                     : null,

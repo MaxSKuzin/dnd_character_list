@@ -20,9 +20,23 @@ class SpSource {
   }
 
   Future<void> savePlayer(Player player) async {
-    final savedPlayers = _sharedPreferences.getStringList(_playersKey) ?? [];
-    savedPlayers.add(jsonEncode(player.toJson()));
-    await _sharedPreferences.setStringList(_playersKey, savedPlayers);
+    final rawSavedPlayers = _sharedPreferences.getStringList(_playersKey) ?? [];
+    var savedPlayers = rawSavedPlayers.map((e) => Player.fromJson(jsonDecode(e))).toList();
+    final mainClass = player.classes.firstWhere((e) => e.isMain);
+    final name = player.personality.name;
+    savedPlayers = savedPlayers
+        .map((e) =>
+            e.personality.name == name && e.classes.firstWhere((e) => e.isMain).runtimeType == mainClass.runtimeType
+                ? player
+                : e)
+        .toList();
+    if (savedPlayers.isEmpty) {
+      savedPlayers.add(player);
+    }
+    await _sharedPreferences.setStringList(
+      _playersKey,
+      savedPlayers.map((e) => jsonEncode(e.toJson())).toList(),
+    );
   }
 
   List<Player> getSavedPlayers() {

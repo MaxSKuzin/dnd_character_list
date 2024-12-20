@@ -13,12 +13,14 @@ class SelectSkillsScreen extends StatefulWidget {
   final int maxSkills;
   final List<Skill> availableSkills;
   final ClassKind classKind;
+  final void Function(List<Skill> skills)? onSkillsSelected;
 
   const SelectSkillsScreen({
     super.key,
     required this.classKind,
     required this.availableSkills,
     required this.maxSkills,
+    this.onSkillsSelected,
   });
 
   @override
@@ -80,12 +82,16 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
               OutlinedButton(
                 onPressed: _selectedSkills.length == widget.maxSkills
                     ? () {
-                        context.read<CreateCharacterCubit>().setSkills(_selectedSkills);
-                        context.router.push(
-                          SelectWeaponsRoute(
-                            equipment: widget.classKind.equipment,
-                          ),
-                        );
+                        if (widget.onSkillsSelected == null) {
+                          context.read<CreateCharacterCubit>().setSkills(_selectedSkills);
+                          context.router.push(
+                            SelectWeaponsRoute(
+                              equipment: widget.classKind.equipment,
+                            ),
+                          );
+                        } else {
+                          widget.onSkillsSelected!(_selectedSkills);
+                        }
                       }
                     : null,
                 child: const Text('Далее'),
