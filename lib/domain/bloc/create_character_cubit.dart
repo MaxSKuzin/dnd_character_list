@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/data/sp_source.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
+import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
@@ -66,6 +67,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
     }
     if (firstWeapon != secondWeapon) {
       _inventory = Inventory(
+        balance: Balance.fromGold(15),
         items: [
           InventoryItem(quantity: 1, item: firstWeapon),
           if (secondWeapon != null) InventoryItem(quantity: 1, item: secondWeapon),
@@ -73,6 +75,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
       );
     } else {
       _inventory = Inventory(
+        balance: Balance.fromGold(15),
         items: [
           InventoryItem(quantity: 2, item: firstWeapon),
         ],

@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/data/sp_source.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
+import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
@@ -105,6 +106,18 @@ class PlayerCubit extends Cubit<Player> {
 
   Future<void> unequipArmor(Armor armor) async {
     final newPlayer = state.unequipArmor(armor);
+    await _source.savePlayer(newPlayer);
+    emit(newPlayer);
+  }
+
+  Future<void> spendBalance(Balance balance) async {
+    final newPlayer = state.spendBalance(balance);
+    await _source.savePlayer(newPlayer);
+    emit(newPlayer);
+  }
+
+  Future<void> addBalance(Balance balance) async {
+    final newPlayer = state.addBalance(balance);
     await _source.savePlayer(newPlayer);
     emit(newPlayer);
   }

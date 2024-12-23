@@ -19,8 +19,6 @@ import 'package:dnd_character_list/domain/models/spell/spell.dart' as _i26;
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart' as _i27;
 import 'package:dnd_character_list/domain/models/start_equipment.dart' as _i28;
 import 'package:dnd_character_list/domain/models/stat_kind.dart' as _i21;
-import 'package:dnd_character_list/inventory_screen/inventory_screen.dart'
-    as _i4;
 import 'package:dnd_character_list/presentation/battle_screen/battle_screen.dart'
     as _i1;
 import 'package:dnd_character_list/presentation/create_character_flow/create_character_flow.dart'
@@ -39,6 +37,8 @@ import 'package:dnd_character_list/presentation/create_character_flow/screens/se
     as _i16;
 import 'package:dnd_character_list/presentation/create_character_flow/screens/set_personality_screen/set_personality_screen.dart'
     as _i17;
+import 'package:dnd_character_list/presentation/inventory_screen/inventory_screen.dart'
+    as _i4;
 import 'package:dnd_character_list/presentation/level_up_flow/bard/select_collegium_screen.dart'
     as _i12;
 import 'package:dnd_character_list/presentation/level_up_flow/level_up_class_screen.dart'

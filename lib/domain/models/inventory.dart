@@ -1,37 +1,58 @@
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
+import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 
 class Inventory {
+  Balance balance;
   List<InventoryItem> items;
 
   Inventory({
     required this.items,
+    required this.balance,
   });
+
+  Inventory spendBalance(Balance value) {
+    return copyWith(
+      balance: balance - value,
+    );
+  }
+
+  Inventory addBalance(Balance value) {
+    return copyWith(
+      balance: balance + value,
+    );
+  }
+
+  Inventory copyWith({
+    Balance? balance,
+    List<InventoryItem>? items,
+  }) {
+    return Inventory(
+      balance: balance ?? this.balance,
+      items: items ?? this.items,
+    );
+  }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Inventory && other.items.equals(items);
+    return other is Inventory && other.items.equals(items) && balance == other.balance;
   }
 
   @override
   int get hashCode => items.hashCode;
 
-  Inventory copyWith({
-    List<InventoryItem>? items,
-  }) {
-    return Inventory(
-      items: items ?? this.items,
-    );
-  }
-
   Map<String, dynamic> toJson() {
-    return {'items': items.map((e) => e.toJson()).toList()};
+    return {
+      'items': items.map((e) => e.toJson()).toList(),
+      'balance': balance.toJson(),
+    };
   }
 
   factory Inventory.fromJson(Map<String, dynamic> json) => Inventory(
+        balance: Balance.fromJson(json['balance']),
         items: List<InventoryItem>.from(
           json['items'].map((x) => InventoryItem.fromJson(x)),
         ),

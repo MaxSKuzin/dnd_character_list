@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
+import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
@@ -491,6 +492,18 @@ class Player {
   Player unequipArmor(Armor armor) {
     return copyWith(
       armor: () => null,
+    );
+  }
+
+  Player spendBalance(Balance balance) {
+    return copyWith(
+      inventory: inventory.spendBalance(balance),
+    );
+  }
+
+  Player addBalance(Balance balance) {
+    return copyWith(
+      inventory: inventory.addBalance(balance),
     );
   }
 
