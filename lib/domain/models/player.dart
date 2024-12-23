@@ -6,6 +6,7 @@ import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
+import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/races/race.dart';
@@ -18,6 +19,7 @@ import 'package:dnd_character_list/domain/models/spell/spell_stat.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
+import 'package:dnd_character_list/domain/models/weapon_type.dart';
 
 class Player {
   final Race race;
@@ -33,8 +35,12 @@ class Player {
   late final int currentMana;
   final Armor? armor;
   final Shield? shield;
-  final List<Weapon> weapons;
+  final Weapon? mainWeapon;
+  final Weapon? secondWeapon;
+  final Weapon? mainRangeWeapon;
+  final Weapon? secondRangeWeapon;
   final DeathThrows deathThrows;
+  final Inventory inventory;
   late final Map<ClassExtras, int> currentExtras;
   final Personality personality;
   bool isDead;
@@ -59,7 +65,11 @@ class Player {
     required this.chosenSkills,
     required this.armor,
     required this.shield,
-    required this.weapons,
+    required this.mainWeapon,
+    required this.secondWeapon,
+    required this.mainRangeWeapon,
+    required this.secondRangeWeapon,
+    required this.inventory,
     Map<ClassExtras, int>? classExtras,
     DeathThrows? deathThrows,
     int? hits,
@@ -388,6 +398,102 @@ class Player {
         (prev, e) => [...prev, ...e.abilities],
       );
 
+  bool get canUseTwoWeapons => classes.any((e) => e.canUseTwoWeapons);
+
+  Player equipMainWeapon(Weapon weapon) {
+    final isMelee = weapon.kind.isMelee;
+    final isTwoHanded = switch (weapon.type) {
+      WeaponType.oneHanded => false,
+      WeaponType.universal => !canUseTwoWeapons,
+      WeaponType.twoHanded => true,
+    };
+    if (isMelee) {
+      return copyWith(
+        mainWeapon: () => weapon,
+        secondWeapon: () => isTwoHanded ? null : secondWeapon,
+      );
+    } else {
+      return copyWith(
+        mainRangeWeapon: () => weapon,
+        secondRangeWeapon: () => isTwoHanded ? null : secondRangeWeapon,
+      );
+    }
+  }
+
+  Player equipSecondaryWeapon(Weapon weapon) {
+    final isMelee = weapon.kind.isMelee;
+    final isTwoHanded = switch (weapon.type) {
+      WeaponType.oneHanded => false,
+      WeaponType.universal => !canUseTwoWeapons,
+      WeaponType.twoHanded => true,
+    };
+    if (isMelee) {
+      return copyWith(
+        mainWeapon: () => isTwoHanded ? weapon : mainWeapon,
+        secondWeapon: () => isTwoHanded ? null : weapon,
+      );
+    } else {
+      return copyWith(
+        mainRangeWeapon: () => isTwoHanded ? weapon : mainRangeWeapon,
+        secondRangeWeapon: () => isTwoHanded ? null : weapon,
+      );
+    }
+  }
+
+  Player unequipMainWeapon(Weapon weapon) {
+    final isMelee = weapon.kind.isMelee;
+    if (isMelee) {
+      return copyWith(
+        mainWeapon: () => null,
+        secondWeapon: () => secondWeapon,
+      );
+    } else {
+      return copyWith(
+        mainRangeWeapon: () => null,
+        secondRangeWeapon: () => secondRangeWeapon,
+      );
+    }
+  }
+
+  Player unequipSecondaryWeapon(Weapon weapon) {
+    final isMelee = weapon.kind.isMelee;
+    if (isMelee) {
+      return copyWith(
+        mainWeapon: () => mainWeapon,
+        secondWeapon: () => null,
+      );
+    } else {
+      return copyWith(
+        mainRangeWeapon: () => mainRangeWeapon,
+        secondRangeWeapon: () => null,
+      );
+    }
+  }
+
+  Player equipShield(Shield shield) {
+    return copyWith(
+      shield: () => shield,
+    );
+  }
+
+  Player unequipShield(Shield shield) {
+    return copyWith(
+      shield: () => null,
+    );
+  }
+
+  Player equipArmor(Armor armor) {
+    return copyWith(
+      armor: () => armor,
+    );
+  }
+
+  Player unequipArmor(Armor armor) {
+    return copyWith(
+      armor: () => null,
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     if (other is! Player) {
@@ -407,10 +513,14 @@ class Player {
     isEqual &= isDead == other.isDead;
     isEqual &= armor == other.armor;
     isEqual &= shield == other.shield;
-    isEqual &= weapons.equals(other.weapons);
+    isEqual &= mainWeapon == other.mainWeapon;
+    isEqual &= secondWeapon == other.secondWeapon;
+    isEqual &= mainRangeWeapon == other.mainRangeWeapon;
+    isEqual &= secondRangeWeapon == other.secondRangeWeapon;
     isEqual &= currentMana == other.currentMana;
     isEqual &= deathThrows == other.deathThrows;
     isEqual &= race == other.race;
+    isEqual &= inventory == other.inventory;
     currentExtras.forEach((key, value) {
       if (other.currentExtras[key] != value) {
         isEqual = false;
@@ -434,11 +544,15 @@ class Player {
         isDead,
         armor,
         shield,
-        weapons,
+        mainWeapon,
+        secondWeapon,
+        mainRangeWeapon,
+        secondRangeWeapon,
         currentMana,
         deathThrows,
         currentExtras,
         race,
+        inventory,
       ]);
 
   Player copyWith({
@@ -454,12 +568,17 @@ class Player {
     bool? isDead,
     Armor? Function()? armor,
     Shield? Function()? shield,
-    List<Weapon>? weapons,
     int? Function()? currentMana,
     DeathThrows? Function()? deathThrows,
     Map<ClassExtras, int>? Function()? classExtras,
+    Weapon? Function()? mainWeapon,
+    Weapon? Function()? secondWeapon,
+    Weapon? Function()? mainRangeWeapon,
+    Weapon? Function()? secondRangeWeapon,
+    Inventory? inventory,
   }) =>
       Player(
+        inventory: inventory ?? this.inventory,
         personality: personality,
         strength: strength ?? _rawStrength,
         dexterity: dexterity ?? _rawDexterity,
@@ -473,10 +592,13 @@ class Player {
         isDead: isDead ?? this.isDead,
         armor: armor != null ? armor() : this.armor,
         shield: shield != null ? shield() : this.shield,
-        weapons: weapons ?? this.weapons,
         mana: currentMana != null ? currentMana() : this.currentMana,
         deathThrows: deathThrows != null ? deathThrows() : this.deathThrows,
         classExtras: classExtras != null ? classExtras() : currentExtras,
+        mainWeapon: mainWeapon != null ? mainWeapon() : this.mainWeapon,
+        secondWeapon: secondWeapon != null ? secondWeapon() : this.secondWeapon,
+        mainRangeWeapon: mainRangeWeapon != null ? mainRangeWeapon() : this.mainRangeWeapon,
+        secondRangeWeapon: secondRangeWeapon != null ? secondRangeWeapon() : this.secondRangeWeapon,
         race: race,
       );
 
@@ -492,11 +614,16 @@ class Player {
         'wisdom': _rawWisdom,
         'chosenSkills': chosenSkills.map((e) => e.index).toList(),
         'race': race.toJson(),
-        'weapons': weapons.map((e) => e.toJson()).toList(),
+        'mainWeapon': mainWeapon?.toJson(),
+        'secondWeapon': secondWeapon?.toJson(),
+        'mainRangeWeapon': mainRangeWeapon?.toJson(),
+        'secondRangeWeapon': secondRangeWeapon?.toJson(),
         'shield': shield?.toJson(),
+        'inventory': inventory.toJson(),
       };
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
+        inventory: Inventory.fromJson(json['inventory']),
         classes: (json['classes'] as List).map((e) => Specialization.fromJson(e)).toList(),
         personality: Personality.fromJson(json['personality']),
         armor: json['armor'] != null ? Armor.fromJson(json['armor']) : null,
@@ -508,7 +635,10 @@ class Player {
         wisdom: json['wisdom'],
         chosenSkills: (json['chosenSkills'] as List).map((e) => Skill.values[e]).toList(),
         race: Race.fromJson(json['race']),
-        weapons: (json['weapons'] as List).map((e) => Weapon.fromJson(e)).toList(),
+        mainWeapon: json['mainWeapon'] != null ? Weapon.fromJson(json['mainWeapon']) : null,
+        secondWeapon: json['secondWeapon'] != null ? Weapon.fromJson(json['secondWeapon']) : null,
+        mainRangeWeapon: json['mainRangeWeapon'] != null ? Weapon.fromJson(json['mainRangeWeapon']) : null,
+        secondRangeWeapon: json['secondRangeWeapon'] != null ? Weapon.fromJson(json['secondRangeWeapon']) : null,
         shield: json['shield'] != null ? Shield.fromJson(json['shield']) : null,
       );
 }

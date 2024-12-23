@@ -59,11 +59,12 @@ class LevelUpCubit extends Cubit<Player?> {
     final spec = player.classes.firstWhereOrNull((e) => e.classKind == _classToUpdate);
 
     final Specialization newClass;
-    final abilities = spec?.abilities ?? [];
     final statsBonuses = spec?.statBonuses ?? {};
     switch (_classToUpdate!) {
       case ClassKind.bard:
-        final collegium = (spec as Bard?)?.collegium;
+        spec as Bard?;
+        final collegium = spec?.collegium;
+        final abilities = spec?.baseAbilities ?? [];
         switch (spec != null ? spec.level + 1 : 1) {
           case 1:
             newClass = Bard.level1(

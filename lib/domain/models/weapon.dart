@@ -46,7 +46,31 @@ class Weapon {
     return '+${bonus + player.proficiencyBonus}';
   }
 
-  String getDamageString({bool isTwoHanded = false}) {
+  String getDamageString(
+    Player player, {
+    required bool isTwoHanded,
+    required bool isMain,
+  }) {
+    int bonus;
+    if (isFencing) {
+      bonus = max(player.dexterity.bonus, player.strength.bonus);
+    } else {
+      bonus = player.strength.bonus;
+    }
+    if (isTwoHanded && type == WeaponType.universal) {
+      final damageValue = (fixedDamage ?? 0) + bonus;
+      return '$damageMultiplier${twoHandedDamage!.name}${damageValue != 0 ? '+$damageValue' : ''}';
+    } else {
+      if (!isMain && !player.canUseTwoWeapons) {
+        bonus = 0;
+      }
+
+      final damageValue = (fixedDamage ?? 0) + bonus;
+      return '$damageMultiplier${damage.name}${damageValue != 0 ? '+$damageValue' : ''}';
+    }
+  }
+
+  String getRawDamageString({bool isTwoHanded = false}) {
     if (isTwoHanded) {
       return '$damageMultiplier${twoHandedDamage!.name}${fixedDamage != null ? '+$fixedDamage' : ''}';
     } else {

@@ -2,11 +2,15 @@ import 'dart:convert';
 
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:injectable/injectable.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @preResolve
 @singleton
 class SpSource {
+  final BehaviorSubject<List<Player>> _playersSubject = BehaviorSubject.seeded([]);
+  Stream<List<Player>> get playersStream => _playersSubject;
+
   static const _playersKey = 'players';
 
   final SharedPreferences _sharedPreferences;
@@ -37,10 +41,16 @@ class SpSource {
       _playersKey,
       savedPlayers.map((e) => jsonEncode(e.toJson())).toList(),
     );
+    _playersSubject.add(getSavedPlayers());
+  }
+
+  void loadPlayers() {
+    _playersSubject.add(getSavedPlayers());
   }
 
   List<Player> getSavedPlayers() {
     final rawPlayers = _sharedPreferences.getStringList(_playersKey) ?? [];
+
     return rawPlayers.map((e) => Player.fromJson(jsonDecode(e))).toList();
   }
 
@@ -48,5 +58,6 @@ class SpSource {
     final savedPlayers = _sharedPreferences.getStringList(_playersKey) ?? [];
     savedPlayers.remove(jsonEncode(player.toJson()));
     await _sharedPreferences.setStringList(_playersKey, savedPlayers);
+    _playersSubject.add(getSavedPlayers());
   }
 }

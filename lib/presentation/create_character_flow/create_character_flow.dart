@@ -18,8 +18,8 @@ class CreateCharacterFlow extends StatelessWidget {
         listener: (context, state) {
           if (state != null) {
             context.router.pushAndPopUntil(
-              const SelectCharacterRoute(),
-              predicate: (route) => false,
+              MainFlowRoute(player: state),
+              predicate: (route) => route.settings.name == SelectCharacterRoute.name,
             );
           }
         },

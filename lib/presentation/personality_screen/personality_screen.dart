@@ -3,6 +3,7 @@ import 'package:dnd_character_list/presentation/common/widgets/class_image.dart'
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
+import 'package:dnd_character_list/presentation/personality_screen/widgets/class_ability_widget.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -18,6 +19,7 @@ class PersonalityScreen extends StatefulWidget {
 class _PersonalityScreenState extends State<PersonalityScreen> {
   @override
   Widget build(BuildContext context) {
+    final abilities = PlayerModel.getPlayer(context).abilities;
     final personality = PlayerModel.getPlayer(context).personality;
     final classes = PlayerModel.classes(context);
     return SafeArea(
@@ -136,6 +138,24 @@ class _PersonalityScreenState extends State<PersonalityScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              if (abilities.isNotEmpty) ...[
+                LabeledBorder(
+                  backgroundColor: context.customColors?.cardColor,
+                  text: 'ОСОБЕННОСТИ',
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 12, 0, 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: abilities
+                          .map(
+                            (e) => ClassAbilityWidget(classAbility: e),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ),
+                const Gap(16),
+              ],
               LabeledBorder(
                 backgroundColor: context.customColors?.cardColor,
                 text: 'ПРЕДЫСТОРИЯ',

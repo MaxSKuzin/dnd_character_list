@@ -1,6 +1,8 @@
+import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/domain/models/weapon_type.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class WeaponInfoDialog extends StatelessWidget {
@@ -19,15 +21,21 @@ class WeaponInfoDialog extends StatelessWidget {
           ),
           child: WeaponInfoDialog(
             weapon: weapon,
+            weaponSlot: null,
+            canUnequip: false,
           ),
         ),
       );
 
   final Weapon weapon;
+  final bool canUnequip;
+  final WeaponSlot? weaponSlot;
 
   const WeaponInfoDialog({
     super.key,
     required this.weapon,
+    required this.canUnequip,
+    required this.weaponSlot,
   });
 
   @override
@@ -47,6 +55,14 @@ class WeaponInfoDialog extends StatelessWidget {
               fontSize: 20,
             ),
           ),
+          if (weaponSlot != null)
+            Text(
+              weaponSlot!.name,
+              style: const TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+              ),
+            ),
           const Gap(16),
           Flexible(
             child: SingleChildScrollView(
@@ -91,7 +107,7 @@ class WeaponInfoDialog extends StatelessWidget {
                     'Тип: ${weapon.damageType.name}',
                   ),
                   Text(
-                    'Урон: ${weapon.getDamageString()}+(${weapon.isFencing ? 'ловкость/сила' : 'сила'})',
+                    'Урон: ${weapon.getRawDamageString()}+(${weapon.isFencing ? 'ловкость/сила' : 'сила'})',
                   ),
                   if (weapon.fixedDamage != null)
                     Text(
@@ -99,7 +115,7 @@ class WeaponInfoDialog extends StatelessWidget {
                     ),
                   if (weapon.twoHandedDamage != null && weapon.type == WeaponType.universal)
                     Text(
-                      'Урон в двух руках: ${weapon.getDamageString(isTwoHanded: true)}+(${weapon.isFencing ? 'ловкость/сила' : 'сила'})',
+                      'Урон в двух руках: ${weapon.getRawDamageString(isTwoHanded: true)}+(${weapon.isFencing ? 'ловкость/сила' : 'сила'})',
                     ),
                   if (weapon.minRange != null && weapon.maxRange != null) ...[
                     const Gap(8),
@@ -117,7 +133,24 @@ class WeaponInfoDialog extends StatelessWidget {
                     Text(
                       'Максимальная: ${weapon.maxRange}',
                     ),
-                  ]
+                  ],
+                  if (canUnequip) ...[
+                    const Gap(16),
+                    ElevatedButton(
+                      onPressed: () {
+                        switch (weaponSlot!) {
+                          case WeaponSlot.mainHand:
+                          case WeaponSlot.mainRange:
+                            context.read<PlayerCubit>().unequipMainWeapon(weapon);
+                          case WeaponSlot.secondHand:
+                          case WeaponSlot.secondRange:
+                            context.read<PlayerCubit>().unequipSecondaryWeapon(weapon);
+                        }
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Снять'),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -125,5 +158,25 @@ class WeaponInfoDialog extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+enum WeaponSlot {
+  mainHand,
+  mainRange,
+  secondHand,
+  secondRange;
+
+  String get name {
+    switch (this) {
+      case WeaponSlot.mainHand:
+        return 'Основная рука';
+      case WeaponSlot.mainRange:
+        return 'Основное дальнобойное';
+      case WeaponSlot.secondHand:
+        return 'Вторая рука';
+      case WeaponSlot.secondRange:
+        return 'Второе дальнобойное';
+    }
   }
 }

@@ -26,6 +26,9 @@ class AppRouter extends RootStackRouter {
             AdaptiveRoute(
               page: PersonalityRoute.page,
             ),
+            AdaptiveRoute(
+              page: InventoryRoute.page,
+            ),
           ],
         ),
         AdaptiveRoute(

@@ -105,11 +105,9 @@ class _SelectWeaponsScreenState extends State<SelectWeaponsScreen> {
                           (_secondWeapon != null || (widget.equipment.secondWeapons?.length ?? 0) == 0)
                       ? () {
                           context.read<CreateCharacterCubit>().setWeapons(
-                            [
-                              _selectedWeapon!,
-                              if (_secondWeapon != null) _secondWeapon!,
-                            ],
-                          );
+                                _selectedWeapon!,
+                                _secondWeapon,
+                              );
                           if (widget.equipment.armor != null) {
                             context.read<CreateCharacterCubit>().setArmor(
                                   widget.equipment.armor!,
@@ -193,7 +191,7 @@ class WeaponWidget extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                   child: Center(
-                    child: Text(weapon.getDamageString()),
+                    child: Text(weapon.getRawDamageString()),
                   ),
                 ),
               ),

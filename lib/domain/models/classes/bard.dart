@@ -1,4 +1,5 @@
 import 'package:dnd_character_list/domain/models/bard_collegiums/bard_collegium.dart';
+import 'package:dnd_character_list/domain/models/bard_collegiums/swords_collegium.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
@@ -78,6 +79,14 @@ final class Bard extends Specialization {
 
   @override
   final List<Spell> knownSpells;
+
+  @override
+  bool get canUseTwoWeapons {
+    if (collegium is SwordsCollegium) {
+      return (collegium as SwordsCollegium).fightingStyle == FightingStyle.twoWeaponFighting;
+    }
+    return false;
+  }
 
   @override
   Map<String, dynamic> toJson() => {

@@ -20,11 +20,10 @@ class LevelUpFlow extends StatelessWidget {
       child: BlocListener<LevelUpCubit, Player?>(
         listener: (context, state) {
           if (state != null) {
-            context.router.popUntil((_) => false);
-            context.router.pushAll([
-              const SelectCharacterRoute(),
+            context.router.pushAndPopUntil(
               MainFlowRoute(player: state),
-            ]);
+              predicate: (route) => route.settings.name == SelectCharacterRoute.name,
+            );
           }
         },
         child: PlayerModel(

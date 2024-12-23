@@ -3,6 +3,7 @@ import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/races/race.dart';
@@ -22,9 +23,13 @@ class CreateCharacterCubit extends Cubit<Player?> {
   ClassKind? _selectedClass;
   List<Spell>? _selectedSpells;
   List<Skill>? _selectedSkills;
-  List<Weapon>? _selectedWeapons;
+  Weapon? _mainWeapon;
+  Weapon? _secondWeapon;
+  Weapon? _mainRangeWeapon;
+  Weapon? _secondRangeWeapon;
   Armor? _armor;
   Personality? _personality;
+  Inventory? _inventory;
 
   CreateCharacterCubit(this._source) : super(null);
 
@@ -48,8 +53,31 @@ class CreateCharacterCubit extends Cubit<Player?> {
     _selectedSkills = [...skills];
   }
 
-  void setWeapons(List<Weapon> weapons) {
-    _selectedWeapons = [...weapons];
+  void setWeapons(Weapon firstWeapon, Weapon? secondWeapon) {
+    if (firstWeapon.kind.isMelee) {
+      _mainWeapon = firstWeapon;
+    } else {
+      _mainRangeWeapon = firstWeapon;
+    }
+    if (secondWeapon?.kind.isMelee ?? false) {
+      _secondWeapon = secondWeapon;
+    } else {
+      _secondRangeWeapon = secondWeapon;
+    }
+    if (firstWeapon != secondWeapon) {
+      _inventory = Inventory(
+        items: [
+          InventoryItem(quantity: 1, item: firstWeapon),
+          if (secondWeapon != null) InventoryItem(quantity: 1, item: secondWeapon),
+        ],
+      );
+    } else {
+      _inventory = Inventory(
+        items: [
+          InventoryItem(quantity: 2, item: firstWeapon),
+        ],
+      );
+    }
   }
 
   void setArmor(Armor armor) {
@@ -102,7 +130,11 @@ class CreateCharacterCubit extends Cubit<Player?> {
       wisdom: _stats![StatKind.wisdom]!,
       chosenSkills: _selectedSkills!,
       race: _race!,
-      weapons: _selectedWeapons ?? [],
+      mainWeapon: _mainWeapon,
+      secondWeapon: _secondWeapon,
+      mainRangeWeapon: _mainRangeWeapon,
+      secondRangeWeapon: _secondRangeWeapon,
+      inventory: _inventory!,
       shield: null,
     );
 

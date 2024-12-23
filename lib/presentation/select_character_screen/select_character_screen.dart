@@ -18,7 +18,7 @@ class SelectCharacterScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: BlocProvider(
-            create: (_) => getIt<CreatedCharactersCubit>()..loadPlayers(),
+            create: (_) => getIt<CreatedCharactersCubit>(),
             child: BlocBuilder<CreatedCharactersCubit, List<Player>>(
               builder: (context, characters) => GridView(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

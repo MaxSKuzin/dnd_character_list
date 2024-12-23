@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +24,12 @@ class _MainFlowState extends State<MainFlow> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => PlayerCubit(widget.player),
+      create: (context) => getIt<PlayerCubit>(param1: widget.player),
       child: BlocBuilder<PlayerCubit, Player>(
         builder: (context, state) => PlayerModel(
           player: state,
           child: AutoTabsScaffold(
+            homeIndex: 2,
             // appBarBuilder: (context, tabsRouter) => AppBar(
             //   title: const Text('DnD Character List'),
             //   actions: [
@@ -43,16 +45,20 @@ class _MainFlowState extends State<MainFlow> {
               type: BottomNavigationBarType.fixed,
               items: const [
                 BottomNavigationBarItem(
-                  label: 'Статы',
-                  icon: Icon(Icons.format_list_numbered),
-                ),
-                BottomNavigationBarItem(
                   label: 'Бой',
                   icon: Icon(Icons.sports_mma_outlined),
                 ),
                 BottomNavigationBarItem(
                   label: 'Спеллы',
                   icon: Icon(Icons.back_hand_outlined),
+                ),
+                BottomNavigationBarItem(
+                  label: 'Статы',
+                  icon: Icon(Icons.format_list_numbered),
+                ),
+                BottomNavigationBarItem(
+                  label: 'Инвентарь',
+                  icon: Icon(Icons.person),
                 ),
                 BottomNavigationBarItem(
                   label: 'Перс',
@@ -63,9 +69,10 @@ class _MainFlowState extends State<MainFlow> {
               currentIndex: tabsRouter.activeIndex,
             ),
             routes: const [
-              MainRoute(),
               BattleRoute(),
               SpellsRoute(),
+              MainRoute(),
+              InventoryRoute(),
               PersonalityRoute(),
             ],
           ),

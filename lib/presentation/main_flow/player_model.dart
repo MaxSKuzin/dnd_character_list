@@ -3,6 +3,7 @@ import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/cur_max.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
+import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
@@ -20,7 +21,11 @@ enum PlayerAspect {
   saveThrows,
   profiencyBonus,
   protection,
-  weapons,
+  mainWeapon,
+  secondWeapon,
+  mainRangeWeapon,
+  secondRangeWeapon,
+  inventory,
   mana,
   spellKinds,
   deathThrows,
@@ -74,8 +79,17 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     if (dependencies.contains(PlayerAspect.protection)) {
       update |= oldWidget.player.protection != player.protection;
     }
-    if (dependencies.contains(PlayerAspect.weapons)) {
-      update |= !oldWidget.player.weapons.equals(player.weapons);
+    if (dependencies.contains(PlayerAspect.mainWeapon)) {
+      update |= oldWidget.player.mainWeapon != player.mainWeapon;
+    }
+    if (dependencies.contains(PlayerAspect.secondWeapon)) {
+      update |= oldWidget.player.secondWeapon != player.secondWeapon;
+    }
+    if (dependencies.contains(PlayerAspect.mainRangeWeapon)) {
+      update |= oldWidget.player.mainRangeWeapon != player.mainRangeWeapon;
+    }
+    if (dependencies.contains(PlayerAspect.secondRangeWeapon)) {
+      update |= oldWidget.player.secondRangeWeapon != player.secondRangeWeapon;
     }
     if (dependencies.contains(PlayerAspect.spellKinds)) {
       update |= !oldWidget.player.spellKinds.equals(player.spellKinds);
@@ -90,6 +104,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     }
     if (dependencies.contains(PlayerAspect.deathThrows)) {
       update |= oldWidget.player.deathThrows != player.deathThrows;
+    }
+    if (dependencies.contains(PlayerAspect.inventory)) {
+      update |= oldWidget.player.inventory != player.inventory;
     }
     if (dependencies.contains(PlayerAspect.extras)) {
       player.currentExtras.forEach((key, value) {
@@ -139,8 +156,24 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.protection)!.player.protection;
   }
 
-  static List<Weapon> weapons(BuildContext context) {
-    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.weapons)!.player.weapons;
+  static Weapon? mainWeapon(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.mainWeapon)!.player.mainWeapon;
+  }
+
+  static Weapon? secondWeapon(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.secondWeapon)!.player.secondWeapon;
+  }
+
+  static Weapon? mainRangeWeapon(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.mainRangeWeapon)!
+        .player
+        .mainRangeWeapon;
+  }
+
+  static Weapon? secondRangeWeapon(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.secondRangeWeapon)!
+        .player
+        .secondRangeWeapon;
   }
 
   static List<SpellStat> spellStats(BuildContext context) {
@@ -161,5 +194,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
 
   static Map<Specialization, List<Spell>> spells(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.spells)!.player.spells;
+  }
+
+  static Inventory inventory(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.inventory)!.player.inventory;
   }
 }

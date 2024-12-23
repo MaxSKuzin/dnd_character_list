@@ -70,6 +70,8 @@ abstract class Specialization {
 
   ClassKind get classKind;
 
+  bool get canUseTwoWeapons => false;
+
   @override
   bool operator ==(Object other) {
     if (other is Specialization) {

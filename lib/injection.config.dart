@@ -14,6 +14,7 @@ import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart'
 import 'package:dnd_character_list/domain/bloc/created_characters_cubit.dart'
     as _i716;
 import 'package:dnd_character_list/domain/bloc/level_up_cubit.dart' as _i876;
+import 'package:dnd_character_list/domain/bloc/player_cubit.dart' as _i571;
 import 'package:dnd_character_list/domain/models/player.dart' as _i747;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -33,6 +34,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i895.SpSource.init(),
       preResolve: true,
     );
+    gh.factoryParam<_i571.PlayerCubit, _i747.Player, dynamic>((
+      player,
+      _,
+    ) =>
+        _i571.PlayerCubit(
+          player,
+          gh<_i895.SpSource>(),
+        ));
     gh.factory<_i716.CreatedCharactersCubit>(
         () => _i716.CreatedCharactersCubit(gh<_i895.SpSource>()));
     gh.factory<_i475.CreateCharacterCubit>(
