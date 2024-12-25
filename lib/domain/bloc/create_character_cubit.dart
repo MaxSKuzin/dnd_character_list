@@ -1,6 +1,6 @@
 import 'package:dnd_character_list/data/sp_source.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
-import 'package:dnd_character_list/domain/models/balance.dart';
+import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
@@ -11,6 +11,7 @@ import 'package:dnd_character_list/domain/models/races/race.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
+import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -30,7 +31,9 @@ class CreateCharacterCubit extends Cubit<Player?> {
   Weapon? _secondRangeWeapon;
   Armor? _armor;
   Personality? _personality;
-  Inventory? _inventory;
+  Background? _background;
+  List<Tool>? _tools;
+  List<InventoryItem>? _backgroundItems;
 
   CreateCharacterCubit(this._source) : super(null);
 
@@ -65,22 +68,6 @@ class CreateCharacterCubit extends Cubit<Player?> {
     } else {
       _secondRangeWeapon = secondWeapon;
     }
-    if (firstWeapon != secondWeapon) {
-      _inventory = Inventory(
-        balance: Balance.fromGold(15),
-        items: [
-          InventoryItem(quantity: 1, item: firstWeapon),
-          if (secondWeapon != null) InventoryItem(quantity: 1, item: secondWeapon),
-        ],
-      );
-    } else {
-      _inventory = Inventory(
-        balance: Balance.fromGold(15),
-        items: [
-          InventoryItem(quantity: 2, item: firstWeapon),
-        ],
-      );
-    }
   }
 
   void setArmor(Armor armor) {
@@ -109,7 +96,36 @@ class CreateCharacterCubit extends Cubit<Player?> {
     );
   }
 
+  void setBackground(Background background) {
+    _background = background;
+  }
+
+  void setTools(List<Tool> tools) {
+    _tools = [...tools];
+  }
+
+  void setBackgroundItems(List<InventoryItem> items) {
+    _backgroundItems = [...items];
+  }
+
   Future<void> createCharacter() async {
+    final inventoryItems = [
+      ..._backgroundItems!,
+      if (_tools != null) ..._tools!.map((e) => InventoryItem(quantity: 1, item: e)),
+    ];
+    if (_mainWeapon != _secondWeapon) {
+      inventoryItems.addAll([
+        InventoryItem(quantity: 1, item: _mainWeapon),
+        if (_secondWeapon != null) InventoryItem(quantity: 1, item: _secondWeapon),
+      ]);
+    } else {
+      inventoryItems.add(InventoryItem(quantity: 2, item: _mainWeapon!));
+    }
+    final Inventory inventory = Inventory(
+      items: inventoryItems,
+      balance: _background!.balance,
+    );
+
     final spec = switch (_selectedClass!) {
       ClassKind.bard => Bard.level1(
           isMain: true,
@@ -122,6 +138,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
       _ => throw UnimplementedError(),
     };
     final player = Player(
+      background: _background!,
       classes: [spec],
       personality: _personality!,
       armor: _armor,
@@ -137,7 +154,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
       secondWeapon: _secondWeapon,
       mainRangeWeapon: _mainRangeWeapon,
       secondRangeWeapon: _secondRangeWeapon,
-      inventory: _inventory!,
+      inventory: inventory,
       shield: null,
     );
 

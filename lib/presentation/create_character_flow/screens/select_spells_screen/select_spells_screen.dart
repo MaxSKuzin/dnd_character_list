@@ -204,10 +204,16 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                                   .read<CreateCharacterCubit>()
                                   .setSpells([..._selectedSpells, ..._selectedConspiracies]);
                               context.pushRoute(
-                                SelectSkillsRoute(
-                                  maxSkills: widget.classKind.startSkillCount,
-                                  availableSkills: widget.classKind.availableSkills,
-                                  classKind: widget.classKind,
+                                SelectBackgroundRoute(
+                                  onContinue: () {
+                                    context.pushRoute(
+                                      SelectSkillsRoute(
+                                        maxSkills: widget.classKind.startSkillCount,
+                                        availableSkills: widget.classKind.availableSkills,
+                                        classKind: widget.classKind,
+                                      ),
+                                    );
+                                  },
                                 ),
                               );
                             }

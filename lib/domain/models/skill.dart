@@ -36,7 +36,7 @@ enum Skill {
   perception(StatKind.wisdom),
 
   ///Выступление
-  perfomance(StatKind.charisma),
+  performance(StatKind.charisma),
 
   ///Убеждение
   conviction(StatKind.charisma),
@@ -75,7 +75,7 @@ enum Skill {
         medicine => 'Медицина',
         nature => 'Природа',
         perception => 'Восприятие',
-        perfomance => 'Выступление',
+        performance => 'Выступление',
         conviction => 'Убеждение',
         religion => 'Религия',
         manualDexterity => 'Ловкость рук',

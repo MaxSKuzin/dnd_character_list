@@ -1,10 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
+import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
+import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/weapon_info_dialog.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
+import 'package:dnd_character_list/presentation/common/widgets/text_parser/text_parses_base.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +99,40 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       trailing: Text('x$quantity'),
                     );
                   }
-                  return null;
+                  if (item is Armor) {
+                    return ListTile(
+                      title: Text(item.name),
+                      trailing: Text('x$quantity'),
+                    );
+                  }
+                  if (item is Tool) {
+                    return ListTile(
+                      onTap: () => showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                          shape: const RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: Colors.white,
+                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 24,
+                              horizontal: 32,
+                            ),
+                            child: TextParses(item.description),
+                          ),
+                        ),
+                      ),
+                      title: Text(item.name),
+                      trailing: Text('x$quantity'),
+                    );
+                  }
+                  return ListTile(
+                    title: Text(item),
+                    trailing: Text('x$quantity'),
+                  );
                 },
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
+import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 
 class Inventory {
@@ -83,7 +84,10 @@ class InventoryItem {
       'quantity': quantity,
       'item': {
         'itemType': item.runtimeType.toString(),
-        ...(item.toJson() as Map<String, dynamic>),
+        if (item is int || item is double || item is String || item is bool)
+          'value': item
+        else
+          ...(item.toJson() as Map<String, dynamic>),
       },
     };
   }
@@ -94,6 +98,8 @@ class InventoryItem {
           'CustomInvetoryItem' => CustomInvetoryItem.fromJson(json['item']),
           'Weapon' => Weapon.fromJson(json['item']),
           'Armor' => Armor.fromJson(json['item']),
+          'Tool' => Tool.fromJson(json['item']),
+          'int' || 'double' || 'String' || 'bool' => json['item']['value'],
           _ => throw Exception('Unknown item type'),
         },
       );

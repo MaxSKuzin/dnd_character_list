@@ -47,6 +47,15 @@ class Balance {
     };
   }
 
+  @override
+  String toString() {
+    return [
+      if (gold != 0) '$gold зм',
+      if (silver != 0) '$silver см',
+      if (copper != 0) '$copper мм',
+    ].join(', ');
+  }
+
   factory Balance.fromJson(Map<String, dynamic> json) {
     return Balance(json['value']);
   }

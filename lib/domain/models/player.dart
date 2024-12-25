@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
+import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
@@ -23,6 +24,7 @@ import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/domain/models/weapon_type.dart';
 
 class Player {
+  final Background background;
   final Race race;
   late final Stat strength;
   late final Stat dexterity;
@@ -31,7 +33,7 @@ class Player {
   late final Stat wisdom;
   late final Stat charisma;
   final List<Specialization> classes;
-  final List<Skill> chosenSkills;
+  late final List<Skill> chosenSkills;
   late final int currentHits;
   late final int currentMana;
   final Armor? armor;
@@ -46,6 +48,7 @@ class Player {
   final Personality personality;
   bool isDead;
 
+  final List<Skill> _rawchosenSkills;
   final int _rawStrength;
   final int _rawDexterity;
   final int _rawConstitution;
@@ -63,7 +66,7 @@ class Player {
     required int wisdom,
     required int charisma,
     required this.classes,
-    required this.chosenSkills,
+    required List<Skill> chosenSkills,
     required this.armor,
     required this.shield,
     required this.mainWeapon,
@@ -71,6 +74,7 @@ class Player {
     required this.mainRangeWeapon,
     required this.secondRangeWeapon,
     required this.inventory,
+    required this.background,
     Map<ClassExtras, int>? classExtras,
     DeathThrows? deathThrows,
     int? hits,
@@ -83,11 +87,16 @@ class Player {
         _rawIntelligence = intelligence,
         _rawWisdom = wisdom,
         _rawCharisma = charisma,
+        _rawchosenSkills = chosenSkills,
         deathThrows = deathThrows ??
             const DeathThrows(
               death: 0,
               life: 0,
             ) {
+    this.chosenSkills = [
+      ..._rawchosenSkills,
+      ...background.skills,
+    ];
     this.strength = Stat(
       value: strength +
           (race.statBonuses[StatKind.strength] ?? 0) +
@@ -600,7 +609,7 @@ class Player {
         wisdom: wisdom ?? _rawWisdom,
         charisma: charisma ?? _rawCharisma,
         classes: classes ?? this.classes,
-        chosenSkills: chosenSkills ?? this.chosenSkills,
+        chosenSkills: chosenSkills ?? _rawchosenSkills,
         hits: currentHits != null ? currentHits() : this.currentHits,
         isDead: isDead ?? this.isDead,
         armor: armor != null ? armor() : this.armor,
@@ -613,6 +622,7 @@ class Player {
         mainRangeWeapon: mainRangeWeapon != null ? mainRangeWeapon() : this.mainRangeWeapon,
         secondRangeWeapon: secondRangeWeapon != null ? secondRangeWeapon() : this.secondRangeWeapon,
         race: race,
+        background: background,
       );
 
   Map<String, dynamic> toJson() => {
@@ -625,7 +635,7 @@ class Player {
         'intelligence': _rawIntelligence,
         'strength': _rawStrength,
         'wisdom': _rawWisdom,
-        'chosenSkills': chosenSkills.map((e) => e.index).toList(),
+        'chosenSkills': _rawchosenSkills.map((e) => e.index).toList(),
         'race': race.toJson(),
         'mainWeapon': mainWeapon?.toJson(),
         'secondWeapon': secondWeapon?.toJson(),
@@ -633,6 +643,7 @@ class Player {
         'secondRangeWeapon': secondRangeWeapon?.toJson(),
         'shield': shield?.toJson(),
         'inventory': inventory.toJson(),
+        'background': background.index,
       };
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
@@ -653,5 +664,6 @@ class Player {
         mainRangeWeapon: json['mainRangeWeapon'] != null ? Weapon.fromJson(json['mainRangeWeapon']) : null,
         secondRangeWeapon: json['secondRangeWeapon'] != null ? Weapon.fromJson(json['secondRangeWeapon']) : null,
         shield: json['shield'] != null ? Shield.fromJson(json['shield']) : null,
+        background: Background.values[json['background']],
       );
 }

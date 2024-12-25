@@ -132,10 +132,16 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
                         } else {
                           context.read<CreateCharacterCubit>().setSpells([]);
                           context.pushRoute(
-                            SelectSkillsRoute(
-                              maxSkills: _selectedClass!.startSkillCount,
-                              availableSkills: _selectedClass!.availableSkills,
-                              classKind: _selectedClass!,
+                            SelectBackgroundRoute(
+                              onContinue: () {
+                                context.pushRoute(
+                                  SelectSkillsRoute(
+                                    maxSkills: _selectedClass!.startSkillCount,
+                                    availableSkills: _selectedClass!.availableSkills,
+                                    classKind: _selectedClass!,
+                                  ),
+                                );
+                              },
                             ),
                           );
                         }
