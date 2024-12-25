@@ -1,12 +1,12 @@
-import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
+import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/presentation/common/widgets/text_parser/text_parses_base.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class ClassAbilityWidget extends StatelessWidget {
-  final ClassAbility classAbility;
+class PeculiarityWidget extends StatelessWidget {
+  final Peculiarity classAbility;
 
-  const ClassAbilityWidget({super.key, required this.classAbility});
+  const PeculiarityWidget({super.key, required this.classAbility});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class ClassAbilityWidget extends StatelessWidget {
             horizontal: 16,
           ),
           child: Text(
-            classAbility.name,
+            classAbility.name.toUpperCase(),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -41,7 +41,7 @@ class ClassAbilityWidget extends StatelessWidget {
 }
 
 class _DialogInfo extends StatelessWidget {
-  final ClassAbility classAbility;
+  final Peculiarity classAbility;
 
   const _DialogInfo({
     super.key,

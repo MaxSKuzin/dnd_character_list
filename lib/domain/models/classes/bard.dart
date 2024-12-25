@@ -1,10 +1,10 @@
 import 'package:dnd_character_list/domain/models/bard_collegiums/bard_collegium.dart';
 import 'package:dnd_character_list/domain/models/bard_collegiums/swords_collegium.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
-import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
+import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
@@ -31,10 +31,10 @@ final class Bard extends Specialization {
     this.doubledSaveThrows = const [],
   });
 
-  final List<ClassAbility> baseAbilities;
+  final List<Peculiarity> baseAbilities;
 
   @override
-  List<ClassAbility> get abilities => [
+  List<Peculiarity> get abilities => [
         ...baseAbilities,
         ...collegium?.getAbilities(level) ?? [],
       ];
@@ -102,7 +102,7 @@ final class Bard extends Specialization {
       };
 
   static Bard fromJson(Map<String, dynamic> json) => Bard._(
-        baseAbilities: (json['baseAbilities'] as List).map((e) => ClassAbility.fromJson(e)).toList(),
+        baseAbilities: (json['baseAbilities'] as List).map((e) => Peculiarity.fromJson(e)).toList(),
         collegium: json['collegium'] == null ? null : BardCollegium.fromJson(json['collegium']),
         knownSpells: (json['knownSpells'] as List).map((e) => Spell.fromJson(e)).toList(),
         level: json['level'],
@@ -132,12 +132,12 @@ final class Bard extends Specialization {
       Bard._(
         collegium: null,
         baseAbilities: [
-          const ClassAbility(
+          const Peculiarity(
             name: 'МАСТЕР НА ВСЕ РУКИ',
             description:
                 '''Вы можете добавлять половину бонуса мастерства, округлённую в меньшую сторону, ко всем проверкам характеристики, куда этот бонус еще не включён.''',
           ),
-          const ClassAbility(
+          const Peculiarity(
             name: 'ПЕСНЬ ОТДЫХА',
             description: '''
 Вы с помощью успокаивающей музыки или речей можете помочь своим раненым союзникам восстановить их силы во время короткого отдыха. Если вы или любые союзные существа, способные слышать ваше исполнение, восстанавливаете хиты в конце короткого отдыха, используя Кости Хитов, каждое потратившее Кость Хитов существо восстанавливает дополнительно 1к6 хитов.
@@ -155,7 +155,7 @@ final class Bard extends Specialization {
   factory Bard.level3({
     required bool isMain,
     required List<Spell> knownSpells,
-    required List<ClassAbility> abilities,
+    required List<Peculiarity> abilities,
     required BardCollegium collegium,
   }) =>
       Bard._(
@@ -170,7 +170,7 @@ final class Bard extends Specialization {
   factory Bard.level4({
     required bool isMain,
     required List<Spell> knownSpells,
-    required List<ClassAbility> abilities,
+    required List<Peculiarity> abilities,
     required BardCollegium collegium,
     required Map<StatKind, int> statBonuses,
   }) =>
@@ -187,7 +187,7 @@ final class Bard extends Specialization {
   factory Bard.level5({
     required bool isMain,
     required List<Spell> knownSpells,
-    required List<ClassAbility> abilities,
+    required List<Peculiarity> abilities,
     required BardCollegium collegium,
     required Map<StatKind, int> statBonuses,
   }) =>
@@ -196,7 +196,7 @@ final class Bard extends Specialization {
         collegium: collegium,
         baseAbilities: [
           ...abilities,
-          const ClassAbility(
+          const Peculiarity(
             name: 'ИСТОЧНИК ВДОХНОВЕНИЯ',
             description:
                 'Вы восстанавливаете истраченные вдохновения барда и после короткого, и после продолжительного отдыха.',
@@ -211,7 +211,7 @@ final class Bard extends Specialization {
   factory Bard.level6({
     required bool isMain,
     required List<Spell> knownSpells,
-    required List<ClassAbility> abilities,
+    required List<Peculiarity> abilities,
     required BardCollegium collegium,
     required Map<StatKind, int> statBonuses,
   }) =>
@@ -220,7 +220,7 @@ final class Bard extends Specialization {
         collegium: collegium,
         baseAbilities: [
           ...abilities,
-          const ClassAbility(
+          const Peculiarity(
             name: 'КОНТРОЧАРОВАНИЕ',
             description:
                 '''Вы получаете возможность использовать звуки или слова силы для разрушения воздействующих на разум эффектов. Вы можете действием начать исполнение, которое продлится до конца вашего следующего хода. В течение этого времени вы и все дружественные существа в пределах 30 футов от вас совершают спасброски от запугивания и очарования с преимуществом. Чтобы получить это преимущество, существа должны слышать вас. Исполнение заканчивается преждевременно, если вы оказываетесь недееспособны, теряете способность говорить, или прекращаете исполнение добровольно (на это не требуется действие).''',
@@ -235,7 +235,7 @@ final class Bard extends Specialization {
   factory Bard.level7({
     required bool isMain,
     required List<Spell> knownSpells,
-    required List<ClassAbility> abilities,
+    required List<Peculiarity> abilities,
     required BardCollegium collegium,
     required Map<StatKind, int> statBonuses,
   }) =>
@@ -252,7 +252,7 @@ final class Bard extends Specialization {
   factory Bard.level8({
     required bool isMain,
     required List<Spell> knownSpells,
-    required List<ClassAbility> abilities,
+    required List<Peculiarity> abilities,
     required BardCollegium collegium,
     required Map<StatKind, int> statBonuses,
   }) =>
@@ -269,7 +269,7 @@ final class Bard extends Specialization {
   factory Bard.level9({
     required bool isMain,
     required List<Spell> knownSpells,
-    required List<ClassAbility> abilities,
+    required List<Peculiarity> abilities,
     required BardCollegium collegium,
     required Map<StatKind, int> statBonuses,
   }) =>

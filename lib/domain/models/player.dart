@@ -5,10 +5,10 @@ import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
-import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
+import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/races/race.dart';
@@ -403,10 +403,13 @@ class Player {
             ),
       );
 
-  List<ClassAbility> get abilities => classes.fold(
-        <ClassAbility>[],
-        (prev, e) => [...prev, ...e.abilities],
-      );
+  List<Peculiarity> get abilities => [
+        ...race.peculiarities,
+        ...classes.fold(
+          <Peculiarity>[],
+          (prev, e) => [...prev, ...e.abilities],
+        ),
+      ];
 
   bool get canUseTwoWeapons => classes.any((e) => e.canUseTwoWeapons);
 

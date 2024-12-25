@@ -1,5 +1,5 @@
 import 'package:dnd_character_list/domain/models/bard_collegiums/bard_collegium.dart';
-import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
+import 'package:dnd_character_list/domain/models/peculiarity.dart';
 
 class SwordsCollegium extends BardCollegium {
   final FightingStyle fightingStyle;
@@ -17,12 +17,12 @@ class SwordsCollegium extends BardCollegium {
 Со своими навыками обращения с оружием и магией, эти клинки либо работают силовиками на гильдии воров, либо начинают скитаться сами по себе как искатели приключений.''';
 
   @override
-  List<ClassAbility> getAbilities(int level) {
-    final abilities = <ClassAbility>[];
+  List<Peculiarity> getAbilities(int level) {
+    final abilities = <Peculiarity>[];
     if (level >= 3) {
       abilities.addAll(
         [
-          ClassAbility(
+          Peculiarity(
             name: 'БОЕВОЙ СТИЛЬ',
             description: switch (fightingStyle) {
               FightingStyle.dueling =>
@@ -31,12 +31,12 @@ class SwordsCollegium extends BardCollegium {
                 'Сражение двумя оружиями. Если вы сражаетесь двумя оружиями, вы можете добавить модификатор характеристики к урону от второй атаки.',
             },
           ),
-          const ClassAbility(
+          const Peculiarity(
             name: 'ДОПОЛНИТЕЛЬНЫЕ ВЛАДЕНИЯ',
             description:
                 'Когда вы вступаете в Коллегию Мечей, вы получаете владение средними доспехами и скимитарами. Если вы владеете простым или воинским оружием ближнего боя, то можете использовать его в качестве фокусировки для ваших заклинаний барда.',
           ),
-          const ClassAbility(
+          const Peculiarity(
             name: 'РОСЧЕРК КЛИНКА',
             description: '''
 Вы учитесь исполнять впечатляющие демонстрации боевого мастерства и проворства. Когда вы совершаете действие Атака в свой ход, ваша скорость ходьбы увеличивается на 10 футов до конца хода, а если атака оружием, которую вы совершаете частью этого действия, попадает по существу, вы можете использовать один из следующих вариантов «Росчерка клинка» по своему выбору. Вы можете использовать только один вариант «Росчерка клинка» за ход.
@@ -52,7 +52,7 @@ class SwordsCollegium extends BardCollegium {
     }
     if (level >= 6) {
       abilities.add(
-        const ClassAbility(
+        const Peculiarity(
           name: 'ДОПОЛНИТЕЛЬНАЯ АТАКА',
           description: 'Если вы в свой ход совершаете действие Атака, вы можете совершить две атаки вместо одной.',
         ),
@@ -60,7 +60,7 @@ class SwordsCollegium extends BardCollegium {
     }
     if (level >= 14) {
       abilities.add(
-        const ClassAbility(
+        const Peculiarity(
           name: 'МАСТЕРСКИЙ РОСЧЕРК',
           description:
               'Когда вы используете вариант «Росчерка клинка», вы можете совершить бросок к6 и использовать его вместо траты кости бардовского вдохновения.',

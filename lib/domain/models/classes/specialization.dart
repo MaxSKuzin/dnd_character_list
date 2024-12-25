@@ -4,9 +4,9 @@ import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
-import 'package:dnd_character_list/domain/models/classes/class_ability.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
+import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
@@ -66,7 +66,7 @@ abstract class Specialization {
 
   List<Spell> get knownSpells => [];
 
-  List<ClassAbility> get abilities => [];
+  List<Peculiarity> get abilities => [];
 
   ClassKind get classKind;
 
