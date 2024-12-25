@@ -6,6 +6,7 @@ import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
+import 'package:dnd_character_list/domain/models/weapon_type.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/weapon_info_dialog.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/common/widgets/text_parser/text_parses_base.dart';
@@ -90,7 +91,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                 onPressed: () async {
                                   final player = PlayerModel.getPlayer(context);
                                   if (quantity == 1 &&
-                                      (item == player.secondWeapon || item == player.secondRangeWeapon)) {
+                                      (item == player.secondWeapon ||
+                                          item == player.secondRangeWeapon ||
+                                          item.type == WeaponType.twoHanded)) {
                                     await context.read<PlayerCubit>().unequipSecondaryWeapon(item);
                                   }
                                   await context.read<PlayerCubit>().equipMainWeapon(item);
@@ -99,14 +102,19 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                 child: const Text('Взять в основную руку'),
                               ),
                               TextButton(
-                                onPressed: () async {
-                                  final player = PlayerModel.getPlayer(context);
-                                  if (quantity == 1 && (item == player.mainWeapon || item == player.mainRangeWeapon)) {
-                                    await context.read<PlayerCubit>().unequipMainWeapon(item);
-                                  }
-                                  await context.read<PlayerCubit>().equipSecondaryWeapon(item);
-                                  Navigator.of(modalContext).pop();
-                                },
+                                onPressed: item.type != WeaponType.twoHanded
+                                    ? () async {
+                                        final player = PlayerModel.getPlayer(context);
+                                        if (quantity == 1 &&
+                                            (item == player.mainWeapon ||
+                                                item == player.mainRangeWeapon ||
+                                                player.mainWeapon?.type == WeaponType.twoHanded)) {
+                                          await context.read<PlayerCubit>().unequipMainWeapon(item);
+                                        }
+                                        await context.read<PlayerCubit>().equipSecondaryWeapon(item);
+                                        Navigator.of(modalContext).pop();
+                                      }
+                                    : null,
                                 child: const Text('Взять во вторую руку'),
                               ),
                             ],
