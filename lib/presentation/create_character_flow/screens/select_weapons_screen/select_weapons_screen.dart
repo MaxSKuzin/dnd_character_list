@@ -113,7 +113,19 @@ class _SelectWeaponsScreenState extends State<SelectWeaponsScreen> {
                                   widget.equipment.armor!,
                                 );
                           }
-                          context.pushRoute(const SetPersonalityRoute());
+                          final newLanguagesCount =
+                              context.read<CreateCharacterCubit>().race!.additionalLanguagesCount +
+                                  context.read<CreateCharacterCubit>().background!.additionalLangauges;
+                          if (newLanguagesCount > 0) {
+                            context.pushRoute(
+                              SelectLanguagesRoute(
+                                knownLanguages: context.read<CreateCharacterCubit>().race!.knownLanguages,
+                                maxLanguages: newLanguagesCount,
+                              ),
+                            );
+                          } else {
+                            context.pushRoute(const SetPersonalityRoute());
+                          }
                         }
                       : null,
                   child: const Text('Далее'),

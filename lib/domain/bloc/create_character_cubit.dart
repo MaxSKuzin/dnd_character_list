@@ -5,6 +5,7 @@ import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
+import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/races/race.dart';
@@ -21,7 +22,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
   final SpSource _source;
 
   Map<StatKind, int>? _stats;
-  Race? _race;
+  Race? race;
   ClassKind? _selectedClass;
   List<Spell>? _selectedSpells;
   List<Skill>? _selectedSkills;
@@ -31,9 +32,10 @@ class CreateCharacterCubit extends Cubit<Player?> {
   Weapon? _secondRangeWeapon;
   Armor? _armor;
   Personality? _personality;
-  Background? _background;
+  Background? background;
   List<Tool>? _tools;
   List<InventoryItem>? _backgroundItems;
+  List<Language>? _languages;
 
   CreateCharacterCubit(this._source) : super(null);
 
@@ -41,8 +43,8 @@ class CreateCharacterCubit extends Cubit<Player?> {
     _stats = {...stats};
   }
 
-  void setRace(Race race) {
-    _race = race;
+  void setRace(Race newRace) {
+    race = newRace;
   }
 
   void setClass(ClassKind classKind) {
@@ -96,8 +98,8 @@ class CreateCharacterCubit extends Cubit<Player?> {
     );
   }
 
-  void setBackground(Background background) {
-    _background = background;
+  void setBackground(Background newBackground) {
+    background = newBackground;
   }
 
   void setTools(List<Tool> tools) {
@@ -106,6 +108,11 @@ class CreateCharacterCubit extends Cubit<Player?> {
 
   void setBackgroundItems(List<InventoryItem> items) {
     _backgroundItems = [...items];
+  }
+
+
+  void setLanguages(List<Language> languages) {
+    _languages = [...languages];
   }
 
   Future<void> createCharacter() async {
@@ -123,7 +130,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
     }
     final Inventory inventory = Inventory(
       items: inventoryItems,
-      balance: _background!.balance,
+      balance: background!.balance,
     );
 
     final spec = switch (_selectedClass!) {
@@ -138,7 +145,8 @@ class CreateCharacterCubit extends Cubit<Player?> {
       _ => throw UnimplementedError(),
     };
     final player = Player(
-      background: _background!,
+      knownLanguages: _languages ?? [],
+      background: background!,
       classes: [spec],
       personality: _personality!,
       armor: _armor,
@@ -149,7 +157,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
       strength: _stats![StatKind.strength]!,
       wisdom: _stats![StatKind.wisdom]!,
       chosenSkills: _selectedSkills!,
-      race: _race!,
+      race: race!,
       mainWeapon: _mainWeapon,
       secondWeapon: _secondWeapon,
       mainRangeWeapon: _mainRangeWeapon,

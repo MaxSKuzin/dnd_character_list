@@ -58,7 +58,7 @@ class _MainFlowState extends State<MainFlow> {
                 ),
                 BottomNavigationBarItem(
                   label: 'Инвентарь',
-                  icon: Icon(Icons.person),
+                  icon: Icon(Icons.inventory),
                 ),
                 BottomNavigationBarItem(
                   label: 'Перс',

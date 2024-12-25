@@ -200,9 +200,11 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                             if (widget.onSpellsSelected != null) {
                               widget.onSpellsSelected!([..._selectedSpells, ..._selectedConspiracies]);
                             } else {
-                              context
-                                  .read<CreateCharacterCubit>()
-                                  .setSpells([..._selectedSpells, ..._selectedConspiracies]);
+                              context.read<CreateCharacterCubit>().setSpells([
+                                ...widget.knownSpells,
+                                ..._selectedSpells,
+                                ..._selectedConspiracies,
+                              ]);
                               context.pushRoute(
                                 SelectBackgroundRoute(
                                   onContinue: () {

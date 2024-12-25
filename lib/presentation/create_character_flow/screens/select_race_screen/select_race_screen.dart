@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/races/race.dart';
-import 'package:dnd_character_list/domain/models/races/races.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,7 +43,7 @@ class _SelectRaceScreenState extends State<SelectRaceScreen> {
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
                   ),
-                  children: races
+                  children: Race.values
                       .map(
                         (e) => _selectedRace != e
                             ? OutlinedButton(

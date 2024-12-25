@@ -19,13 +19,16 @@ class PersonalityScreen extends StatefulWidget {
 class _PersonalityScreenState extends State<PersonalityScreen> {
   @override
   Widget build(BuildContext context) {
-    final abilities = PlayerModel.getPlayer(context).abilities;
-    final personality = PlayerModel.getPlayer(context).personality;
+    final player = PlayerModel.getPlayer(context);
+    final languages = player.knownLanguages;
+    final abilities = player.abilities;
+    final personality = player.personality;
     final classes = PlayerModel.classes(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -156,6 +159,25 @@ class _PersonalityScreenState extends State<PersonalityScreen> {
                 ),
                 const Gap(16),
               ],
+              LabeledBorder(
+                backgroundColor: context.customColors?.cardColor,
+                text: 'ЯЗЫКИ',
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: languages
+                        .map(
+                          (e) => Text(
+                            e.name.toUpperCase(),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+              ),
+              const Gap(16),
               LabeledBorder(
                 backgroundColor: context.customColors?.cardColor,
                 text: 'ПРЕДЫСТОРИЯ',

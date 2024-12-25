@@ -8,6 +8,7 @@ import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
+import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
@@ -46,6 +47,7 @@ class Player {
   final Inventory inventory;
   late final Map<ClassExtras, int> currentExtras;
   final Personality personality;
+  final List<Language> _additionalLanguages;
   bool isDead;
 
   final List<Skill> _rawchosenSkills;
@@ -57,6 +59,7 @@ class Player {
   final int _rawCharisma;
 
   Player({
+    required List<Language> knownLanguages,
     required this.personality,
     required this.race,
     required int strength,
@@ -81,6 +84,7 @@ class Player {
     int? mana,
     this.isDead = false,
   })  : assert(classes.isNotEmpty),
+        _additionalLanguages = knownLanguages,
         _rawStrength = strength,
         _rawDexterity = dexterity,
         _rawConstitution = constitution,
@@ -413,6 +417,11 @@ class Player {
 
   bool get canUseTwoWeapons => classes.any((e) => e.canUseTwoWeapons);
 
+  List<Language> get knownLanguages => [
+        ...race.knownLanguages,
+        ..._additionalLanguages,
+      ];
+
   Player equipMainWeapon(Weapon weapon) {
     final isMelee = weapon.kind.isMelee;
     final isTwoHanded = switch (weapon.type) {
@@ -626,6 +635,7 @@ class Player {
         secondRangeWeapon: secondRangeWeapon != null ? secondRangeWeapon() : this.secondRangeWeapon,
         race: race,
         background: background,
+        knownLanguages: _additionalLanguages,
       );
 
   Map<String, dynamic> toJson() => {
@@ -639,7 +649,7 @@ class Player {
         'strength': _rawStrength,
         'wisdom': _rawWisdom,
         'chosenSkills': _rawchosenSkills.map((e) => e.index).toList(),
-        'race': race.toJson(),
+        'race': race.index,
         'mainWeapon': mainWeapon?.toJson(),
         'secondWeapon': secondWeapon?.toJson(),
         'mainRangeWeapon': mainRangeWeapon?.toJson(),
@@ -647,6 +657,7 @@ class Player {
         'shield': shield?.toJson(),
         'inventory': inventory.toJson(),
         'background': background.index,
+        'knownLanguages': _additionalLanguages.map((e) => e.index).toList(),
       };
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
@@ -661,12 +672,13 @@ class Player {
         strength: json['strength'],
         wisdom: json['wisdom'],
         chosenSkills: (json['chosenSkills'] as List).map((e) => Skill.values[e]).toList(),
-        race: Race.fromJson(json['race']),
+        race: Race.values[json['race']],
         mainWeapon: json['mainWeapon'] != null ? Weapon.fromJson(json['mainWeapon']) : null,
         secondWeapon: json['secondWeapon'] != null ? Weapon.fromJson(json['secondWeapon']) : null,
         mainRangeWeapon: json['mainRangeWeapon'] != null ? Weapon.fromJson(json['mainRangeWeapon']) : null,
         secondRangeWeapon: json['secondRangeWeapon'] != null ? Weapon.fromJson(json['secondRangeWeapon']) : null,
         shield: json['shield'] != null ? Shield.fromJson(json['shield']) : null,
         background: Background.values[json['background']],
+        knownLanguages: (json['knownLanguages'] as List).map((e) => Language.values[e]).toList(),
       );
 }

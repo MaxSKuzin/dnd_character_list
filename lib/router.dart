@@ -62,6 +62,9 @@ class AppRouter extends RootStackRouter {
             AdaptiveRoute(
               page: SelectToolsRoute.page,
             ),
+            AdaptiveRoute(
+              page: SelectLanguagesRoute.page,
+            ),
           ],
         ),
         AdaptiveRoute(
