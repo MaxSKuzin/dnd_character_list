@@ -231,7 +231,7 @@ class Player {
 
   ///Does not modify the original object!
   Player addClass<T extends Specialization>(T spec) {
-    if (classes.any((e) => e.classKind == e.classKind)) {
+    if (classes.any((e) => e.classKind == spec.classKind)) {
       throw "Can't duplicate existing class";
     }
     return copyWith(

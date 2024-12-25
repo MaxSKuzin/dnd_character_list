@@ -31,10 +31,10 @@ enum SpellSlot {
         SpellSlot.level9 => '9 уровень',
       };
 
-  static Map<SpellSlot, int> getSpellCells(List<({ClassKind kind, int level})> classes) {
-    final magicLevel = classes.fold(
+  static Map<SpellSlot, int> getSpellCells(Map<ClassKind, int> classes) {
+    final magicLevel = classes.entries.fold(
       0,
-      (prev, e) => prev + (e.level * e.kind.magicLevelMultiplier).toInt(),
+      (prev, e) => prev + (e.value * e.key.magicLevelMultiplier).toInt(),
     );
     if (magicLevel == 0) {
       return {};

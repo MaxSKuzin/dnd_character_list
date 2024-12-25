@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/data/sp_source.dart';
 import 'package:dnd_character_list/domain/models/bard_collegiums/bard_collegium.dart';
+import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
@@ -105,6 +106,12 @@ class LevelUpCubit extends Cubit<Player?> {
         }
         break;
       case ClassKind.barbarian:
+        {
+          newClass = Barbarian(
+            level: spec != null ? spec.level + 1 : 1,
+            isMain: _isClassMain!,
+          );
+        }
       case ClassKind.warrior:
       case ClassKind.wizard:
       case ClassKind.driud:

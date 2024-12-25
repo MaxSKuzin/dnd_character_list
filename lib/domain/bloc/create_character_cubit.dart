@@ -14,6 +14,7 @@ import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
+import 'package:dnd_character_list/domain/models/weapon_type.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
@@ -110,7 +111,6 @@ class CreateCharacterCubit extends Cubit<Player?> {
     _backgroundItems = [...items];
   }
 
-
   void setLanguages(List<Language> languages) {
     _languages = [...languages];
   }
@@ -159,7 +159,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
       chosenSkills: _selectedSkills!,
       race: race!,
       mainWeapon: _mainWeapon,
-      secondWeapon: _secondWeapon,
+      secondWeapon: _mainWeapon?.type != WeaponType.twoHanded ? _secondWeapon : null,
       mainRangeWeapon: _mainRangeWeapon,
       secondRangeWeapon: _secondRangeWeapon,
       inventory: inventory,
