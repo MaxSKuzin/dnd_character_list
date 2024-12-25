@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
@@ -27,6 +28,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     final inventory = PlayerModel.inventory(context);
+    final items = inventory.items.sorted((a, b) {
+      final aOrder = switch (a.item) {
+        Weapon _ => 0,
+        Armor _ => 1,
+        Tool _ => 2,
+        CustomInvetoryItem _ => 3,
+        _ => 4,
+      };
+      final bOrder = switch (b.item) {
+        Weapon _ => 0,
+        Armor _ => 1,
+        Tool _ => 2,
+        CustomInvetoryItem _ => 3,
+        _ => 4,
+      };
+      return aOrder.compareTo(bOrder);
+    });
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -38,10 +56,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
             const Gap(16),
             Expanded(
               child: ListView.builder(
-                itemCount: inventory.items.length,
+                itemCount: items.length,
                 itemBuilder: (context, index) {
-                  final quantity = inventory.items[index].quantity;
-                  final item = inventory.items[index].item;
+                  final quantity = items[index].quantity;
+                  final item = items[index].item;
                   if (item is CustomInvetoryItem) {
                     return ListTile(
                       title: Text(item.name),
@@ -154,12 +172,35 @@ class BalanceWidget extends StatelessWidget {
       text: 'БАЛАНС',
       backgroundColor: context.customColors?.cardColor,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
         child: Row(
           children: [
+            IconButton(
+              onPressed: () async {
+                final value = await showDialog<int?>(
+                  context: context,
+                  builder: (modalContext) => const Dialog(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: Colors.white,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                    ),
+                    child: EnterBalanceDialog(
+                      title: 'Снять',
+                    ),
+                  ),
+                );
+                if (value != null) {
+                  context.read<PlayerCubit>().spendBalance(
+                        Balance(value),
+                      );
+                }
+              },
+              icon: const Icon(Icons.remove),
+            ),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text('Золото: ${balance.gold}'),
                   const Gap(4),
@@ -169,57 +210,29 @@ class BalanceWidget extends StatelessWidget {
                 ],
               ),
             ),
-            Column(
-              children: [
-                IconButton(
-                  onPressed: () async {
-                    final value = await showDialog<int?>(
-                      context: context,
-                      builder: (modalContext) => const Dialog(
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            color: Colors.white,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(16)),
-                        ),
-                        child: EnterBalanceDialog(
-                          title: 'Положить',
-                        ),
+            IconButton(
+              onPressed: () async {
+                final value = await showDialog<int?>(
+                  context: context,
+                  builder: (modalContext) => const Dialog(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: Colors.white,
                       ),
-                    );
-                    if (value != null) {
-                      context.read<PlayerCubit>().addBalance(
-                            Balance(value),
-                          );
-                    }
-                  },
-                  icon: const Icon(Icons.add),
-                ),
-                IconButton(
-                  onPressed: () async {
-                    final value = await showDialog<int?>(
-                      context: context,
-                      builder: (modalContext) => const Dialog(
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            color: Colors.white,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(16)),
-                        ),
-                        child: EnterBalanceDialog(
-                          title: 'Снять',
-                        ),
-                      ),
-                    );
-                    if (value != null) {
-                      context.read<PlayerCubit>().spendBalance(
-                            Balance(value),
-                          );
-                    }
-                  },
-                  icon: const Icon(Icons.remove),
-                ),
-              ],
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                    ),
+                    child: EnterBalanceDialog(
+                      title: 'Положить',
+                    ),
+                  ),
+                );
+                if (value != null) {
+                  context.read<PlayerCubit>().addBalance(
+                        Balance(value),
+                      );
+                }
+              },
+              icon: const Icon(Icons.add),
             ),
           ],
         ),
