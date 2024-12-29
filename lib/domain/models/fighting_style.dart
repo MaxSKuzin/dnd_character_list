@@ -28,6 +28,8 @@ enum FightingStyle {
   static FightingStyle fromName(String name) => switch (name) {
         'dueling' => FightingStyle.dueling,
         'twoWeaponFighting' => FightingStyle.twoWeaponFighting,
+        'protection' => FightingStyle.protection,
+        'defense' => FightingStyle.defence,
         _ => throw ArgumentError('Unknown fighting style: $name'),
       };
 }

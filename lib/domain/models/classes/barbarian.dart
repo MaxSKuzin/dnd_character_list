@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
@@ -59,7 +61,9 @@ final class Barbarian extends Specialization {
   @override
   int getProtection(Player player) {
     if (player.armor == null) {
-      return 10 + player.dexterity.bonus + player.constitution.bonus;
+      final dexterityBonus = max(0, player.dexterity.bonus);
+      final constitutionBonus = max(0, player.constitution.bonus);
+      return 10 + dexterityBonus + constitutionBonus;
     }
     return super.getProtection(player);
   }

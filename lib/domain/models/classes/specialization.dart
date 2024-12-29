@@ -32,7 +32,7 @@ abstract class Specialization {
 
   int getProtection(Player player) {
     if (player.armor == null) {
-      return 10 + player.dexterity.bonus;
+      return 10 + max(player.dexterity.bonus, 0);
     }
 
     var protection = player.armor!.protection;

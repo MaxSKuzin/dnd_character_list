@@ -93,6 +93,9 @@ class AppRouter extends RootStackRouter {
             AdaptiveRoute(
               page: FillStatsRoute.page,
             ),
+            AdaptiveRoute(
+              page: SelectFightingStyleRoute.page,
+            ),
           ],
         ),
       ];

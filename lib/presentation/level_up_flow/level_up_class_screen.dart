@@ -294,6 +294,18 @@ extension on ClassKind {
           default:
             return null;
         }
+      case ClassKind.paladin:
+        switch (level) {
+          case 2:
+            return SelectFightingStyleRoute(
+              onStyleSelected: (style) {
+                context.read<LevelUpCubit>().setFightingStyle(style);
+                context.maybePop(true);
+              },
+            );
+          default:
+            return null;
+        }
       default:
         return null;
     }
