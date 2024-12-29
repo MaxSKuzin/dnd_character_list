@@ -1,9 +1,13 @@
 import 'dart:math';
 
 import 'package:dnd_character_list/domain/models/armor.dart';
+import 'package:dnd_character_list/domain/models/equipment_kits.dart';
+import 'package:dnd_character_list/domain/models/inventory.dart';
+import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/start_equipment.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
+import 'package:dnd_character_list/domain/models/tools/musical_instruments.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/domain/models/weapon_kind.dart';
 
@@ -25,40 +29,81 @@ enum ClassKind {
 
   StartEquipment get equipment => switch (this) {
         ClassKind.bard => StartEquipment(
-            weapons: {
-              Weapon.rapier(),
-              Weapon.longSword(),
-              ...availableWeapons.where(
-                (element) => element.kind == WeaponKind.simpleMelee || element.kind == WeaponKind.simpleRanged,
+            [
+              EquipmentToSelect(
+                quantity: 1,
+                items: [
+                  Weapon.rapier(),
+                  Weapon.longSword(),
+                  ...availableWeapons.where(
+                    (element) => element.kind == WeaponKind.simpleMelee || element.kind == WeaponKind.simpleRanged,
+                  ),
+                ].map((e) => InventoryItem(quantity: 1, item: e)).toList(),
               ),
-            }.toList(),
-            secondWeapons: [
-              Weapon.dagger(),
+              EquipmentToSelect(
+                quantity: 1,
+                items: musicalInstruments.map((e) => InventoryItem(quantity: 1, item: e)).toList(),
+              ),
+              EquipmentToSelect(
+                quantity: 2,
+                items: [
+                  Armor.leather(),
+                  Weapon.dagger(),
+                ].map((e) => InventoryItem(quantity: 1, item: e)).toList(),
+              ),
             ],
-            armor: Armor.leather(),
+            [
+              artistSet,
+              diplomaSet,
+            ],
           ),
-        ClassKind.barbarian => StartEquipment(
-            weapons: {
-              Weapon.ax(),
-              ...availableWeapons.where(
-                (element) => element.kind == WeaponKind.martialMelee,
-              ),
-            }.toList(),
-            secondWeapons: {
-              ...availableWeapons.where(
-                (element) => element.kind == WeaponKind.simpleMelee || element.kind == WeaponKind.simpleRanged,
-              ),
-            }.toList(),
-            armor: null,
-          ),
-        ClassKind.wizard => StartEquipment(
-            weapons: {
-              Weapon.stuff(),
-              Weapon.dagger(),
-            }.toList(),
-            secondWeapons: null,
-            armor: null,
-          ),
+        ClassKind.paladin => StartEquipment([
+            EquipmentToSelect(
+              quantity: 2,
+              items: [
+                ...availableWeapons.where(
+                  (element) => element.kind == WeaponKind.martialMelee || element.kind == WeaponKind.martialRanged,
+                ),
+                Shield.regular(),
+              ]
+                  .map(
+                    (e) => InventoryItem(quantity: 1, item: e),
+                  )
+                  .toList(),
+            ),
+            EquipmentToSelect(
+              quantity: 1,
+              items: [
+                InventoryItem(
+                  quantity: 5,
+                  item: Weapon.throwingSpear(),
+                ),
+                ...availableWeapons
+                    .where(
+                      (element) => element.kind == WeaponKind.simpleMelee && element != Weapon.throwingSpear(),
+                    )
+                    .map(
+                      (e) => InventoryItem(quantity: 1, item: e),
+                    ),
+              ],
+            ),
+            EquipmentToSelect(
+              quantity: 2,
+              items: [
+                InventoryItem(
+                  quantity: 1,
+                  item: Armor.chainmail(),
+                ),
+                InventoryItem(
+                  quantity: 1,
+                  item: 'Священный символ',
+                ),
+              ],
+            ),
+          ], [
+            travellersSet,
+            priestSet,
+          ]),
         _ => throw UnimplementedError(),
       };
 
@@ -82,6 +127,7 @@ enum ClassKind {
         ClassKind.bard => 3,
         ClassKind.barbarian => 2,
         ClassKind.wizard => 2,
+        ClassKind.paladin => 2,
         _ => throw UnimplementedError(),
       };
 
@@ -103,6 +149,14 @@ enum ClassKind {
             Skill.investigation,
             Skill.religion,
           ],
+        ClassKind.paladin => [
+            Skill.athletics,
+            Skill.harassment,
+            Skill.medicine,
+            Skill.insight,
+            Skill.religion,
+            Skill.conviction,
+          ],
         _ => throw UnimplementedError(),
       };
 
@@ -110,6 +164,7 @@ enum ClassKind {
         ClassKind.bard => 3 + level,
         ClassKind.barbarian => 0,
         ClassKind.wizard => max(1, level + statBonus(StatKind.intelligence)),
+        ClassKind.paladin => level > 1 ? max(1, level ~/ 2 + statBonus(StatKind.charisma)) : 0,
         _ => throw UnimplementedError(),
       };
 
@@ -120,6 +175,7 @@ enum ClassKind {
             10: 4,
           }._getValue(level),
         ClassKind.barbarian => 0,
+        ClassKind.paladin => 0,
         ClassKind.wizard => {
             1: 3,
             4: 4,
@@ -132,6 +188,7 @@ enum ClassKind {
         ClassKind.bard => 1,
         ClassKind.barbarian => 0,
         ClassKind.wizard => 1,
+        ClassKind.paladin => 0.5,
         _ => throw UnimplementedError(),
       };
 
@@ -140,7 +197,7 @@ enum ClassKind {
         _ => 0,
       };
 
-  int getStatsBonus(int level) => level % 4 == 0 ? 2 : 0; 
+  int getStatsBonus(int level) => level % 4 == 0 ? 2 : 0;
 }
 
 extension on Map<int, int> {

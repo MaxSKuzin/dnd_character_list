@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/models/bard_collegiums/bard_collegium.dart';
 import 'package:dnd_character_list/domain/models/bard_collegiums/swords_collegium.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
+import 'package:dnd_character_list/presentation/common/widgets/text_parser/text_parses_base.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -57,14 +59,19 @@ class _SelectCollegiumScreenState extends State<SelectCollegiumScreen> {
                 Expanded(
                   child: Column(
                     children: switch (_selectedCollegiumKind!) {
-                      _CollegeKind.swords => FightingStyle.values
+                      _CollegeKind.swords => [FightingStyle.dueling, FightingStyle.twoWeaponFighting]
                           .map(
                             (e) => ListTile(
-                              title: Text(
-                                e.title,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              title: ImageFiltered(
+                                imageFilter: ColorFilter.mode(
+                                  _selectedCollegium is SwordsCollegium &&
+                                          (_selectedCollegium as SwordsCollegium).fightingStyle == e
+                                      ? Colors.transparent
+                                      : Colors.black45,
+                                  BlendMode.srcATop,
+                                ),
+                                child: TextParses(
+                                  e.description,
                                 ),
                               ),
                               onTap: () {
@@ -72,8 +79,6 @@ class _SelectCollegiumScreenState extends State<SelectCollegiumScreen> {
                                   _selectedCollegium = SwordsCollegium(fightingStyle: e);
                                 });
                               },
-                              selected: _selectedCollegium is SwordsCollegium &&
-                                  (_selectedCollegium as SwordsCollegium).fightingStyle == e,
                             ),
                           )
                           .toList(),

@@ -86,7 +86,7 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
                           context.read<CreateCharacterCubit>().setSkills(_selectedSkills);
                           context.router.push(
                             SelectWeaponsRoute(
-                              equipment: widget.classKind.equipment,
+                              startEquip: widget.classKind.equipment,
                             ),
                           );
                         } else {

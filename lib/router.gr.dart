@@ -764,13 +764,13 @@ class SelectToolsRouteArgs {
 class SelectWeaponsRoute extends _i22.PageRouteInfo<SelectWeaponsRouteArgs> {
   SelectWeaponsRoute({
     _i23.Key? key,
-    required _i33.StartEquipment equipment,
+    required _i33.StartEquipment startEquip,
     List<_i22.PageRouteInfo>? children,
   }) : super(
           SelectWeaponsRoute.name,
           args: SelectWeaponsRouteArgs(
             key: key,
-            equipment: equipment,
+            startEquip: startEquip,
           ),
           initialChildren: children,
         );
@@ -783,7 +783,7 @@ class SelectWeaponsRoute extends _i22.PageRouteInfo<SelectWeaponsRouteArgs> {
       final args = data.argsAs<SelectWeaponsRouteArgs>();
       return _i19.SelectWeaponsScreen(
         key: args.key,
-        equipment: args.equipment,
+        startEquip: args.startEquip,
       );
     },
   );
@@ -792,16 +792,16 @@ class SelectWeaponsRoute extends _i22.PageRouteInfo<SelectWeaponsRouteArgs> {
 class SelectWeaponsRouteArgs {
   const SelectWeaponsRouteArgs({
     this.key,
-    required this.equipment,
+    required this.startEquip,
   });
 
   final _i23.Key? key;
 
-  final _i33.StartEquipment equipment;
+  final _i33.StartEquipment startEquip;
 
   @override
   String toString() {
-    return 'SelectWeaponsRouteArgs{key: $key, equipment: $equipment}';
+    return 'SelectWeaponsRouteArgs{key: $key, startEquip: $startEquip}';
   }
 }
 

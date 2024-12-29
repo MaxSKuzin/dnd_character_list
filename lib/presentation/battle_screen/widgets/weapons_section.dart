@@ -25,6 +25,7 @@ class WeaponsSection extends StatelessWidget {
     final secondWeapon = PlayerModel.secondWeapon(context);
     final mainRangeWeapon = PlayerModel.mainRangeWeapon(context);
     final secondRangeWeapon = PlayerModel.secondRangeWeapon(context);
+    final shield = PlayerModel.shield(context);
     return LabeledBorder(
       backgroundColor: context.customColors?.cardColor,
       text: 'АТАКИ',
@@ -62,25 +63,25 @@ class WeaponsSection extends StatelessWidget {
               _WeaponWidget(
                 mainWeapon,
                 isMain: true,
-                isTwoHanded: secondWeapon != null,
+                isTwoHanded: secondWeapon == null && shield == null,
               ),
             if (secondWeapon != null)
               _WeaponWidget(
                 secondWeapon,
                 isMain: false,
-                isTwoHanded: true,
+                isTwoHanded: false,
               ),
             if (mainRangeWeapon != null)
               _WeaponWidget(
                 mainRangeWeapon,
                 isMain: true,
-                isTwoHanded: secondRangeWeapon != null,
+                isTwoHanded: secondRangeWeapon == null,
               ),
             if (secondRangeWeapon != null)
               _WeaponWidget(
                 secondRangeWeapon,
                 isMain: false,
-                isTwoHanded: mainRangeWeapon != null,
+                isTwoHanded: false,
               ),
           ],
         ),

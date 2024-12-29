@@ -4,6 +4,7 @@ import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
@@ -86,6 +87,14 @@ final class Bard extends Specialization {
       return (collegium as SwordsCollegium).fightingStyle == FightingStyle.twoWeaponFighting;
     }
     return false;
+  }
+
+  @override
+  FightingStyle? get fightingStyle {
+    if (collegium is SwordsCollegium) {
+      return (collegium as SwordsCollegium).fightingStyle;
+    }
+    return null;
   }
 
   @override

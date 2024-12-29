@@ -28,13 +28,18 @@ class SpSource {
     var savedPlayers = rawSavedPlayers.map((e) => Player.fromJson(jsonDecode(e))).toList();
     final mainClass = player.classes.firstWhere((e) => e.isMain);
     final name = player.personality.name;
+    final containsPlayer = savedPlayers.any(
+      (e) => e.personality.name == name && e.classes.firstWhere((e) => e.isMain).runtimeType == mainClass.runtimeType,
+    );
     savedPlayers = savedPlayers
-        .map((e) =>
-            e.personality.name == name && e.classes.firstWhere((e) => e.isMain).runtimeType == mainClass.runtimeType
-                ? player
-                : e)
+        .map(
+          (e) =>
+              e.personality.name == name && e.classes.firstWhere((e) => e.isMain).runtimeType == mainClass.runtimeType
+                  ? player
+                  : e,
+        )
         .toList();
-    if (savedPlayers.isEmpty) {
+    if (!containsPlayer) {
       savedPlayers.add(player);
     }
     await _sharedPreferences.setStringList(
@@ -55,9 +60,17 @@ class SpSource {
   }
 
   Future<void> removePlayer(Player player) async {
-    final savedPlayers = _sharedPreferences.getStringList(_playersKey) ?? [];
-    savedPlayers.remove(jsonEncode(player.toJson()));
-    await _sharedPreferences.setStringList(_playersKey, savedPlayers);
+    final rawSavedPlayers = _sharedPreferences.getStringList(_playersKey) ?? [];
+    final savedPlayers = rawSavedPlayers.map((e) => Player.fromJson(jsonDecode(e))).toList();
+    final name = player.personality.name;
+    final mainClass = player.classes.firstWhere((e) => e.isMain);
+    savedPlayers.removeWhere(
+      (e) => e.personality.name == name && e.classes.firstWhere((e) => e.isMain).runtimeType == mainClass.runtimeType,
+    );
+    await _sharedPreferences.setStringList(
+      _playersKey,
+      savedPlayers.map((e) => jsonEncode(e.toJson())).toList(),
+    );
     _playersSubject.add(getSavedPlayers());
   }
 }

@@ -1,10 +1,14 @@
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
+
 class Peculiarity {
   final String name;
   final String description;
+  final SpellSlot? manaRequired;
 
   const Peculiarity({
     required this.name,
     required this.description,
+    this.manaRequired,
   });
 
   @override

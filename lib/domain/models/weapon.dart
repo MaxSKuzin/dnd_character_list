@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dnd_character_list/domain/models/damage_type.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/weapon_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon_type.dart';
@@ -37,11 +38,16 @@ class Weapon {
   });
 
   String getHitString(Player player) {
-    final int bonus;
+    int bonus;
     if (isFencing) {
       bonus = max(player.dexterity.bonus, player.strength.bonus);
     } else {
       bonus = player.strength.bonus;
+    }
+    if (player.secondWeapon == null &&
+        player.fightingStyles.contains(FightingStyle.dueling) &&
+        type == WeaponType.oneHanded) {
+      bonus += 2;
     }
     return '+${bonus + player.proficiencyBonus}';
   }

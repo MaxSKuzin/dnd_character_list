@@ -5,7 +5,9 @@ import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/paladin.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
@@ -19,6 +21,8 @@ abstract class Specialization {
     required this.level,
     required this.isMain,
   });
+
+  FightingStyle? get fightingStyle => null;
 
   String get name;
 
@@ -102,6 +106,7 @@ abstract class Specialization {
   factory Specialization.fromJson(Map<String, dynamic> json) => switch (json['type']) {
         'Bard' => Bard.fromJson(json),
         'Barbarian' => Barbarian.fromJson(json),
+        'Paladin' => Paladin.fromJson(json),
         _ => throw 'No such class',
       };
 }

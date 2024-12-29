@@ -1,17 +1,35 @@
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
+import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 
 class Inventory {
-  Balance balance;
-  List<InventoryItem> items;
+  final Balance balance;
+  late final List<InventoryItem> items;
 
   Inventory({
-    required this.items,
+    required List<InventoryItem> items,
     required this.balance,
-  });
+  }) {
+    final newItems = <InventoryItem>[];
+    for (final item in items) {
+      final existingItem = newItems.firstWhereOrNull((e) => e.item == item.item);
+      if (existingItem != null) {
+        newItems.remove(existingItem);
+        newItems.add(
+          InventoryItem(
+            quantity: existingItem.quantity + item.quantity,
+            item: item.item,
+          ),
+        );
+      } else {
+        newItems.add(item);
+      }
+    }
+    this.items = newItems;
+  }
 
   Inventory spendBalance(Balance value) {
     return copyWith(
@@ -61,8 +79,8 @@ class Inventory {
 }
 
 class InventoryItem {
-  int quantity;
-  dynamic item;
+  final int quantity;
+  final dynamic item;
 
   InventoryItem({
     required this.quantity,
@@ -99,6 +117,7 @@ class InventoryItem {
           'Weapon' => Weapon.fromJson(json['item']),
           'Armor' => Armor.fromJson(json['item']),
           'Tool' => Tool.fromJson(json['item']),
+          'Shield' => Shield.fromJson(json['item']),
           'int' || 'double' || 'String' || 'bool' => json['item']['value'],
           _ => throw Exception('Unknown item type'),
         },

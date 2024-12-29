@@ -1,9 +1,9 @@
 import 'package:dnd_character_list/data/sp_source.dart';
-import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/paladin.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
@@ -13,8 +13,6 @@ import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/tools/tool.dart';
-import 'package:dnd_character_list/domain/models/weapon.dart';
-import 'package:dnd_character_list/domain/models/weapon_type.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
@@ -27,16 +25,12 @@ class CreateCharacterCubit extends Cubit<Player?> {
   ClassKind? _selectedClass;
   List<Spell>? _selectedSpells;
   List<Skill>? _selectedSkills;
-  Weapon? _mainWeapon;
-  Weapon? _secondWeapon;
-  Weapon? _mainRangeWeapon;
-  Weapon? _secondRangeWeapon;
-  Armor? _armor;
   Personality? _personality;
   Background? background;
   List<Tool>? _tools;
   List<InventoryItem>? _backgroundItems;
   List<Language>? _languages;
+  List<InventoryItem>? _inventoryItems;
 
   CreateCharacterCubit(this._source) : super(null);
 
@@ -60,21 +54,8 @@ class CreateCharacterCubit extends Cubit<Player?> {
     _selectedSkills = [...skills];
   }
 
-  void setWeapons(Weapon firstWeapon, Weapon? secondWeapon) {
-    if (firstWeapon.kind.isMelee) {
-      _mainWeapon = firstWeapon;
-    } else {
-      _mainRangeWeapon = firstWeapon;
-    }
-    if (secondWeapon?.kind.isMelee ?? false) {
-      _secondWeapon = secondWeapon;
-    } else {
-      _secondRangeWeapon = secondWeapon;
-    }
-  }
-
-  void setArmor(Armor armor) {
-    _armor = armor;
+  void setInventoryItems(List<InventoryItem> items) {
+    _inventoryItems = [...items];
   }
 
   void setPersonality({
@@ -117,17 +98,11 @@ class CreateCharacterCubit extends Cubit<Player?> {
 
   Future<void> createCharacter() async {
     final inventoryItems = [
+      ..._inventoryItems!,
       ..._backgroundItems!,
       if (_tools != null) ..._tools!.map((e) => InventoryItem(quantity: 1, item: e)),
     ];
-    if (_mainWeapon != _secondWeapon) {
-      inventoryItems.addAll([
-        InventoryItem(quantity: 1, item: _mainWeapon),
-        if (_secondWeapon != null) InventoryItem(quantity: 1, item: _secondWeapon),
-      ]);
-    } else {
-      inventoryItems.add(InventoryItem(quantity: 2, item: _mainWeapon!));
-    }
+
     final Inventory inventory = Inventory(
       items: inventoryItems,
       balance: background!.balance,
@@ -142,6 +117,9 @@ class CreateCharacterCubit extends Cubit<Player?> {
           level: 1,
           isMain: true,
         ),
+      ClassKind.paladin => Paladin.level1(
+          isMain: true,
+        ),
       _ => throw UnimplementedError(),
     };
     final player = Player(
@@ -149,7 +127,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
       background: background!,
       classes: [spec],
       personality: _personality!,
-      armor: _armor,
+      armor: null,
       charisma: _stats![StatKind.charisma]!,
       constitution: _stats![StatKind.constitution]!,
       dexterity: _stats![StatKind.dexterity]!,
@@ -158,10 +136,10 @@ class CreateCharacterCubit extends Cubit<Player?> {
       wisdom: _stats![StatKind.wisdom]!,
       chosenSkills: _selectedSkills!,
       race: race!,
-      mainWeapon: _mainWeapon,
-      secondWeapon: _mainWeapon?.type != WeaponType.twoHanded ? _secondWeapon : null,
-      mainRangeWeapon: _mainRangeWeapon,
-      secondRangeWeapon: _secondRangeWeapon,
+      mainWeapon: null,
+      secondWeapon: null,
+      mainRangeWeapon: null,
+      secondRangeWeapon: null,
       inventory: inventory,
       shield: null,
     );

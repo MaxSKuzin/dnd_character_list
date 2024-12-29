@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
+import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_stat.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
@@ -32,6 +33,7 @@ enum PlayerAspect {
   extras,
   classes,
   spells,
+  shield,
 }
 
 class PlayerModel extends InheritedModel<PlayerAspect> {
@@ -112,6 +114,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
       player.currentExtras.forEach((key, value) {
         update |= oldWidget.player.currentExtras[key] != value;
       });
+    }
+    if (dependencies.contains(PlayerAspect.shield)) {
+      update |= oldWidget.player.shield != player.shield;
     }
     return update;
   }
@@ -198,5 +203,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
 
   static Inventory inventory(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.inventory)!.player.inventory;
+  }
+
+  static Shield? shield(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.shield)!.player.shield;
   }
 }

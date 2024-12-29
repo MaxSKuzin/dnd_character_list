@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
@@ -289,6 +290,9 @@ class Player {
     if (shield != null) {
       maxProtection += shield!.defense;
     }
+    if (armor != null && fightingStyles.contains(FightingStyle.defence)) {
+      maxProtection++;
+    }
     return maxProtection;
   }
 
@@ -498,7 +502,7 @@ class Player {
     );
   }
 
-  Player unequipShield(Shield shield) {
+  Player unequipShield() {
     return copyWith(
       shield: () => null,
     );
@@ -527,6 +531,14 @@ class Player {
       inventory: inventory.addBalance(balance),
     );
   }
+
+  List<FightingStyle> get fightingStyles => classes.fold(
+        <FightingStyle>[],
+        (prev, e) => [
+          ...prev,
+          if (e.fightingStyle != null) e.fightingStyle!,
+        ],
+      );
 
   @override
   bool operator ==(Object other) {

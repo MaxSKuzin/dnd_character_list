@@ -92,8 +92,8 @@ class PlayerCubit extends Cubit<Player> {
     emit(newPlayer);
   }
 
-  Future<void> unequipShield(Shield shield) async {
-    final newPlayer = state.unequipShield(shield);
+  Future<void> unequipShield() async {
+    final newPlayer = state.unequipShield();
     await _source.savePlayer(newPlayer);
     emit(newPlayer);
   }

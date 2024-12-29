@@ -69,7 +69,9 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                         (e) => EnterStatWidget(
                           statKind: e.key,
                           value: e.value,
-                          canAdd: widget.isInitial ? e.value < 15 : e.value < 20,
+                          canAdd: widget.isInitial
+                              ? e.value < 15 && (e.value >= 13 && points > 1 || e.value < 13)
+                              : e.value < 20,
                           canSubtract: widget.isInitial ? e.value > 8 : e.value > widget.initialStats[e.key]!,
                           onAdd: () {
                             setState(() {

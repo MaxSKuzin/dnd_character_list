@@ -4,7 +4,9 @@ import 'package:dnd_character_list/domain/models/bard_collegiums/bard_collegium.
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/paladin.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
@@ -27,6 +29,8 @@ class LevelUpCubit extends Cubit<Player?> {
   BardCollegium? _collegium;
 
   Map<StatKind, int>? _statsBonus;
+
+  FightingStyle? _fightingStyle;
 
   LevelUpCubit(
     this._spSource,
@@ -52,6 +56,10 @@ class LevelUpCubit extends Cubit<Player?> {
 
   void setStatsBonus(Map<StatKind, int> statsBonus) {
     _statsBonus = statsBonus;
+  }
+
+  void setFightingStyle(FightingStyle fightingStyle) {
+    _fightingStyle = fightingStyle;
   }
 
   void levelUp() async {
@@ -105,6 +113,29 @@ class LevelUpCubit extends Cubit<Player?> {
             throw UnimplementedError();
         }
         break;
+      case ClassKind.paladin:
+        {
+          spec as Paladin?;
+          final fightingStyle = spec?.fightingStyle;
+          final abilities = spec?.baseAbilities ?? [];
+          switch (spec != null ? spec.level + 1 : 1) {
+            case 1:
+              newClass = Paladin.level1(
+                isMain: _isClassMain!,
+              );
+              break;
+            case 2:
+              newClass = Paladin.level2(
+                isMain: _isClassMain!,
+                abilities: abilities,
+                fightingStyle: _fightingStyle!,
+                knownSpells: _newSpells!,
+              );
+            default:
+              throw UnimplementedError();
+          }
+          break;
+        }
       case ClassKind.barbarian:
         {
           newClass = Barbarian(

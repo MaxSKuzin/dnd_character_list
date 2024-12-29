@@ -1,4 +1,5 @@
 import 'package:dnd_character_list/domain/models/bard_collegiums/bard_collegium.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
 
 class SwordsCollegium extends BardCollegium {
@@ -24,12 +25,7 @@ class SwordsCollegium extends BardCollegium {
         [
           Peculiarity(
             name: 'БОЕВОЙ СТИЛЬ',
-            description: switch (fightingStyle) {
-              FightingStyle.dueling =>
-                'Дуэлянт. Пока вы держите рукопашное оружие в одной руке и не используете другого оружия, вы получаете бонус +2 к броскам урона этим оружием.',
-              FightingStyle.twoWeaponFighting =>
-                'Сражение двумя оружиями. Если вы сражаетесь двумя оружиями, вы можете добавить модификатор характеристики к урону от второй атаки.',
-            },
+            description: fightingStyle.description,
           ),
           const Peculiarity(
             name: 'ДОПОЛНИТЕЛЬНЫЕ ВЛАДЕНИЯ',
@@ -86,30 +82,4 @@ class SwordsCollegium extends BardCollegium {
   }
 }
 
-enum FightingStyle {
-  dueling,
-  twoWeaponFighting;
 
-  String get title => switch (this) {
-        FightingStyle.dueling => 'Дуэлянт',
-        FightingStyle.twoWeaponFighting => 'Сражение двумя оружиями',
-      };
-
-  String get name => switch (this) {
-        FightingStyle.dueling => 'dueling',
-        FightingStyle.twoWeaponFighting => 'twoWeaponFighting',
-      };
-
-  String get description => switch (this) {
-        FightingStyle.dueling =>
-          'Пока вы держите рукопашное оружие в одной руке и не используете другого оружия, вы получаете бонус +2 к броскам урона этим оружием.',
-        FightingStyle.twoWeaponFighting =>
-          'Если вы сражаетесь двумя оружиями, вы можете добавить модификатор характеристики к урону от второй атаки.',
-      };
-
-  static FightingStyle fromName(String name) => switch (name) {
-        'dueling' => FightingStyle.dueling,
-        'twoWeaponFighting' => FightingStyle.twoWeaponFighting,
-        _ => throw ArgumentError('Unknown fighting style: $name'),
-      };
-}
