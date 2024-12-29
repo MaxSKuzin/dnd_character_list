@@ -8,8 +8,10 @@ class InventoryShieldWidget extends StatelessWidget {
   const InventoryShieldWidget({
     super.key,
     required this.item,
+    required this.quantity,
   });
 
+  final int quantity;
   final Shield item;
 
   @override
@@ -23,6 +25,7 @@ class InventoryShieldWidget extends StatelessWidget {
         ),
       ),
       title: Text(item.name),
+      trailing: Text('x$quantity'),
     );
   }
 }

@@ -532,6 +532,24 @@ class Player {
     );
   }
 
+  Player removeItem(InventoryItem item) {
+    return copyWith(
+      inventory: inventory.removeItem(item),
+    );
+  }
+
+  Player addItemQuantity(InventoryItem item) {
+    return copyWith(
+      inventory: inventory.addItemQuantity(item),
+    );
+  }
+
+  Player addItem(InventoryItem item) {
+    return copyWith(
+      inventory: inventory.addItem(item),
+    );
+  }
+
   List<FightingStyle> get fightingStyles => classes.fold(
         <FightingStyle>[],
         (prev, e) => [

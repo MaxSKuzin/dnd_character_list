@@ -3,6 +3,7 @@ import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
+import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
@@ -118,6 +119,24 @@ class PlayerCubit extends Cubit<Player> {
 
   Future<void> addBalance(Balance balance) async {
     final newPlayer = state.addBalance(balance);
+    await _source.savePlayer(newPlayer);
+    emit(newPlayer);
+  }
+
+  Future<void> removeItem(InventoryItem item) async {
+    final newPlayer = state.removeItem(item);
+    await _source.savePlayer(newPlayer);
+    emit(newPlayer);
+  }
+
+  Future<void> addItemQuantity(InventoryItem item) async {
+    final newPlayer = state.addItemQuantity(item);
+    await _source.savePlayer(newPlayer);
+    emit(newPlayer);
+  }
+
+  Future<void> addItem(InventoryItem item) async {
+    final newPlayer = state.addItem(item);
     await _source.savePlayer(newPlayer);
     emit(newPlayer);
   }

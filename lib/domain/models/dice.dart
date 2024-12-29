@@ -19,6 +19,8 @@ class Dice {
 
   static Dice get k20 => const Dice._(20);
 
+  static List<Dice> values = [k4, k6, k8, k10, k12, k20];
+
   String get name => 'k$value';
 
   int roll() => _random.nextInt(value) + 1;

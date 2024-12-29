@@ -68,6 +68,9 @@ class AppRouter extends RootStackRouter {
           ],
         ),
         AdaptiveRoute(
+          page: InventoryAddItemRoute.page,
+        ),
+        AdaptiveRoute(
           initial: true,
           page: SelectCharacterRoute.page,
         ),

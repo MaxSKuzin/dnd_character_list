@@ -43,6 +43,52 @@ class Inventory {
     );
   }
 
+  Inventory removeItem(InventoryItem item) {
+    return copyWith(
+      items: items
+          .map((e) {
+            if (e == item) {
+              final newQuantity = e.quantity - 1;
+              if (newQuantity == 0) {
+                return null;
+              }
+              return InventoryItem(
+                quantity: newQuantity,
+                item: e.item,
+              );
+            }
+            return e;
+          })
+          .whereNotNull()
+          .toList(),
+    );
+  }
+
+  Inventory addItemQuantity(InventoryItem item) {
+    return copyWith(
+      items: items.map((e) {
+        if (e == item) {
+          final newQuantity = e.quantity + 1;
+          return InventoryItem(
+            quantity: newQuantity,
+            item: e.item,
+          );
+        }
+        return e;
+      }).toList(),
+    );
+  }
+
+  Inventory addItem(InventoryItem item) {
+    final existingItem = items.firstWhereOrNull((e) => e.item == item.item);
+    if (existingItem != null) {
+      return addItemQuantity(existingItem);
+    }
+    return copyWith(
+      items: [...items, item],
+    );
+  }
+
   Inventory copyWith({
     Balance? balance,
     List<InventoryItem>? items,

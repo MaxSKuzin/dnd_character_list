@@ -38,4 +38,3 @@ class InventoryToolWidget extends StatelessWidget {
     );
   }
 }
-

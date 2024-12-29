@@ -8,7 +8,7 @@ class Armor {
   final ArmorKind kind;
   final bool stealthDisadvantage;
 
-  const Armor._({
+  const Armor({
     required this.kind,
     required this.weight,
     required this.name,
@@ -47,7 +47,7 @@ class Armor {
         'stealthDisadvantage': stealthDisadvantage,
       };
 
-  factory Armor.fromJson(Map<String, dynamic> json) => Armor._(
+  factory Armor.fromJson(Map<String, dynamic> json) => Armor(
         kind: ArmorKind.values[json['kind']],
         weight: json['weight'],
         name: json['name'],
@@ -57,7 +57,7 @@ class Armor {
       );
 
   //light armor
-  factory Armor.quilted() => const Armor._(
+  factory Armor.quilted() => const Armor(
         name: 'Стеганый',
         kind: ArmorKind.light,
         protection: 11,
@@ -66,7 +66,7 @@ class Armor {
         stealthDisadvantage: true,
       );
 
-  factory Armor.leather() => const Armor._(
+  factory Armor.leather() => const Armor(
         name: 'Кожаный',
         kind: ArmorKind.light,
         protection: 11,
@@ -74,7 +74,7 @@ class Armor {
         dexterityLimit: null,
       );
 
-  factory Armor.studdedLeather() => const Armor._(
+  factory Armor.studdedLeather() => const Armor(
         name: 'Проклёпанный кожаный',
         kind: ArmorKind.light,
         protection: 12,
@@ -83,7 +83,7 @@ class Armor {
       );
 
   // medium armor
-  factory Armor.fur() => const Armor._(
+  factory Armor.fur() => const Armor(
         name: 'Шкурный',
         kind: ArmorKind.medium,
         protection: 12,
@@ -91,7 +91,7 @@ class Armor {
         dexterityLimit: 2,
       );
 
-  factory Armor.mailShirt() => const Armor._(
+  factory Armor.mailShirt() => const Armor(
         name: 'Кольчужная рубаха',
         kind: ArmorKind.medium,
         protection: 14,
@@ -99,7 +99,7 @@ class Armor {
         dexterityLimit: 2,
       );
 
-  factory Armor.scaly() => const Armor._(
+  factory Armor.scaly() => const Armor(
         name: 'Чешуйчатый',
         kind: ArmorKind.medium,
         protection: 14,
@@ -108,7 +108,7 @@ class Armor {
         stealthDisadvantage: true,
       );
 
-  factory Armor.cuirass() => const Armor._(
+  factory Armor.cuirass() => const Armor(
         name: 'Кираса',
         kind: ArmorKind.medium,
         protection: 14,
@@ -116,7 +116,7 @@ class Armor {
         dexterityLimit: 2,
       );
 
-  factory Armor.halfArmor() => const Armor._(
+  factory Armor.halfArmor() => const Armor(
         name: 'Полулаты',
         kind: ArmorKind.medium,
         protection: 15,
@@ -126,7 +126,7 @@ class Armor {
       );
 
   // heavy armor
-  factory Armor.ringed() => const Armor._(
+  factory Armor.ringed() => const Armor(
         name: 'Колечный',
         kind: ArmorKind.heavy,
         protection: 14,
@@ -135,7 +135,7 @@ class Armor {
         stealthDisadvantage: true,
       );
 
-  factory Armor.chainmail() => const Armor._(
+  factory Armor.chainmail() => const Armor(
         name: 'Кольчуга',
         kind: ArmorKind.heavy,
         protection: 16,
@@ -144,7 +144,7 @@ class Armor {
         stealthDisadvantage: true,
       );
 
-  factory Armor.stacked() => const Armor._(
+  factory Armor.stacked() => const Armor(
         name: 'Наборный',
         kind: ArmorKind.heavy,
         protection: 17,
@@ -153,7 +153,7 @@ class Armor {
         stealthDisadvantage: true,
       );
 
-  factory Armor.plate() => const Armor._(
+  factory Armor.plate() => const Armor(
         name: 'Латы',
         kind: ArmorKind.heavy,
         protection: 18,
