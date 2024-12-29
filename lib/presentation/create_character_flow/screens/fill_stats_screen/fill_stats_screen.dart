@@ -15,6 +15,7 @@ class FillStatsScreen extends StatefulWidget {
   final Function(Map<StatKind, int> stats)? onStatsFilled;
   final bool canSpendOnOneStat;
   final String? title;
+  final List<StatKind> forbiddenStats;
 
   const FillStatsScreen({
     super.key,
@@ -23,6 +24,7 @@ class FillStatsScreen extends StatefulWidget {
     this.canSpendOnOneStat = true,
     this.maxPoints = 27,
     this.initialStats = const {},
+    this.forbiddenStats = const [],
     this.onStatsFilled,
   });
 
@@ -84,9 +86,11 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                         (e) => EnterStatWidget(
                           statKind: e.key,
                           value: e.value,
-                          canAdd: widget.isInitial
-                              ? e.value < 15 && (e.value >= 13 && points > 1 || e.value < 13)
-                              : e.value < 20 && (widget.canSpendOnOneStat || e.value <= widget.initialStats[e.key]!),
+                          canAdd: !widget.forbiddenStats.contains(e.key) &&
+                              (widget.isInitial
+                                  ? e.value < 15 && (e.value >= 13 && points > 1 || e.value < 13)
+                                  : e.value < 20 &&
+                                      (widget.canSpendOnOneStat || e.value <= widget.initialStats[e.key]!)),
                           canSubtract: widget.isInitial ? e.value > 8 : e.value > widget.initialStats[e.key]!,
                           onAdd: () {
                             setState(() {
@@ -129,9 +133,11 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                           context.read<CreateCharacterCubit>().setStats(stats);
                           final statsBonus = context.read<CreateCharacterCubit>().race!.additionalStatsCount;
                           if (widget.isInitial && statsBonus > 0) {
+                            final forbiddenStats = context.read<CreateCharacterCubit>().race!.forbiddenStats;
                             context.pushRoute(
                               FillStatsRoute(
                                 maxPoints: statsBonus,
+                                forbiddenStats: forbiddenStats,
                                 initialStats: stats,
                                 isInitial: false,
                                 canSpendOnOneStat: false,

@@ -14,12 +14,16 @@ class SelectSkillsScreen extends StatefulWidget {
   final List<Skill> availableSkills;
   final ClassKind classKind;
   final void Function(List<Skill> skills)? onSkillsSelected;
+  final bool isInitial;
+  final String? title;
 
   const SelectSkillsScreen({
     super.key,
+    this.title,
     required this.classKind,
     required this.availableSkills,
     required this.maxSkills,
+    this.isInitial = false,
     this.onSkillsSelected,
   });
 
@@ -39,10 +43,10 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Навыки',
+              Text(
+                widget.title ?? 'Навыки',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -83,7 +87,29 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
                 onPressed: _selectedSkills.length == widget.maxSkills
                     ? () {
                         if (widget.onSkillsSelected == null) {
-                          context.read<CreateCharacterCubit>().setSkills(_selectedSkills);
+                          final skills = context.read<CreateCharacterCubit>().selectedSkills ?? [];
+                          context.read<CreateCharacterCubit>().setSkills(
+                            [
+                              ...skills,
+                              ..._selectedSkills,
+                            ],
+                          );
+                          if (widget.isInitial) {
+                            final raceSkillCount = context.read<CreateCharacterCubit>().race!.startSkillCount;
+                            final raceSkills = context.read<CreateCharacterCubit>().race!.availableSkills;
+                            if (raceSkillCount > 0) {
+                              context.pushRoute(
+                                SelectSkillsRoute(
+                                  title: 'Расовые навыки',
+                                  classKind: widget.classKind,
+                                  availableSkills: raceSkills,
+                                  maxSkills: raceSkillCount,
+                                ),
+                              );
+                              return;
+                            }
+                          }
+
                           context.router.push(
                             SelectWeaponsRoute(
                               startEquip: widget.classKind.equipment,

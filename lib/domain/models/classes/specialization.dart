@@ -37,10 +37,11 @@ abstract class Specialization {
 
     var protection = player.armor!.protection;
     final limit = player.armor!.dexterityLimit;
+    final dexterityBonus = max(0, player.dexterity.bonus);
     if (limit != null) {
-      protection += min(player.dexterity.bonus, limit);
+      protection += min(dexterityBonus, limit);
     } else {
-      protection += player.dexterity.bonus;
+      protection += dexterityBonus;
     }
 
     return protection;

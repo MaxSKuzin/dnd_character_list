@@ -119,6 +119,7 @@ class FillStatsRoute extends _i24.PageRouteInfo<FillStatsRouteArgs> {
     bool canSpendOnOneStat = true,
     int maxPoints = 27,
     Map<_i26.StatKind, int> initialStats = const {},
+    List<_i26.StatKind> forbiddenStats = const [],
     dynamic Function(Map<_i26.StatKind, int>)? onStatsFilled,
     List<_i24.PageRouteInfo>? children,
   }) : super(
@@ -130,6 +131,7 @@ class FillStatsRoute extends _i24.PageRouteInfo<FillStatsRouteArgs> {
             canSpendOnOneStat: canSpendOnOneStat,
             maxPoints: maxPoints,
             initialStats: initialStats,
+            forbiddenStats: forbiddenStats,
             onStatsFilled: onStatsFilled,
           ),
           initialChildren: children,
@@ -149,6 +151,7 @@ class FillStatsRoute extends _i24.PageRouteInfo<FillStatsRouteArgs> {
         canSpendOnOneStat: args.canSpendOnOneStat,
         maxPoints: args.maxPoints,
         initialStats: args.initialStats,
+        forbiddenStats: args.forbiddenStats,
         onStatsFilled: args.onStatsFilled,
       );
     },
@@ -163,6 +166,7 @@ class FillStatsRouteArgs {
     this.canSpendOnOneStat = true,
     this.maxPoints = 27,
     this.initialStats = const {},
+    this.forbiddenStats = const [],
     this.onStatsFilled,
   });
 
@@ -178,11 +182,13 @@ class FillStatsRouteArgs {
 
   final Map<_i26.StatKind, int> initialStats;
 
+  final List<_i26.StatKind> forbiddenStats;
+
   final dynamic Function(Map<_i26.StatKind, int>)? onStatsFilled;
 
   @override
   String toString() {
-    return 'FillStatsRouteArgs{key: $key, title: $title, isInitial: $isInitial, canSpendOnOneStat: $canSpendOnOneStat, maxPoints: $maxPoints, initialStats: $initialStats, onStatsFilled: $onStatsFilled}';
+    return 'FillStatsRouteArgs{key: $key, title: $title, isInitial: $isInitial, canSpendOnOneStat: $canSpendOnOneStat, maxPoints: $maxPoints, initialStats: $initialStats, forbiddenStats: $forbiddenStats, onStatsFilled: $onStatsFilled}';
   }
 }
 
@@ -690,18 +696,22 @@ class SelectRaceRoute extends _i24.PageRouteInfo<void> {
 class SelectSkillsRoute extends _i24.PageRouteInfo<SelectSkillsRouteArgs> {
   SelectSkillsRoute({
     _i25.Key? key,
+    String? title,
     required _i32.ClassKind classKind,
     required List<_i33.Skill> availableSkills,
     required int maxSkills,
+    bool isInitial = false,
     void Function(List<_i33.Skill>)? onSkillsSelected,
     List<_i24.PageRouteInfo>? children,
   }) : super(
           SelectSkillsRoute.name,
           args: SelectSkillsRouteArgs(
             key: key,
+            title: title,
             classKind: classKind,
             availableSkills: availableSkills,
             maxSkills: maxSkills,
+            isInitial: isInitial,
             onSkillsSelected: onSkillsSelected,
           ),
           initialChildren: children,
@@ -715,9 +725,11 @@ class SelectSkillsRoute extends _i24.PageRouteInfo<SelectSkillsRouteArgs> {
       final args = data.argsAs<SelectSkillsRouteArgs>();
       return _i18.SelectSkillsScreen(
         key: args.key,
+        title: args.title,
         classKind: args.classKind,
         availableSkills: args.availableSkills,
         maxSkills: args.maxSkills,
+        isInitial: args.isInitial,
         onSkillsSelected: args.onSkillsSelected,
       );
     },
@@ -727,13 +739,17 @@ class SelectSkillsRoute extends _i24.PageRouteInfo<SelectSkillsRouteArgs> {
 class SelectSkillsRouteArgs {
   const SelectSkillsRouteArgs({
     this.key,
+    this.title,
     required this.classKind,
     required this.availableSkills,
     required this.maxSkills,
+    this.isInitial = false,
     this.onSkillsSelected,
   });
 
   final _i25.Key? key;
+
+  final String? title;
 
   final _i32.ClassKind classKind;
 
@@ -741,11 +757,13 @@ class SelectSkillsRouteArgs {
 
   final int maxSkills;
 
+  final bool isInitial;
+
   final void Function(List<_i33.Skill>)? onSkillsSelected;
 
   @override
   String toString() {
-    return 'SelectSkillsRouteArgs{key: $key, classKind: $classKind, availableSkills: $availableSkills, maxSkills: $maxSkills, onSkillsSelected: $onSkillsSelected}';
+    return 'SelectSkillsRouteArgs{key: $key, title: $title, classKind: $classKind, availableSkills: $availableSkills, maxSkills: $maxSkills, isInitial: $isInitial, onSkillsSelected: $onSkillsSelected}';
   }
 }
 

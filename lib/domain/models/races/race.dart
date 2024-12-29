@@ -1,6 +1,7 @@
 import 'package:dnd_character_list/domain/models/item_with_name.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
+import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/thaumaturgy.dart';
@@ -133,6 +134,21 @@ enum Race with ItemWithName {
             (e) => e.slot == SpellSlot.conspiracy,
           )
           .toList();
+
+  int get startSkillCount => switch (this) {
+        halfElf => 2,
+        _ => 0,
+      };
+
+  List<Skill> get availableSkills => switch (this) {
+        halfElf => Skill.values,
+        _ => [],
+      };
+      
+  List<StatKind> get forbiddenStats => switch(this) {
+    halfElf => [StatKind.charisma],
+    _ => [],
+  };
 }
 
 extension on Map<int, List<Spell>> {

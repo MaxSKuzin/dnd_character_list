@@ -210,6 +210,7 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                                   onContinue: () {
                                     context.pushRoute(
                                       SelectSkillsRoute(
+                                        isInitial: true,
                                         maxSkills: widget.classKind.startSkillCount,
                                         availableSkills: widget.classKind.availableSkills,
                                         classKind: widget.classKind,

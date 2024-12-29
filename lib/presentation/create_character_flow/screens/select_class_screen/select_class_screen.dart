@@ -138,6 +138,7 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
                               onContinue: () {
                                 context.pushRoute(
                                   SelectSkillsRoute(
+                                    isInitial: true,
                                     maxSkills: _selectedClass!.startSkillCount,
                                     availableSkills: _selectedClass!.availableSkills,
                                     classKind: _selectedClass!,

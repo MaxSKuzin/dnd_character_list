@@ -24,7 +24,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
   Race? race;
   ClassKind? _selectedClass;
   List<Spell>? _selectedSpells;
-  List<Skill>? _selectedSkills;
+  List<Skill>? selectedSkills;
   Personality? _personality;
   Background? background;
   List<Tool>? _tools;
@@ -51,7 +51,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
   }
 
   void setSkills(List<Skill> skills) {
-    _selectedSkills = [...skills];
+    selectedSkills = [...skills];
   }
 
   void setInventoryItems(List<InventoryItem> items) {
@@ -134,7 +134,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
       intelligence: _stats![StatKind.intelligence]!,
       strength: _stats![StatKind.strength]!,
       wisdom: _stats![StatKind.wisdom]!,
-      chosenSkills: _selectedSkills!,
+      chosenSkills: selectedSkills!,
       race: race!,
       mainWeapon: null,
       secondWeapon: null,
