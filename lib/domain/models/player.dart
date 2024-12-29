@@ -161,12 +161,14 @@ class Player {
     currentExtras = classExtras ?? maxExtras;
   }
 
-  Map<ClassExtras, int> get maxExtras => classes.where((e) => e.classExtra != null).fold(
+  Map<ClassExtras, int> get maxExtras => classes.where((e) => e.classExtras.isNotEmpty).fold(
         <ClassExtras, int>{},
         (prev, e) {
-          final count = e.getClassExtrasCount(this);
-          if (count > 0) {
-            prev[e.classExtra!] = count;
+          for(final extra in e.classExtras) {
+            final count = e.getClassExtrasCount(this, extra);
+            if (count > 0) {
+              prev[extra] = count;
+            }
           }
           return prev;
         },

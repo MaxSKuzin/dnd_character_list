@@ -60,11 +60,11 @@ abstract class Specialization {
 
   StatKind? get spellKind => null;
 
-  ClassExtras? get classExtra => null;
+  List<ClassExtras> get classExtras => [];
 
-  String get classExtraDescription => '';
+  String classExtraDescription(ClassExtras extra) => '';
 
-  int getClassExtrasCount(Player player) => 0;
+  int getClassExtrasCount(Player player, ClassExtras extra) => 0;
 
   Map<StatKind, int> get statBonuses;
 

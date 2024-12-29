@@ -54,7 +54,7 @@ final class Bard extends Specialization {
   Dice inspirationDice;
 
   @override
-  late String classExtraDescription = '''
+  String classExtraDescription(ClassExtras extra) => '''
 Своими словами или музыкой вы можете вдохновлять других. Для этого вы должны бонусным действием выбрать одно существо, отличное от вас, в пределах 60 футов, которое может вас слышать. Это существо получает кость бардовского вдохновения — ${inspirationDice.name}.
 
 В течение следующих 10 минут это существо может один раз бросить эту кость и добавить результат к проверке характеристики, броску атаки или спасброску, который оно совершает. Существо может принять решение о броске кости вдохновения уже после броска к20, но должно сделать это прежде, чем Мастер объявит результат броска. Как только кость бардовского вдохновения брошена, она исчезает. Существо может иметь только одну такую кость одновременно.
@@ -66,10 +66,10 @@ final class Bard extends Specialization {
   StatKind spellKind = StatKind.charisma;
 
   @override
-  final ClassExtras classExtra = ClassExtras.inspiration;
+  final List<ClassExtras> classExtras = [ClassExtras.inspiration];
 
   @override
-  int getClassExtrasCount(Player player) => player.charisma.bonus;
+  int getClassExtrasCount(Player player, ClassExtras extra) => player.charisma.bonus;
 
   @override
   late List<StatKind> chosenSaveThrows = [

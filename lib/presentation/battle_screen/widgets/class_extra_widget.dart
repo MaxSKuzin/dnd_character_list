@@ -34,7 +34,7 @@ class ClassExtraWidget extends StatelessWidget {
           final description = PlayerModel.getPlayer(context)
               .classes
               .firstWhere(
-                (e) => e.classExtra == extra,
+                (e) => e.classExtras.contains(extra),
               )
               .classExtraDescription;
 
@@ -49,7 +49,7 @@ class ClassExtraWidget extends StatelessWidget {
               ),
               child: _DescriptionDialog(
                 extra: extra,
-                description: description,
+                description: description(extra),
               ),
             ),
           );

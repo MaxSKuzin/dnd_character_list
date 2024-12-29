@@ -31,13 +31,15 @@ final class Barbarian extends Specialization {
   int startHealth = 12;
 
   @override
-  final ClassExtras classExtra = ClassExtras.rage;
+  final List<ClassExtras> classExtras = [
+    ClassExtras.rage,
+  ];
 
   @override
-  int getClassExtrasCount(Player player) => _rageInfoTable[level]!.count;
+  int getClassExtrasCount(Player player, ClassExtras extra) => _rageInfoTable[level]!.count;
 
   @override
-  String get classExtraDescription => '''
+  String classExtraDescription(ClassExtras extra) => '''
 В состоянии ярости вы получаете следующие преимущества, если не носите тяжёлый доспех:
 
   · Вы совершаете с преимуществом проверки и спасброски Силы.
