@@ -8,27 +8,32 @@ import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 enum Race with ItemWithName {
   tiefling,
-  tieflingFaerun;
+  tieflingFaerun,
+  halfElf;
 
   @override
   String get name => switch (this) {
         tiefling => 'Тифлинг',
         tieflingFaerun => 'Тифлинг Фаэруна',
+        halfElf => 'Полуэльф',
       };
 
   List<Language> get knownLanguages => switch (this) {
         tiefling => [Language.common, Language.infernal],
         tieflingFaerun => [Language.common, Language.infernal],
+        halfElf => [Language.common, Language.elvish],
       };
 
   int get additionalLanguagesCount => switch (this) {
         tiefling => 0,
         tieflingFaerun => 0,
+        halfElf => 1,
       };
 
   int get speed => switch (this) {
         tiefling => 30,
         tieflingFaerun => 30,
+        halfElf => 30,
       };
 
   Map<StatKind, int> get statBonuses => switch (this) {
@@ -40,6 +45,15 @@ enum Race with ItemWithName {
             StatKind.dexterity: 2,
             StatKind.intelligence: 1,
           },
+        halfElf => {
+            StatKind.charisma: 2,
+          },
+      };
+
+  int get additionalStatsCount => switch (this) {
+        tiefling => 0,
+        tieflingFaerun => 0,
+        halfElf => 2,
       };
 
   List<Peculiarity> get peculiarities => switch (this) {
@@ -68,6 +82,18 @@ enum Race with ItemWithName {
                   'Персонаж получает скоростью полёта 30 футов, если не носит тяжёлый доспех.',
             ),
           ],
+        halfElf => [
+            const Peculiarity(
+              name: 'Темное зрение',
+              description:
+                  'Благодаря вашей эльфийской крови, вы обладаете превосходным зрением в темноте и при тусклом освещении. На расстоянии в 60 футов вы при тусклом освещении можете видеть так, как будто это яркое освещение, и в темноте так, как будто это тусклое освещение. В темноте вы не можете различать цвета, только оттенки серого.',
+            ),
+            const Peculiarity(
+              name: 'Наследие фей',
+              description:
+                  'Вы совершаете с преимуществом спасброски от состояния «очарованный», и вас невозможно магически усыпить.',
+            ),
+          ],
       };
 
   List<Spell> spellForLevel(int level) => switch (this) {
@@ -81,6 +107,7 @@ enum Race with ItemWithName {
               Thaumaturgy(),
             ],
           },
+        halfElf => <int, List<Spell>>{},
       }
           ._getSpells(level)
           .where(
@@ -99,6 +126,7 @@ enum Race with ItemWithName {
               Thaumaturgy(),
             ],
           },
+        halfElf => <int, List<Spell>>{},
       }
           ._getSpells(level)
           .where(

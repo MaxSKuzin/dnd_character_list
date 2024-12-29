@@ -114,7 +114,9 @@ class CreateCharacterRoute extends _i24.PageRouteInfo<void> {
 class FillStatsRoute extends _i24.PageRouteInfo<FillStatsRouteArgs> {
   FillStatsRoute({
     _i25.Key? key,
+    String? title,
     bool isInitial = true,
+    bool canSpendOnOneStat = true,
     int maxPoints = 27,
     Map<_i26.StatKind, int> initialStats = const {},
     dynamic Function(Map<_i26.StatKind, int>)? onStatsFilled,
@@ -123,7 +125,9 @@ class FillStatsRoute extends _i24.PageRouteInfo<FillStatsRouteArgs> {
           FillStatsRoute.name,
           args: FillStatsRouteArgs(
             key: key,
+            title: title,
             isInitial: isInitial,
+            canSpendOnOneStat: canSpendOnOneStat,
             maxPoints: maxPoints,
             initialStats: initialStats,
             onStatsFilled: onStatsFilled,
@@ -140,7 +144,9 @@ class FillStatsRoute extends _i24.PageRouteInfo<FillStatsRouteArgs> {
           orElse: () => const FillStatsRouteArgs());
       return _i3.FillStatsScreen(
         key: args.key,
+        title: args.title,
         isInitial: args.isInitial,
+        canSpendOnOneStat: args.canSpendOnOneStat,
         maxPoints: args.maxPoints,
         initialStats: args.initialStats,
         onStatsFilled: args.onStatsFilled,
@@ -152,7 +158,9 @@ class FillStatsRoute extends _i24.PageRouteInfo<FillStatsRouteArgs> {
 class FillStatsRouteArgs {
   const FillStatsRouteArgs({
     this.key,
+    this.title,
     this.isInitial = true,
+    this.canSpendOnOneStat = true,
     this.maxPoints = 27,
     this.initialStats = const {},
     this.onStatsFilled,
@@ -160,7 +168,11 @@ class FillStatsRouteArgs {
 
   final _i25.Key? key;
 
+  final String? title;
+
   final bool isInitial;
+
+  final bool canSpendOnOneStat;
 
   final int maxPoints;
 
@@ -170,7 +182,7 @@ class FillStatsRouteArgs {
 
   @override
   String toString() {
-    return 'FillStatsRouteArgs{key: $key, isInitial: $isInitial, maxPoints: $maxPoints, initialStats: $initialStats, onStatsFilled: $onStatsFilled}';
+    return 'FillStatsRouteArgs{key: $key, title: $title, isInitial: $isInitial, canSpendOnOneStat: $canSpendOnOneStat, maxPoints: $maxPoints, initialStats: $initialStats, onStatsFilled: $onStatsFilled}';
   }
 }
 

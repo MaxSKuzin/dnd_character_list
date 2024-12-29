@@ -48,7 +48,6 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                   child: Column(
                     children: [
                       TapRegion(
-                        onTapOutside: (_) => FocusScope.of(context).unfocus(),
                         child: TextFormField(
                           autofocus: true,
                           controller: _nameController,
@@ -60,7 +59,6 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                       ),
                       const Gap(16),
                       TapRegion(
-                        onTapOutside: (_) => FocusScope.of(context).unfocus(),
                         child: TextFormField(
                           autofocus: true,
                           controller: _hairController,
@@ -72,7 +70,6 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                       ),
                       const Gap(16),
                       TapRegion(
-                        onTapOutside: (_) => FocusScope.of(context).unfocus(),
                         child: TextFormField(
                           autofocus: true,
                           controller: _eyesController,
@@ -84,7 +81,6 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                       ),
                       const Gap(16),
                       TapRegion(
-                        onTapOutside: (_) => FocusScope.of(context).unfocus(),
                         child: TextFormField(
                           autofocus: true,
                           controller: _skinController,
@@ -96,7 +92,6 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                       ),
                       const Gap(16),
                       TapRegion(
-                        onTapOutside: (_) => FocusScope.of(context).unfocus(),
                         child: TextFormField(
                           autofocus: true,
                           controller: _storyController,
@@ -109,6 +104,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                       const Gap(16),
                       GridView(
                         shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           crossAxisSpacing: 16,
@@ -116,6 +112,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                         children: [
                           GestureDetector(
                             onTap: () async {
+                              FocusScope.of(context).unfocus();
                               final newAge = await EnterNumberDialog.show(
                                 context,
                                 title: 'Возраст',
@@ -158,6 +155,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                           ),
                           GestureDetector(
                             onTap: () async {
+                              FocusScope.of(context).unfocus();
                               final newHeight = await EnterNumberDialog.show(
                                 context,
                                 title: 'Рост',
@@ -200,6 +198,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                           ),
                           GestureDetector(
                             onTap: () async {
+                              FocusScope.of(context).unfocus();
                               final newWeight = await EnterNumberDialog.show(
                                 context,
                                 title: 'Вес',

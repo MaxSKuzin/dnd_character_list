@@ -29,7 +29,9 @@ class CustomInventoryItemWidget extends StatelessWidget {
               vertical: 24,
               horizontal: 32,
             ),
-            child: TextParses(item.description),
+            child: SingleChildScrollView(
+              child: TextParses(item.description),
+            ),
           ),
         ),
       ),

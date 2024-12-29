@@ -13,10 +13,14 @@ class FillStatsScreen extends StatefulWidget {
   final int maxPoints;
   final bool isInitial;
   final Function(Map<StatKind, int> stats)? onStatsFilled;
+  final bool canSpendOnOneStat;
+  final String? title;
 
   const FillStatsScreen({
     super.key,
+    this.title,
     this.isInitial = true,
+    this.canSpendOnOneStat = true,
     this.maxPoints = 27,
     this.initialStats = const {},
     this.onStatsFilled,
@@ -47,6 +51,17 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (widget.title != null) ...[
+                Text(
+                  widget.title!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Gap(8),
+              ],
               Text(
                 'Очки: $points/${widget.maxPoints}',
                 textAlign: TextAlign.center,
@@ -71,7 +86,7 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                           value: e.value,
                           canAdd: widget.isInitial
                               ? e.value < 15 && (e.value >= 13 && points > 1 || e.value < 13)
-                              : e.value < 20,
+                              : e.value < 20 && (widget.canSpendOnOneStat || e.value <= widget.initialStats[e.key]!),
                           canSubtract: widget.isInitial ? e.value > 8 : e.value > widget.initialStats[e.key]!,
                           onAdd: () {
                             setState(() {
@@ -112,7 +127,20 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                           );
                         } else {
                           context.read<CreateCharacterCubit>().setStats(stats);
-                          context.pushRoute(SelectClassRoute(stats: stats));
+                          final statsBonus = context.read<CreateCharacterCubit>().race!.additionalStatsCount;
+                          if (widget.isInitial && statsBonus > 0) {
+                            context.pushRoute(
+                              FillStatsRoute(
+                                maxPoints: statsBonus,
+                                initialStats: stats,
+                                isInitial: false,
+                                canSpendOnOneStat: false,
+                                title: 'Внесите дополнительные очки от расы',
+                              ),
+                            );
+                          } else {
+                            context.pushRoute(SelectClassRoute(stats: stats));
+                          }
                         }
                       }
                     : null,
