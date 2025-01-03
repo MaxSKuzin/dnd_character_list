@@ -107,9 +107,13 @@ class WeaponInfoDialog extends StatelessWidget {
                     'Тип: ${weapon.damageType.name}',
                   ),
                   Text(
-                    'Урон: ${weapon.getRawDamageString()}+(${weapon.isFencing ? 'ловкость/сила' : 'сила'})',
+                    'Урон: ${weapon.getRawDamageString()}+(${weapon.isFencing || weapon.kind.isRanged ? 'ловкость/сила' : 'сила'})',
                   ),
-                  if (weapon.fixedDamage != null)
+                  if (weapon.elementalDamage.isNotEmpty)
+                    Text(
+                      'Доп. урон: ${weapon.elementalDamage.map((e) => '${e.count}${e.damage.name} (${e.type.name})').join(', ')}',
+                    ),
+                  if (weapon.fixedDamage != null && weapon.fixedDamage != 0)
                     Text(
                       'Фиксированный урон: +${weapon.fixedDamage}',
                     ),

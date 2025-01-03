@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/damage_type.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
@@ -35,6 +38,7 @@ class _CreateWeaponSectionState extends State<CreateWeaponSection> with CreateIt
   final _minRangeController = TextEditingController();
   final _twoHandedDamageController = ValueNotifier<Dice>(Dice.k4);
   final _weaponWeightNotifier = ValueNotifier<WeaponWeight>(WeaponWeight.light);
+  final _elementalDamageNotifier = ValueNotifier<List<ElementalDamage>>([]);
 
   @override
   void initState() {
@@ -57,6 +61,7 @@ class _CreateWeaponSectionState extends State<CreateWeaponSection> with CreateIt
     _minRangeController.dispose();
     _twoHandedDamageController.dispose();
     _weaponWeightNotifier.dispose();
+    _elementalDamageNotifier.dispose();
 
     super.dispose();
   }
@@ -131,6 +136,163 @@ class _CreateWeaponSectionState extends State<CreateWeaponSection> with CreateIt
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
             ],
+          ),
+          const Gap(16),
+          ValueListenableBuilder(
+            valueListenable: _elementalDamageNotifier,
+            builder: (context, value, child) => Column(
+              children: [
+                const Text('Элементальный урон'),
+                ...value.mapIndexed(
+                  (index, item) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: context.customColors?.cardColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Stack(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const Text(
+                                'Множитель урона',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      final oldList = [...value];
+                                      oldList[index] = ElementalDamage(
+                                        count: max(item.count - 1, 1),
+                                        type: item.type,
+                                        damage: item.damage,
+                                      );
+                                      _elementalDamageNotifier.value = oldList;
+                                    },
+                                    icon: const Icon(Icons.remove),
+                                  ),
+                                  Text(
+                                    item.count.toString(),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      final oldList = [...value];
+                                      oldList[index] = ElementalDamage(
+                                        count: item.count + 1,
+                                        type: item.type,
+                                        damage: item.damage,
+                                      );
+                                      _elementalDamageNotifier.value = oldList;
+                                    },
+                                    icon: const Icon(Icons.add),
+                                  ),
+                                ],
+                              ),
+                              const Gap(16),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: ElementalType.values
+                                      .map(
+                                        (e) => Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              final oldList = [...value];
+                                              oldList[index] = ElementalDamage(
+                                                count: item.count,
+                                                type: e,
+                                                damage: item.damage,
+                                              );
+                                              _elementalDamageNotifier.value = oldList;
+                                            },
+                                            child: Chip(
+                                              label: Text(e.name),
+                                              color: WidgetStatePropertyAll(
+                                                item.type == e ? context.customColors?.cardColor : Colors.transparent,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
+                              const Gap(16),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: Dice.values
+                                      .map(
+                                        (e) => Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              final oldList = [...value];
+                                              oldList[index] = ElementalDamage(
+                                                count: item.count,
+                                                type: item.type,
+                                                damage: e,
+                                              );
+                                              _elementalDamageNotifier.value = oldList;
+                                            },
+                                            child: Chip(
+                                              label: Text(e.name),
+                                              color: WidgetStatePropertyAll(
+                                                item.damage == e ? context.customColors?.cardColor : Colors.transparent,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                              onPressed: () {
+                                final oldList = [...value];
+                                oldList.removeAt(index);
+                                _elementalDamageNotifier.value = oldList;
+                              },
+                              icon: const Icon(Icons.close),
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  onPressed: () {
+                    _elementalDamageNotifier.value = [
+                      ...value,
+                      ElementalDamage(
+                        count: 1,
+                        type: ElementalType.fire,
+                        damage: Dice.k4,
+                      ),
+                    ];
+                  },
+                  icon: const Icon(Icons.add),
+                ),
+              ],
+            ),
           ),
           ValueListenableBuilder(
             valueListenable: _typeNotifier,
@@ -331,6 +493,7 @@ class _CreateWeaponSectionState extends State<CreateWeaponSection> with CreateIt
       minRange: int.tryParse(_minRangeController.text),
       twoHandedDamage: _typeNotifier.value == WeaponType.universal ? _twoHandedDamageController.value : null,
       weaponWeight: _weaponWeightNotifier.value,
+      elementalDamage: _elementalDamageNotifier.value.toList(),
     );
   }
 }

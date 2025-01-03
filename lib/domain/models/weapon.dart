@@ -21,6 +21,7 @@ class Weapon {
   final int? maxRange;
   final bool isFencing;
   final int? fixedDamage;
+  final List<ElementalDamage> elementalDamage;
 
   const Weapon({
     required this.name,
@@ -28,6 +29,7 @@ class Weapon {
     required this.damageType,
     required this.kind,
     required this.type,
+    this.elementalDamage = const [],
     this.fixedDamage,
     this.damageMultiplier = 1,
     this.isFencing = false,
@@ -39,7 +41,7 @@ class Weapon {
 
   String getHitString(Player player) {
     int bonus;
-    if (isFencing) {
+    if (isFencing || kind.isRanged) {
       bonus = max(player.dexterity.bonus, player.strength.bonus);
     } else {
       bonus = player.strength.bonus;
@@ -58,29 +60,36 @@ class Weapon {
     required bool isMain,
   }) {
     int bonus;
-    if (isFencing) {
+    if (isFencing || kind.isRanged) {
       bonus = max(player.dexterity.bonus, player.strength.bonus);
     } else {
       bonus = player.strength.bonus;
     }
+    var elementalDamage = this.elementalDamage.fold<String>(
+          '',
+          (previousValue, element) => '$previousValue + ${element.count}${element.damage.name}',
+        );
+    if (elementalDamage.isNotEmpty) {
+      elementalDamage = elementalDamage;
+    }
     if (isTwoHanded && type == WeaponType.universal) {
       final damageValue = (fixedDamage ?? 0) + bonus;
-      return '$damageMultiplier${twoHandedDamage!.name}${damageValue != 0 ? '+$damageValue' : ''}';
+      return '$damageMultiplier${twoHandedDamage!.name}$elementalDamage${damageValue != 0 ? ' + $damageValue' : ''}';
     } else {
       if (!isMain && !player.canUseTwoWeapons) {
         bonus = 0;
       }
 
       final damageValue = (fixedDamage ?? 0) + bonus;
-      return '$damageMultiplier${damage.name}${damageValue != 0 ? '+$damageValue' : ''}';
+      return '$damageMultiplier${damage.name}$elementalDamage${damageValue != 0 ? ' + $damageValue' : ''}';
     }
   }
 
   String getRawDamageString({bool isTwoHanded = false}) {
     if (isTwoHanded) {
-      return '$damageMultiplier${twoHandedDamage!.name}${fixedDamage != null ? '+$fixedDamage' : ''}';
+      return '$damageMultiplier${twoHandedDamage!.name}${(fixedDamage ?? 0) != 0 ? '+$fixedDamage' : ''}';
     } else {
-      return '$damageMultiplier${damage.name}${fixedDamage != null ? '+$fixedDamage' : ''}';
+      return '$damageMultiplier${damage.name}${(fixedDamage ?? 0) != 0 ? '+$fixedDamage' : ''}';
     }
   }
 
@@ -259,3 +268,62 @@ final availableWeapons = [
   Weapon.longBow(),
   Weapon.spear(),
 ];
+
+class ElementalDamage {
+  final ElementalType type;
+  final Dice damage;
+  final int count;
+
+  const ElementalDamage({
+    required this.type,
+    required this.damage,
+    required this.count,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (other is ElementalDamage) {
+      return type == other.type && damage == other.damage && count == other.count;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => Object.hashAll([type, damage, count]);
+
+  Map<String, dynamic> toJson() => {
+        'type': type.index,
+        'damage': damage.toJson(),
+        'count': count,
+      };
+
+  factory ElementalDamage.fromJson(Map<String, dynamic> json) => ElementalDamage(
+        type: ElementalType.values[json['type']],
+        damage: Dice.fromJson(json['damage']),
+        count: json['count'],
+      );
+}
+
+enum ElementalType {
+  fire,
+  cold,
+  acid,
+  lightning,
+  thunder,
+  poison,
+  necrotic,
+  radiant,
+  psychic;
+
+  String get name => switch (this) {
+        ElementalType.fire => 'Огонь',
+        ElementalType.cold => 'Холод',
+        ElementalType.acid => 'Кислота',
+        ElementalType.lightning => 'Молния',
+        ElementalType.thunder => 'Гром',
+        ElementalType.poison => 'Яд',
+        ElementalType.necrotic => 'Некротический',
+        ElementalType.radiant => 'Лучистый',
+        ElementalType.psychic => 'Психический',
+      };
+}
