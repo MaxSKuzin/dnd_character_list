@@ -1,5 +1,7 @@
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
+import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/presentation/common/widgets/text_parser/text_parses_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,13 +47,19 @@ class PeculiarityWidget extends StatelessWidget {
   }
 }
 
-class _DialogInfo extends StatelessWidget {
+class _DialogInfo extends StatefulWidget {
   final Peculiarity classAbility;
 
   const _DialogInfo({
-    super.key,
     required this.classAbility,
   });
+
+  @override
+  State<_DialogInfo> createState() => _DialogInfoState();
+}
+
+class _DialogInfoState extends State<_DialogInfo> {
+  late SpellSlot? _slot = widget.classAbility.manaRequired;
 
   @override
   Widget build(BuildContext context) {
@@ -61,34 +69,82 @@ class _DialogInfo extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            classAbility.name,
+            widget.classAbility.name,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
           ),
+          if (widget.classAbility.manaRequired != null) ...[
+            const Gap(8),
+            const Text('Ячейка'),
+            const Gap(8),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: SpellSlot.values
+                  .where(
+                (e) => e.index >= widget.classAbility.manaRequired!.index,
+              )
+                  .map((e) {
+                return GestureDetector(
+                  onTap: () => setState(() {
+                    _slot = e;
+                  }),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: e == _slot ? Colors.white : Colors.grey,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    child: Text(
+                      '${e.index}',
+                      style: TextStyle(
+                        color: e == _slot ? Colors.white : Colors.grey,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const Gap(8),
+          ],
           const Gap(8),
           Flexible(
             child: SingleChildScrollView(
-              child: TextParses(
-                classAbility.description.trim(),
+              child: Column(
+                children: [
+                  TextParses(
+                    widget.classAbility.description.trim(),
+                  ),
+                  if (_slot != null)
+                    TextParses(
+                      '\n${widget.classAbility.magicDescription(_slot!)}',
+                    ),
+                ],
               ),
             ),
           ),
-          if (classAbility.manaRequired != null)
-            Column(
-              children: [
-                const Gap(8),
-                OutlinedButton(
-                  onPressed: () {
-                    context.read<PlayerCubit>().spendMana(
-                          classAbility.manaRequired!.mana,
-                        );
-                    Navigator.pop(context);
-                  },
-                  child: Text('Использовать (${classAbility.manaRequired!.mana} маны)'),
-                ),
-              ],
+          if (_slot != null)
+            BlocBuilder<PlayerCubit, Player>(
+              builder: (context, state) => Column(
+                children: [
+                  const Gap(8),
+                  OutlinedButton(
+                    onPressed: state.currentMana >= _slot!.mana
+                        ? () {
+                            context.read<PlayerCubit>().spendMana(
+                                  _slot!.mana,
+                                );
+                            Navigator.pop(context);
+                          }
+                        : null,
+                    child: Text('Использовать (${_slot!.mana} маны)'),
+                  ),
+                ],
+              ),
             ),
         ],
       ),

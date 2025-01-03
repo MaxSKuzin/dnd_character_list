@@ -47,7 +47,7 @@ class DancingLights extends Spell {
   int? get durationInRounds => null;
 
   @override
-  String description(Player player, Specialization spec) => rawDescription;
+  String description(Player player, Specialization spec, SpellSlot slotToUse) => rawDescription;
 
   @override
   String get rawDescription =>

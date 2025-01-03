@@ -46,7 +46,7 @@ class FireBolt extends Spell {
   int? durationInRounds;
 
   @override
-  String description(Player player, Specialization spec) {
+  String description(Player player, Specialization spec, SpellSlot slotToUse) {
     final diceCount = spec.level >= 5
         ? 2
         : spec.level >= 11

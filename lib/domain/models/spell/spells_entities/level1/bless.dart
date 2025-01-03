@@ -45,9 +45,28 @@ class Bless extends Spell {
   SpellSlot slot = SpellSlot.level1;
 
   @override
-  String description(Player player, Specialization spec) => rawDescription;
+  bool get hasEffectOnHigherLevels => true;
+
+  @override
+  String description(Player player, Specialization spec, SpellSlot slotToUse) {
+    final String count = switch (slotToUse) {
+      SpellSlot.level1 => 'трёх',
+      SpellSlot.level2 => 'четырёх',
+      SpellSlot.level3 => 'пяти',
+      SpellSlot.level4 => 'шести',
+      SpellSlot.level5 => 'семи',
+      SpellSlot.level6 => 'восьми',
+      SpellSlot.level7 => 'девяти',
+      SpellSlot.level8 => 'десяти',
+      SpellSlot.level9 => 'одиннадцати',
+      _ => throw UnimplementedError()
+    };
+    return '''Вы благословляете до $count существ на свой выбор в пределах дистанции. Каждый раз, когда до окончания заклинания цель совершает бросок атаки или спасбросок, она может бросить <b>к4</b> и добавить выпавшее число к результату.''';
+  }
 
   @override
   String get rawDescription =>
-      '''Вы благословляете до трёх существ на свой выбор в пределах дистанции. Каждый раз, когда до окончания заклинания цель совершает бросок атаки или спасбросок, она может бросить к4 и добавить выпавшее число к результату.''';
+      '''Вы благословляете до трёх существ на свой выбор в пределах дистанции. Каждый раз, когда до окончания заклинания цель совершает бросок атаки или спасбросок, она может бросить <b>к4</b> и добавить выпавшее число к результату.
+      
+      <b>На больших уровнях</b>. Если вы накладываете это заклинание, используя ячейку 2-го уровня или выше, вы можете сделать целью одно дополнительное существо за каждый уровень ячейки выше 1-го.''';
 }

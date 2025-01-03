@@ -45,9 +45,9 @@ class ShieldOfFaith extends Spell {
   SpellSlot slot = SpellSlot.level1;
 
   @override
-  String description(Player player, Specialization spec) => rawDescription;
+  String description(Player player, Specialization spec, SpellSlot slotToUse) => rawDescription;
 
   @override
   String get rawDescription =>
-      '''Появляется мерцающее поле, окружающее существо, выбранное вами в пределах дистанции, даруя ему на время длительности бонус +2 к КД.''';
+      '''Появляется мерцающее поле, окружающее существо, выбранное вами в пределах дистанции, даруя ему на время длительности бонус <b>+2</b> к КД.''';
 }

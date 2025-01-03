@@ -46,7 +46,7 @@ class MinorIllusion extends Spell {
   int? get durationInRounds => null;
 
   @override
-  String description(Player player, Specialization spec) {
+  String description(Player player, Specialization spec, SpellSlot slotToUse) {
     final spellKind = spec.spellKind;
     final spellStat = player.spellKinds.firstWhere((e) => e.statKind == spellKind);
     return '''Вы создаёте звук или образ предмета в пределах дистанции, существующий, пока активно заклинание. Иллюзия также оканчивается, если вы отпустите её действием или используете это заклинание ещё раз.

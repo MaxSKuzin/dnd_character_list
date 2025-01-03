@@ -47,7 +47,7 @@ class Message extends Spell {
   int? get durationInRounds => 1;
 
   @override
-  String description(Player player, Specialization spec) => rawDescription;
+  String description(Player player, Specialization spec, SpellSlot slotToUse) => rawDescription;
 
   @override
   String get rawDescription =>

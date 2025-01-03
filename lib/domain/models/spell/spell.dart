@@ -7,7 +7,7 @@ import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_time.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/conspiracies.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/spells_level_1.dart';
-import 'package:dnd_character_list/domain/models/spell/spells_entities/level2/spells_level_w.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level2/spells_level_2.dart';
 
 abstract class Spell {
   Spell();
@@ -24,7 +24,7 @@ abstract class Spell {
 
   bool get isConcentration;
 
-  String description(Player player, Specialization spec);
+  String description(Player player, Specialization spec, SpellSlot slotToUse);
 
   String get rawDescription;
 
@@ -37,6 +37,8 @@ abstract class Spell {
   int get timeToCast;
 
   bool get isRitual => false;
+
+  bool get hasEffectOnHigherLevels => false;
 
   @override
   bool operator ==(Object other) {

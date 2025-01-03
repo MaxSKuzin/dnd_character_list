@@ -6,7 +6,7 @@ import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/conspiracies.dart';
 import 'package:dnd_character_list/domain/models/spell/spells_entities/level1/spells_level_1.dart';
-import 'package:dnd_character_list/domain/models/spell/spells_entities/level2/spells_level_w.dart';
+import 'package:dnd_character_list/domain/models/spell/spells_entities/level2/spells_level_2.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_info_dialog.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_widget.dart';
@@ -173,7 +173,7 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                                   context,
                                   canDrainMana: false,
                                   spell: e,
-                                  spellDescription: e.rawDescription,
+                                  spellDescription: (_) => e.rawDescription,
                                 ),
                                 icon: const Icon(Icons.info),
                               ),

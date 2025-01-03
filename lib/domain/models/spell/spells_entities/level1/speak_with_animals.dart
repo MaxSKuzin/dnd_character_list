@@ -44,7 +44,7 @@ class SpeakWithAnimals extends Spell {
   SpellSlot slot = SpellSlot.level1;
 
   @override
-  String description(Player player, Specialization spec) => rawDescription;
+  String description(Player player, Specialization spec, SpellSlot slotToUse) => rawDescription;
 
   @override
   String get rawDescription =>

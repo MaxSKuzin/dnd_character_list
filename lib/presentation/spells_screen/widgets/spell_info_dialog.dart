@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class SpellInfoDialog extends StatelessWidget {
+class SpellInfoDialog extends StatefulWidget {
   static Future<void> show(
     BuildContext context, {
     required Spell spell,
-    required String spellDescription,
+    required String Function(SpellSlot slot) spellDescription,
     bool canDrainMana = true,
   }) async {
     await showDialog(
@@ -27,7 +27,7 @@ class SpellInfoDialog extends StatelessWidget {
           child: SpellInfoDialog(
             spell: spell,
             canDrainMana: canDrainMana,
-            spellDescription: spellDescription,
+            spellDescription:  spellDescription,
           ),
         );
         return canDrainMana
@@ -41,7 +41,7 @@ class SpellInfoDialog extends StatelessWidget {
   }
 
   final Spell spell;
-  final String spellDescription;
+  final String Function(SpellSlot slot) spellDescription;
   final bool canDrainMana;
 
   const SpellInfoDialog({
@@ -52,6 +52,13 @@ class SpellInfoDialog extends StatelessWidget {
   });
 
   @override
+  State<SpellInfoDialog> createState() => _SpellInfoDialogState();
+}
+
+class _SpellInfoDialogState extends State<SpellInfoDialog> {
+  late SpellSlot? _slot = widget.spell.slot;
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -59,16 +66,51 @@ class SpellInfoDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            spell.name,
+            widget.spell.name,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
           ),
-          if (spell.slot != SpellSlot.conspiracy)
+          if (widget.spell.slot != SpellSlot.conspiracy)
             Text(
-              '${spell.slot.mana} маны',
+              '${_slot?.mana ?? widget.spell.slot.mana} маны',
             ),
+          if (widget.spell.hasEffectOnHigherLevels) ...[
+            const Gap(8),
+            const Text('Ячейка'),
+            const Gap(8),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: SpellSlot.values
+                  .where(
+                (e) => e.index >= widget.spell.slot.index,
+              )
+                  .map((e) {
+                return GestureDetector(
+                  onTap: () => setState(() {
+                    _slot = e;
+                  }),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: e == _slot ? Colors.white : Colors.grey,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    child: Text(
+                      '${e.index}',
+                      style: TextStyle(
+                        color: e == _slot ? Colors.white : Colors.grey,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
           const Gap(8),
           Flexible(
             child: SingleChildScrollView(
@@ -77,14 +119,14 @@ class SpellInfoDialog extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextParses(
-                    spellDescription.trim(),
+                    widget.spellDescription(_slot ?? widget.spell.slot).trim(),
                   ),
-                  if (canDrainMana && spell.slot != SpellSlot.conspiracy) ...[
+                  if (widget.canDrainMana && widget.spell.slot != SpellSlot.conspiracy) ...[
                     const Gap(16),
                     BlocBuilder<PlayerCubit, Player>(
                       builder: (context, state) => FilledButton(
-                        onPressed: state.currentMana >= spell.slot.mana
-                            ? () => context.read<PlayerCubit>().spendMana(spell.slot.mana)
+                        onPressed: state.currentMana >= (_slot?.mana ?? widget.spell.slot.mana)
+                            ? () => context.read<PlayerCubit>().spendMana(_slot?.mana ?? widget.spell.slot.mana)
                             : null,
                         child: const Text('Использовать'),
                       ),

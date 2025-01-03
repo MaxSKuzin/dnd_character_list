@@ -46,7 +46,7 @@ class ChillTouch extends Spell {
   int durationInRounds = 1;
 
   @override
-  String description(Player player, Specialization spec) {
+  String description(Player player, Specialization spec, SpellSlot slotToUse) {
     final diceCount = spec.level >= 5
         ? 2
         : spec.level >= 11

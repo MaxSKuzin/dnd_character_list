@@ -24,7 +24,7 @@ class Mending extends Spell {
   ];
 
   @override
-  Duration duration =  Duration.zero;
+  Duration duration = Duration.zero;
 
   @override
   SpellTime castTimeType = SpellTime.minute;
@@ -49,7 +49,7 @@ class Mending extends Spell {
   int? get durationInRounds => null;
 
   @override
-  String description(Player player, Specialization spec) => rawDescription;
+  String description(Player player, Specialization spec, SpellSlot slotToUse) => rawDescription;
 
   @override
   String get rawDescription =>

@@ -44,7 +44,7 @@ class EldritchBlast extends Spell {
   int? durationInRounds;
 
   @override
-  String description(Player player, Specialization spec) {
+  String description(Player player, Specialization spec, SpellSlot slotToUse) {
     final raysCount = spec.level >= 5
         ? 2
         : spec.level >= 11
