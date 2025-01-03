@@ -49,6 +49,7 @@ class Player {
   late final Map<ClassExtras, int> currentExtras;
   final Personality personality;
   final List<Language> _additionalLanguages;
+  final Map<SpellSlot, Spell> raceSpells;
   bool isDead;
 
   final List<Skill> _rawchosenSkills;
@@ -79,6 +80,7 @@ class Player {
     required this.secondRangeWeapon,
     required this.inventory,
     required this.background,
+    required this.raceSpells,
     Map<ClassExtras, int>? classExtras,
     DeathThrows? deathThrows,
     int? hits,
@@ -642,6 +644,7 @@ class Player {
     Weapon? Function()? mainRangeWeapon,
     Weapon? Function()? secondRangeWeapon,
     Inventory? inventory,
+    Map<SpellSlot, Spell>? raceSpells,
   }) =>
       Player(
         inventory: inventory ?? this.inventory,
@@ -665,6 +668,7 @@ class Player {
         secondWeapon: secondWeapon != null ? secondWeapon() : this.secondWeapon,
         mainRangeWeapon: mainRangeWeapon != null ? mainRangeWeapon() : this.mainRangeWeapon,
         secondRangeWeapon: secondRangeWeapon != null ? secondRangeWeapon() : this.secondRangeWeapon,
+        raceSpells: raceSpells ?? this.raceSpells,
         race: race,
         background: background,
         knownLanguages: _additionalLanguages,
@@ -690,6 +694,12 @@ class Player {
         'inventory': inventory.toJson(),
         'background': background.index,
         'knownLanguages': _additionalLanguages.map((e) => e.index).toList(),
+        'raceSpells': raceSpells.map(
+          (key, value) => MapEntry(
+            key.index.toString(),
+            value.toJson(),
+          ),
+        ),
       };
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
@@ -712,5 +722,10 @@ class Player {
         shield: json['shield'] != null ? Shield.fromJson(json['shield']) : null,
         background: Background.values[json['background']],
         knownLanguages: (json['knownLanguages'] as List).map((e) => Language.values[e]).toList(),
+        raceSpells: json['raceSpells'] != null
+            ? (json['raceSpells'] as Map).map(
+                (key, value) => MapEntry(SpellSlot.values[int.parse(key)], Spell.fromJson(value)),
+              )
+            : {},
       );
 }

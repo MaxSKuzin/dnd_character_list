@@ -9,6 +9,7 @@ import 'package:dnd_character_list/domain/models/player_skill.dart';
 import 'package:dnd_character_list/domain/models/save_throw.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_stat.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
@@ -34,6 +35,7 @@ enum PlayerAspect {
   classes,
   spells,
   shield,
+  raceSpells,
 }
 
 class PlayerModel extends InheritedModel<PlayerAspect> {
@@ -98,6 +100,11 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     }
     if (dependencies.contains(PlayerAspect.classes)) {
       update |= !oldWidget.player.classes.equals(player.classes);
+    }
+    if (dependencies.contains(PlayerAspect.raceSpells)) {
+      player.raceSpells.forEach((key, value) {
+        update |= oldWidget.player.raceSpells[key] != value;
+      });
     }
     if (dependencies.contains(PlayerAspect.spells)) {
       player.spells.forEach((key, value) {
@@ -207,5 +214,9 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
 
   static Shield? shield(BuildContext context) {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.shield)!.player.shield;
+  }
+
+  static Map<SpellSlot, Spell> raceSpells(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.raceSpells)!.player.raceSpells;
   }
 }

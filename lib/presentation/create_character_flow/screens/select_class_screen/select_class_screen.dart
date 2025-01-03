@@ -121,14 +121,12 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
                           ).bonus,
                         );
                         context.read<CreateCharacterCubit>().setClass(_selectedClass!);
-                        final knownSpells = context.read<CreateCharacterCubit>().race!.conspiracyForLevel(1);
                         if (_selectedClass!.knownConspiracies(1) > 0 || knownSpellsCount > 0) {
                           context.pushRoute(
                             SelectSpellsRoute(
                               classKind: _selectedClass!,
                               maxConspiracies: _selectedClass!.knownConspiracies(1),
                               maxSpells: knownSpellsCount,
-                              knownSpells: knownSpells,
                             ),
                           );
                         } else {

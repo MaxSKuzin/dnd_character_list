@@ -97,43 +97,20 @@ enum Race with ItemWithName {
           ],
       };
 
-  List<Spell> spellForLevel(int level) => switch (this) {
+  Map<SpellSlot, Spell> spellForLevel(int level) => switch (this) {
         tiefling => {
-            1: [
-              Thaumaturgy(),
-            ],
+            1: {
+              SpellSlot.conspiracy: Thaumaturgy(),
+            },
           },
         tieflingFaerun => {
-            1: [
-              Thaumaturgy(),
-            ],
+            1: {
+              SpellSlot.conspiracy: Thaumaturgy(),
+            },
           },
-        halfElf => <int, List<Spell>>{},
+        halfElf => <int, Map<SpellSlot, Thaumaturgy>>{},
       }
-          ._getSpells(level)
-          .where(
-            (e) => e.slot != SpellSlot.conspiracy,
-          )
-          .toList();
-
-  List<Spell> conspiracyForLevel(int level) => switch (this) {
-        tiefling => {
-            1: [
-              Thaumaturgy(),
-            ],
-          },
-        tieflingFaerun => {
-            1: [
-              Thaumaturgy(),
-            ],
-          },
-        halfElf => <int, List<Spell>>{},
-      }
-          ._getSpells(level)
-          .where(
-            (e) => e.slot == SpellSlot.conspiracy,
-          )
-          .toList();
+          ._getSpellsMap(level);
 
   int get startSkillCount => switch (this) {
         halfElf => 2,
@@ -144,11 +121,11 @@ enum Race with ItemWithName {
         halfElf => Skill.values,
         _ => [],
       };
-      
-  List<StatKind> get forbiddenStats => switch(this) {
-    halfElf => [StatKind.charisma],
-    _ => [],
-  };
+
+  List<StatKind> get forbiddenStats => switch (this) {
+        halfElf => [StatKind.charisma],
+        _ => [],
+      };
 }
 
 extension on Map<int, List<Spell>> {
@@ -163,5 +140,20 @@ extension on Map<int, List<Spell>> {
       },
     );
     return spells;
+  }
+}
+
+extension on Map<int, Map<SpellSlot, Spell>> {
+  Map<SpellSlot, Spell> _getSpellsMap(int level) {
+    final spells = entries.fold(
+      <MapEntry<SpellSlot, Spell>>[],
+      (previousValue, element) {
+        if (element.key <= level) {
+          return [...previousValue, ...element.value.entries];
+        }
+        return previousValue;
+      },
+    );
+    return Map.fromEntries(spells);
   }
 }

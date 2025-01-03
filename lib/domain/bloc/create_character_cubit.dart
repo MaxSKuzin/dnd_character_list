@@ -123,6 +123,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
       _ => throw UnimplementedError(),
     };
     final player = Player(
+      raceSpells: race!.spellForLevel(1),
       knownLanguages: _languages ?? [],
       background: background!,
       classes: [spec],

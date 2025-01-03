@@ -156,13 +156,26 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
                         );
 
                         final knownConspiraciesCount = classKind.knownConspiracies(newLevel);
+                        final classKnownSpells = selectedClass?.knownSpells
+                                .where(
+                                  (e) => e.slot != SpellSlot.conspiracy,
+                                )
+                                .toList() ??
+                            [];
+                        final classKnownConspiracies = selectedClass?.knownSpells
+                                .where(
+                                  (e) => e.slot == SpellSlot.conspiracy,
+                                )
+                                .toList() ??
+                            [];
+
                         final knownSpells =
                             player.spells.values.expand((e) => e).where((e) => e.slot != SpellSlot.conspiracy).toList();
                         final knownConspiracies =
                             player.spells.values.expand((e) => e).where((e) => e.slot == SpellSlot.conspiracy).toList();
 
-                        final conspiraciesDiff = max(0, knownConspiraciesCount - knownConspiracies.length);
-                        final spellsDiff = max(0, knownSpellsCount - knownSpells.length);
+                        final conspiraciesDiff = max(0, knownConspiraciesCount - classKnownConspiracies.length);
+                        final spellsDiff = max(0, knownSpellsCount - classKnownSpells.length);
 
                         final availableSlots = SpellSlot.getSpellCells(
                           Map.fromEntries(
@@ -231,7 +244,7 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
                           passed = await context.pushRoute(route) ?? false;
                         }
 
-                        final raceSpells = player.race.conspiracyForLevel(player.level + 1);
+                        final raceSpells = player.race.spellForLevel(player.level + 1);
 
                         if (conspiraciesDiff > 0 || spellsDiff > 0) {
                           passed = await context.pushRoute(
@@ -244,13 +257,16 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
                                     ...availableSlots.keys,
                                   ],
                                   knownSpells: [
-                                    ...raceSpells,
                                     ...knownSpells,
                                     ...knownConspiracies,
                                   ],
                                   onSpellsSelected: (spells) {
                                     context.read<LevelUpCubit>().setSpells(
-                                      [...knownSpells, ...knownConspiracies, ...spells],
+                                      [
+                                        ...classKnownSpells,
+                                        ...classKnownConspiracies,
+                                        ...spells,
+                                      ],
                                     );
                                     context.maybePop(true);
                                   },
@@ -260,12 +276,12 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
                         } else {
                           context.read<LevelUpCubit>().setSpells(
                             [
-                              ...knownSpells,
-                              ...knownConspiracies,
-                              ...raceSpells,
+                              ...classKnownSpells,
+                              ...classKnownConspiracies,
                             ],
                           );
                         }
+                        context.read<LevelUpCubit>().setRaceSpells(raceSpells);
                         if (passed) {
                           context.read<LevelUpCubit>().levelUp();
                         }

@@ -38,6 +38,14 @@ class _SpellsScreenState extends State<SpellsScreen> {
         .sorted(
           (a, b) => a.value.slot.compareTo(b.value.slot),
         );
+    final raceSpells = PlayerModel.raceSpells(context)
+        .entries
+        .where(
+          (e) => (selectedSlot != null ? e.value.slot == selectedSlot : true),
+        )
+        .sorted(
+          (a, b) => a.value.slot.compareTo(b.value.slot),
+        );
     return SafeArea(
       child: Column(
         children: [
@@ -111,25 +119,75 @@ class _SpellsScreenState extends State<SpellsScreen> {
           ),
           const Gap(8),
           Expanded(
-            child: ListView.separated(
-              separatorBuilder: (context, index) => const Gap(16),
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              itemCount: availableSpells.length,
-              itemBuilder: (context, index) {
-                final spell = availableSpells[index];
-                return SpellWidget(
-                  onTap: () => SpellInfoDialog.show(
-                    context,
-                    spell: spell.value,
-                    spellDescription: (slot) => spell.value.description(
-                      PlayerModel.getPlayer(context),
-                      spell.key,
-                      slot,
-                    ),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    separatorBuilder: (context, index) => const Gap(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    itemCount: raceSpells.length,
+                    itemBuilder: (context, index) {
+                      final spell = raceSpells[index];
+                      return Stack(
+                        children: [
+                          SpellWidget(
+                            onTap: () => SpellInfoDialog.show(
+                              context,
+                              canChangeSlot: false,
+                              spell: spell.value,
+                              spellDescription: (slot) => spell.value.description(
+                                PlayerModel.getPlayer(context),
+                                PlayerModel.getPlayer(context).classes.first,
+                                spell.key,
+                              ),
+                            ),
+                            spell: spell.value,
+                          ),
+                          const Align(
+                            alignment: Alignment.topRight,
+                            child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Chip(
+                                label: Text(
+                                  'Расовое',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
-                  spell: spell.value,
-                );
-              },
+                  if (raceSpells.isNotEmpty) const Gap(16),
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    separatorBuilder: (context, index) => const Gap(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    itemCount: availableSpells.length,
+                    itemBuilder: (context, index) {
+                      final spell = availableSpells[index];
+                      return SpellWidget(
+                        onTap: () => SpellInfoDialog.show(
+                          context,
+                          spell: spell.value,
+                          spellDescription: (slot) => spell.value.description(
+                            PlayerModel.getPlayer(context),
+                            spell.key,
+                            slot,
+                          ),
+                        ),
+                        spell: spell.value,
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ],

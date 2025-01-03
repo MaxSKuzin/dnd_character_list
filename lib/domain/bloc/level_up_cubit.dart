@@ -10,6 +10,7 @@ import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -23,6 +24,7 @@ class LevelUpCubit extends Cubit<Player?> {
   ClassKind? _classToUpdate;
   bool? _isClassMain;
   List<Spell>? _newSpells;
+  Map<SpellSlot, Spell>? _raceSpells;
 
   List<Skill>? _newSkills;
 
@@ -60,6 +62,10 @@ class LevelUpCubit extends Cubit<Player?> {
 
   void setFightingStyle(FightingStyle fightingStyle) {
     _fightingStyle = fightingStyle;
+  }
+
+  void setRaceSpells(Map<SpellSlot, Spell> spells) {
+    _raceSpells = spells;
   }
 
   void levelUp() async {
@@ -150,7 +156,6 @@ class LevelUpCubit extends Cubit<Player?> {
       case ClassKind.inventor:
       case ClassKind.witch:
       case ClassKind.monk:
-      case ClassKind.paladin:
       case ClassKind.thief:
       case ClassKind.ranger:
       case ClassKind.sorcerer:
@@ -159,6 +164,9 @@ class LevelUpCubit extends Cubit<Player?> {
     Player newPlayer = spec == null ? player.addClass(newClass) : player.levelUp(newClass);
     if (_newSkills != null) {
       newPlayer = newPlayer.copyWith(chosenSkills: _newSkills!);
+    }
+    if (_raceSpells != null) {
+      newPlayer = newPlayer.copyWith(raceSpells: _raceSpells!);
     }
     await _spSource.savePlayer(newPlayer);
     emit(newPlayer);

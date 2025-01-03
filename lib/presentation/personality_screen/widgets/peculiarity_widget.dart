@@ -63,6 +63,18 @@ class _DialogInfoState extends State<_DialogInfo> {
 
   @override
   Widget build(BuildContext context) {
+    final availableSlots = widget.classAbility.manaRequired != null
+        ? context
+            .read<PlayerCubit>()
+            .state
+            .spellCells
+            .entries
+            .where(
+              (e) => e.key.index >= widget.classAbility.manaRequired!.index && e.value > 0,
+            )
+            .map((e) => e.key)
+            .toList()
+        : <SpellSlot>[];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
@@ -75,18 +87,14 @@ class _DialogInfoState extends State<_DialogInfo> {
               fontWeight: FontWeight.w700,
             ),
           ),
-          if (widget.classAbility.manaRequired != null) ...[
+          if (widget.classAbility.manaRequired != null && availableSlots.length > 1) ...[
             const Gap(8),
             const Text('Ячейка'),
             const Gap(8),
             Wrap(
               spacing: 12,
               runSpacing: 12,
-              children: SpellSlot.values
-                  .where(
-                (e) => e.index >= widget.classAbility.manaRequired!.index,
-              )
-                  .map((e) {
+              children: availableSlots.map((e) {
                 return GestureDetector(
                   onTap: () => setState(() {
                     _slot = e;

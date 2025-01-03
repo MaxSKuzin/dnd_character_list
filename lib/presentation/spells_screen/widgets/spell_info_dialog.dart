@@ -13,6 +13,7 @@ class SpellInfoDialog extends StatefulWidget {
     required Spell spell,
     required String Function(SpellSlot slot) spellDescription,
     bool canDrainMana = true,
+    bool canChangeSlot = true,
   }) async {
     await showDialog(
       context: context,
@@ -26,8 +27,9 @@ class SpellInfoDialog extends StatefulWidget {
           ),
           child: SpellInfoDialog(
             spell: spell,
+            canChangeSlot: canChangeSlot,
             canDrainMana: canDrainMana,
-            spellDescription:  spellDescription,
+            spellDescription: spellDescription,
           ),
         );
         return canDrainMana
@@ -43,12 +45,14 @@ class SpellInfoDialog extends StatefulWidget {
   final Spell spell;
   final String Function(SpellSlot slot) spellDescription;
   final bool canDrainMana;
+  final bool canChangeSlot;
 
   const SpellInfoDialog({
     super.key,
     required this.spell,
     required this.canDrainMana,
     required this.spellDescription,
+    this.canChangeSlot = true,
   });
 
   @override
@@ -60,6 +64,16 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final availableSlots = context
+        .read<PlayerCubit>()
+        .state
+        .spellCells
+        .entries
+        .where(
+          (e) => e.key.index >= widget.spell.slot.index && e.value > 0,
+        )
+        .map((e) => e.key)
+        .toList();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
@@ -76,42 +90,38 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
             Text(
               '${_slot?.mana ?? widget.spell.slot.mana} маны',
             ),
-          if (widget.spell.hasEffectOnHigherLevels) ...[
-            const Gap(8),
-            const Text('Ячейка'),
-            const Gap(8),
+          const Gap(8),
+          const Text('Ячейка'),
+          const Gap(8),
+          if (availableSlots.length > 1 && widget.canChangeSlot) ...[
             Wrap(
               spacing: 12,
               runSpacing: 12,
-              children: SpellSlot.values
-                  .where(
-                (e) => e.index >= widget.spell.slot.index,
-              )
-                  .map((e) {
-                return GestureDetector(
-                  onTap: () => setState(() {
-                    _slot = e;
-                  }),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: e == _slot ? Colors.white : Colors.grey,
-                      ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    child: Text(
-                      '${e.index}',
-                      style: TextStyle(
-                        color: e == _slot ? Colors.white : Colors.grey,
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+              children: availableSlots
+                  .map((e) => GestureDetector(
+                        onTap: () => setState(() {
+                          _slot = e;
+                        }),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: e == _slot ? Colors.white : Colors.grey,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          child: Text(
+                            '${e.index}',
+                            style: TextStyle(
+                              color: e == _slot ? Colors.white : Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ))
+                  .toList(),
             ),
+            const Gap(8),
           ],
-          const Gap(8),
           Flexible(
             child: SingleChildScrollView(
               child: Column(
