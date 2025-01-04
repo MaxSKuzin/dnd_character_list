@@ -4,6 +4,7 @@ import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
+import 'package:dnd_character_list/domain/models/classes/thief.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
@@ -118,6 +119,9 @@ class CreateCharacterCubit extends Cubit<Player?> {
           isMain: true,
         ),
       ClassKind.paladin => Paladin.level1(
+          isMain: true,
+        ),
+      ClassKind.thief => Thief.level1(
           isMain: true,
         ),
       _ => throw UnimplementedError(),

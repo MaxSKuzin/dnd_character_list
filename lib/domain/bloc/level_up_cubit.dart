@@ -6,6 +6,7 @@ import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
+import 'package:dnd_character_list/domain/models/classes/thief.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
@@ -149,6 +150,26 @@ class LevelUpCubit extends Cubit<Player?> {
             isMain: _isClassMain!,
           );
         }
+      case ClassKind.thief:
+        {
+          spec as Thief?;
+          final abilities = spec?.baseAbilities ?? [];
+          switch (spec != null ? spec.level + 1 : 1) {
+            case 1:
+              newClass = Thief.level1(
+                isMain: _isClassMain!,
+              );
+              break;
+            case 2:
+              newClass = Thief.level2(
+                isMain: _isClassMain!,
+                abilities: abilities,
+              );
+            default:
+              throw UnimplementedError();
+          }
+          break;
+        }
       case ClassKind.warrior:
       case ClassKind.wizard:
       case ClassKind.driud:
@@ -156,7 +177,6 @@ class LevelUpCubit extends Cubit<Player?> {
       case ClassKind.inventor:
       case ClassKind.witch:
       case ClassKind.monk:
-      case ClassKind.thief:
       case ClassKind.ranger:
       case ClassKind.sorcerer:
         throw UnimplementedError();

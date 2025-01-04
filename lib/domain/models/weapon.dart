@@ -255,6 +255,26 @@ class Weapon {
         kind: WeaponKind.simpleMelee,
         type: WeaponType.universal,
       );
+
+  factory Weapon.shortSword() => Weapon(
+        name: 'Короткий меч',
+        damage: Dice.k6,
+        isFencing: true,
+        weaponWeight: WeaponWeight.light,
+        damageType: DamageType.pricking,
+        kind: WeaponKind.martialMelee,
+        type: WeaponType.oneHanded,
+      );
+
+  factory Weapon.shortBow() => Weapon(
+        name: 'Короткий лук',
+        damage: Dice.k6,
+        damageType: DamageType.pricking,
+        kind: WeaponKind.simpleRanged,
+        type: WeaponType.twoHanded,
+        minRange: 80,
+        maxRange: 320,
+      );
 }
 
 final availableWeapons = [

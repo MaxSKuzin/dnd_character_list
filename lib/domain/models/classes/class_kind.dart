@@ -8,6 +8,7 @@ import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/start_equipment.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/tools/musical_instruments.dart';
+import 'package:dnd_character_list/domain/models/tools/thieves_tools.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/domain/models/weapon_kind.dart';
 
@@ -24,8 +25,7 @@ enum ClassKind {
   paladin,
   thief,
   ranger,
-  sorcerer,
-  ;
+  sorcerer;
 
   StartEquipment get equipment => switch (this) {
         ClassKind.bard => StartEquipment(
@@ -57,53 +57,109 @@ enum ClassKind {
               diplomaSet,
             ],
           ),
-        ClassKind.paladin => StartEquipment([
-            EquipmentToSelect(
-              quantity: 2,
-              items: [
-                ...availableWeapons.where(
-                  (element) => element.kind == WeaponKind.martialMelee || element.kind == WeaponKind.martialRanged,
-                ),
-                Shield.regular(),
-              ]
-                  .map(
-                    (e) => InventoryItem(quantity: 1, item: e),
-                  )
-                  .toList(),
-            ),
-            EquipmentToSelect(
-              quantity: 1,
-              items: [
-                InventoryItem(
-                  quantity: 5,
-                  item: Weapon.throwingSpear(),
-                ),
-                ...availableWeapons
-                    .where(
-                      (element) => element.kind == WeaponKind.simpleMelee && element != Weapon.throwingSpear(),
-                    )
+        ClassKind.paladin => StartEquipment(
+            [
+              EquipmentToSelect(
+                quantity: 2,
+                items: [
+                  ...availableWeapons.where(
+                    (element) => element.kind == WeaponKind.martialMelee || element.kind == WeaponKind.martialRanged,
+                  ),
+                  Shield.regular(),
+                ]
                     .map(
                       (e) => InventoryItem(quantity: 1, item: e),
-                    ),
-              ],
-            ),
-            EquipmentToSelect(
-              quantity: 2,
-              items: [
-                InventoryItem(
-                  quantity: 1,
-                  item: Armor.chainmail(),
-                ),
-                InventoryItem(
-                  quantity: 1,
-                  item: 'Священный символ',
-                ),
-              ],
-            ),
-          ], [
-            travellersSet,
-            priestSet,
-          ]),
+                    )
+                    .toList(),
+              ),
+              EquipmentToSelect(
+                quantity: 1,
+                items: [
+                  InventoryItem(
+                    quantity: 5,
+                    item: Weapon.throwingSpear(),
+                  ),
+                  ...availableWeapons
+                      .where(
+                        (element) => element.kind == WeaponKind.simpleMelee && element != Weapon.throwingSpear(),
+                      )
+                      .map(
+                        (e) => InventoryItem(quantity: 1, item: e),
+                      ),
+                ],
+              ),
+              EquipmentToSelect(
+                quantity: 2,
+                items: [
+                  InventoryItem(
+                    quantity: 1,
+                    item: Armor.chainmail(),
+                  ),
+                  InventoryItem(
+                    quantity: 1,
+                    item: 'Священный символ',
+                  ),
+                ],
+              ),
+            ],
+            [
+              travellersSet,
+              priestSet,
+            ],
+          ),
+        ClassKind.thief => StartEquipment(
+            [
+              EquipmentToSelect(
+                quantity: 1,
+                items: [
+                  InventoryItem(
+                    quantity: 1,
+                    item: Weapon.rapier(),
+                  ),
+                  InventoryItem(
+                    quantity: 1,
+                    item: Weapon.shortSword(),
+                  ),
+                ],
+              ),
+              EquipmentToSelect(
+                quantity: 2,
+                items: [
+                  InventoryItem(
+                    quantity: 1,
+                    item: Weapon.shortBow(),
+                  ),
+                  InventoryItem(
+                    quantity: 20,
+                    item: 'Стрела',
+                  ),
+                  InventoryItem(
+                    quantity: 1,
+                    item: Weapon.shortSword(),
+                  ),
+                ],
+              ),
+              EquipmentToSelect(
+                quantity: 3,
+                items: [
+                  InventoryItem(
+                    quantity: 1,
+                    item: Armor.leather(),
+                  ),
+                  InventoryItem(quantity: 1, item: thievesTools.first),
+                  InventoryItem(
+                    quantity: 2,
+                    item: Weapon.dagger(),
+                  ),
+                ],
+              ),
+            ],
+            [
+              dungeonExplorerSet,
+              bulgartSet,
+              travellersSet,
+            ],
+          ),
         _ => throw UnimplementedError(),
       };
 
@@ -128,6 +184,7 @@ enum ClassKind {
         ClassKind.barbarian => 2,
         ClassKind.wizard => 2,
         ClassKind.paladin => 2,
+        ClassKind.thief => 4,
         _ => throw UnimplementedError(),
       };
 
@@ -157,6 +214,19 @@ enum ClassKind {
             Skill.religion,
             Skill.conviction,
           ],
+        ClassKind.thief => [
+            Skill.acrobatics,
+            Skill.athletics,
+            Skill.perception,
+            Skill.performance,
+            Skill.harassment,
+            Skill.manualDexterity,
+            Skill.fraud,
+            Skill.insight,
+            Skill.investigation,
+            Skill.stealth,
+            Skill.conviction,
+          ],
         _ => throw UnimplementedError(),
       };
 
@@ -165,6 +235,7 @@ enum ClassKind {
         ClassKind.barbarian => 0,
         ClassKind.wizard => max(1, level + statBonus(StatKind.intelligence)),
         ClassKind.paladin => level > 1 ? max(1, level ~/ 2 + statBonus(StatKind.charisma)) : 0,
+        ClassKind.thief => 0,
         _ => throw UnimplementedError(),
       };
 
@@ -181,6 +252,7 @@ enum ClassKind {
             4: 4,
             10: 5,
           }._getValue(level),
+        ClassKind.thief => 0,
         _ => throw UnimplementedError(),
       };
 
@@ -189,11 +261,13 @@ enum ClassKind {
         ClassKind.barbarian => 0,
         ClassKind.wizard => 1,
         ClassKind.paladin => 0.5,
+        ClassKind.thief => 0,
         _ => throw UnimplementedError(),
       };
 
   int getDoubledSkillPoints(int level) => switch (this) {
         ClassKind.bard => level == 3 || level == 10 ? 2 : 0,
+        ClassKind.thief => level == 1 || level == 6 ? 2 : 0,
         _ => 0,
       };
 

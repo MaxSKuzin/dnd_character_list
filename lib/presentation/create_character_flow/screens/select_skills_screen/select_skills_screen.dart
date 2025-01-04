@@ -108,6 +108,18 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
                               );
                               return;
                             }
+                            final additionalSkills = widget.classKind.getDoubledSkillPoints(1);
+                            if (additionalSkills > 0) {
+                              context.pushRoute(
+                                SelectSkillsRoute(
+                                  title: 'Бонус к навыкам',
+                                  classKind: widget.classKind,
+                                  availableSkills: context.read<CreateCharacterCubit>().selectedSkills ?? [],
+                                  maxSkills: additionalSkills,
+                                ),
+                              );
+                              return;
+                            }
                           }
 
                           context.router.push(
