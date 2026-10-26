@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:dnd_character_list/domain/models/appearance.dart';
 
 /// Положение фотографии в круге аватара: масштаб и сдвиг относительно стороны круга. Исходная фотография
 /// заполняет круг (как `BoxFit.cover`), затем увеличивается в [scale] раз от левого верхнего угла и сдвигается
@@ -33,9 +34,6 @@ class Personality {
   final int height;
   final int weight;
   final String story;
-  final String eyesColor;
-  final String hairColor;
-  final String skinColor;
 
   /// Выбранная строка каждой таблицы персонализации предыстории по заголовку таблицы,
   /// например «Черта характера» → «Я безнадёжный романтик».
@@ -48,10 +46,10 @@ class Personality {
   /// Положение фотографии в круге аватара.
   final AvatarFrame avatarFrame;
 
+  /// Облик пиксельного аватара.
+  final Appearance appearance;
+
   Personality({
-    required this.eyesColor,
-    required this.hairColor,
-    required this.skinColor,
     required this.name,
     required this.age,
     required this.height,
@@ -60,12 +58,10 @@ class Personality {
     this.traits = const {},
     this.avatar,
     this.avatarFrame = AvatarFrame.initial,
+    this.appearance = const Appearance(),
   });
 
-  Personality copyWith({String? Function()? avatar, AvatarFrame? avatarFrame}) => Personality(
-        eyesColor: eyesColor,
-        hairColor: hairColor,
-        skinColor: skinColor,
+  Personality copyWith({String? Function()? avatar, AvatarFrame? avatarFrame, Appearance? appearance}) => Personality(
         name: name,
         age: age,
         height: height,
@@ -74,6 +70,7 @@ class Personality {
         traits: traits,
         avatar: avatar != null ? avatar() : this.avatar,
         avatarFrame: avatarFrame ?? this.avatarFrame,
+        appearance: appearance ?? this.appearance,
       );
 
   @override
@@ -84,12 +81,10 @@ class Personality {
       other.height == height &&
       other.weight == weight &&
       other.story == story &&
-      other.eyesColor == eyesColor &&
-      other.hairColor == hairColor &&
-      other.skinColor == skinColor &&
       const MapEquality<String, String>().equals(other.traits, traits) &&
       other.avatar == avatar &&
-      other.avatarFrame == avatarFrame;
+      other.avatarFrame == avatarFrame &&
+      other.appearance == appearance;
 
   @override
   int get hashCode => Object.hash(
@@ -98,12 +93,10 @@ class Personality {
         height,
         weight,
         story,
-        eyesColor,
-        hairColor,
-        skinColor,
         const MapEquality<String, String>().hash(traits),
         avatar,
         avatarFrame,
+        appearance,
       );
 
   Map<String, dynamic> toJson() => {
@@ -112,18 +105,13 @@ class Personality {
         'height': height,
         'weight': weight,
         'story': story,
-        'eyesColor': eyesColor,
-        'hairColor': hairColor,
-        'skinColor': skinColor,
         'traits': traits,
         'avatar': avatar,
         'avatarFrame': avatarFrame.toJson(),
+        'appearance': appearance.toJson(),
       };
 
   factory Personality.fromJson(Map<String, dynamic> json) => Personality(
-        eyesColor: json['eyesColor'],
-        hairColor: json['hairColor'],
-        skinColor: json['skinColor'],
         name: json['name'],
         age: json['age'],
         height: json['height'],
@@ -132,5 +120,6 @@ class Personality {
         traits: (json['traits'] as Map).cast<String, String>(),
         avatar: json['avatar'],
         avatarFrame: AvatarFrame.fromJson(json['avatarFrame']),
+        appearance: Appearance.fromJson(json['appearance']),
       );
 }

@@ -55,9 +55,6 @@ const _sage = Background(
 Player _player(Sorcerer sorcerer) => Player(
       knownLanguages: const [Language.sylvan],
       personality: Personality(
-        eyesColor: 'зелёные',
-        hairColor: 'серебристые',
-        skinColor: 'светлая',
         name: 'Ирис',
         age: 25,
         height: 175,

@@ -78,9 +78,6 @@ Player playerFixture({
     Player(
       knownLanguages: const [],
       personality: Personality(
-        eyesColor: '',
-        hairColor: '',
-        skinColor: '',
         name: 'Тест',
         age: 20,
         height: 170,
@@ -94,7 +91,9 @@ Player playerFixture({
       intelligence: 10,
       wisdom: 10,
       charisma: 15,
-      classes: [spec ?? Bard(level: 1, isMain: true, knownSpells: const [], features: const [], inspirationDice: Dice.k6)],
+      classes: [
+        spec ?? Bard(level: 1, isMain: true, knownSpells: const [], features: const [], inspirationDice: Dice.k6)
+      ],
       chosenSkills: const [],
       armor: null,
       shield: null,
@@ -133,4 +132,3 @@ Player playerFixture({
       ),
       raceSpells: const {},
     );
-

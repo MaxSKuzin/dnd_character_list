@@ -6,6 +6,8 @@ import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/presentation/common/widgets/character_avatar.dart';
 import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
 import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
+import 'package:dnd_character_list/presentation/common/widgets/pixel_avatar/appearance_editor.dart';
+import 'package:dnd_character_list/presentation/common/widgets/pixel_avatar/avatar_layers.dart';
 import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/extensions/feature_choices.dart';
@@ -136,20 +138,42 @@ class _Appearance extends StatelessWidget {
       ('Возраст', '${personality.age}'),
       ('Рост', '${personality.height} см'),
       ('Вес', '${personality.weight} кг'),
-      ('Глаза', personality.eyesColor),
-      ('Кожа', personality.skinColor),
-      ('Волосы', personality.hairColor),
     ];
+    final look = AvatarLook.of(player);
     return SheetSection(
       icon: Icons.face_outlined,
       title: 'Внешность',
-      child: TileGrid(
-        columns: 3,
+      trailing: IconButton(
+        tooltip: 'Изменить облик',
+        onPressed: () => _editAppearance(context, look),
+        icon: const Icon(Icons.edit_outlined),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final (label, value) in values) InfoTile(label: label, value: value.trim().isEmpty ? '—' : value)
+          // Пиксельный персонаж в надетой экипировке; нажатие открывает редактор облика.
+          Center(
+            child: GestureDetector(
+              onTap: () => _editAppearance(context, look),
+              child: AvatarStage(look: look, size: 224),
+            ),
+          ),
+          const Gap(8),
+          TileGrid(
+            columns: 3,
+            children: [
+              for (final (label, value) in values) InfoTile(label: label, value: value.trim().isEmpty ? '—' : value)
+            ],
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _editAppearance(BuildContext context, AvatarLook look) async {
+    final cubit = context.read<PlayerCubit>();
+    final appearance = await AppearanceEditor.show(context, look);
+    if (appearance != null) await cubit.setAppearance(appearance);
   }
 }
 

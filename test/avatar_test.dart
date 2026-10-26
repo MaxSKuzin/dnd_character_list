@@ -10,6 +10,7 @@ import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/common/widgets/character_avatar.dart';
+import 'package:dnd_character_list/presentation/common/widgets/pixel_avatar/avatar_renderer.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/personality_screen/personality_screen.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,9 @@ void main() {
 
   testWidgets('character screen shows header, sections and avatar picker', (tester) async {
     SharedPreferences.setMockInitialValues({});
-    getIt.registerSingleton<AvatarStore>(AvatarStore(documents: () async => documents));
+    getIt
+      ..registerSingleton<AvatarStore>(AvatarStore(documents: () async => documents))
+      ..registerSingleton<AvatarRenderer>(AvatarRenderer());
     addTearDown(getIt.reset);
     final cubit = PlayerCubit(playerFixture(), await SpSource.init());
 
@@ -108,7 +111,9 @@ void main() {
   testWidgets('chosen avatar appears without restart', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final store = AvatarStore(documents: () async => documents);
-    getIt.registerSingleton<AvatarStore>(store);
+    getIt
+      ..registerSingleton<AvatarStore>(store)
+      ..registerSingleton<AvatarRenderer>(AvatarRenderer());
     addTearDown(getIt.reset);
     final cubit = PlayerCubit(playerFixture(), await SpSource.init());
     final png = await tester.runAsync(() => _png(200, 100));
@@ -186,7 +191,9 @@ void main() {
 
   testWidgets('delete button asks for confirmation', (tester) async {
     SharedPreferences.setMockInitialValues({});
-    getIt.registerSingleton<AvatarStore>(AvatarStore(documents: () async => documents));
+    getIt
+      ..registerSingleton<AvatarStore>(AvatarStore(documents: () async => documents))
+      ..registerSingleton<AvatarRenderer>(AvatarRenderer());
     addTearDown(getIt.reset);
     final source = await SpSource.init();
     final cubit = PlayerCubit(playerFixture(), source);

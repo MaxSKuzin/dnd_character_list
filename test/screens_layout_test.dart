@@ -6,6 +6,7 @@ import 'package:dnd_character_list/domain/bloc/created_characters_cubit.dart';
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
+import 'package:dnd_character_list/presentation/common/widgets/pixel_avatar/avatar_renderer.dart';
 import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'package:dnd_character_list/presentation/extensions/theme_extensions.dart';
 import 'package:dnd_character_list/presentation/inventory_screen/inventory_screen.dart';
@@ -31,6 +32,7 @@ void main() {
     getIt
       ..registerSingleton<SpSource>(source)
       ..registerSingleton<AvatarStore>(AvatarStore(documents: () async => documents))
+      ..registerSingleton<AvatarRenderer>(AvatarRenderer())
       ..registerFactory(() => CreatedCharactersCubit(source));
   });
   tearDown(() => getIt.reset());

@@ -51,9 +51,6 @@ Feat _feat(String slug, {List<StatKind> statIncrease = const []}) => Feat(
 Player _player(Bard bard) => Player(
       knownLanguages: const [Language.elvish],
       personality: Personality(
-        eyesColor: 'карие',
-        hairColor: 'чёрные',
-        skinColor: 'красная',
         name: 'Лира',
         age: 20,
         height: 170,

@@ -3,9 +3,12 @@ import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dar
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
+import 'package:dnd_character_list/domain/models/appearance.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/presentation/common/widgets/enter_number_dialog.dart';
+import 'package:dnd_character_list/presentation/common/widgets/pixel_avatar/appearance_editor.dart';
+import 'package:dnd_character_list/presentation/common/widgets/pixel_avatar/avatar_layers.dart';
 import 'package:dnd_character_list/presentation/create_character_flow/screens/set_personality_screen/personality_table_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,13 +30,13 @@ class SetPersonalityScreen extends StatefulWidget {
 
 class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
   final _nameController = TextEditingController();
-  final _hairController = TextEditingController();
-  final _skinController = TextEditingController();
-  final _eyesController = TextEditingController();
   final _storyController = TextEditingController();
   int _age = 0;
   int _height = 0;
   int _weight = 0;
+
+  /// Облик пиксельного аватара; по умолчанию — типичный для расы.
+  late Appearance _appearance = Appearance.forRace(context.read<CreateCharacterCubit>().race!);
 
   /// Выбранная строка по заголовку таблицы.
   final _traits = <String, String>{};
@@ -45,9 +48,6 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _hairController.dispose();
-    _skinController.dispose();
-    _eyesController.dispose();
     _storyController.dispose();
 
     super.dispose();
@@ -66,28 +66,32 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
     cubit.setPersonality(
       Personality(
         name: _nameController.text,
-        hairColor: _hairController.text,
-        eyesColor: _eyesController.text,
-        skinColor: _skinController.text,
         story: _storyController.text,
         age: _age,
         height: _height,
         weight: _weight,
         traits: Map.of(_traits),
+        appearance: _appearance,
       ),
     );
     cubit.createCharacter();
   }
 
+  Future<void> _editAppearance(AvatarLook look) async {
+    FocusScope.of(context).unfocus();
+    final appearance = await AppearanceEditor.show(context, look);
+    if (appearance != null && mounted) setState(() => _appearance = appearance);
+  }
+
   @override
   Widget build(BuildContext context) {
     final race = context.read<CreateCharacterCubit>().race!;
+    final look = AvatarLook(appearance: _appearance, race: race);
     final valueStyle = context.theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700);
     return ListenableBuilder(
-      listenable:
-          Listenable.merge([_nameController, _hairController, _eyesController, _skinController, _storyController]),
+      listenable: Listenable.merge([_nameController, _storyController]),
       builder: (context, _) {
-        final controllers = [_nameController, _hairController, _eyesController, _skinController, _storyController];
+        final controllers = [_nameController, _storyController];
         final isFilled = controllers.every((e) => e.text.trim().isNotEmpty) &&
             _age != 0 &&
             _height != 0 &&
@@ -119,6 +123,19 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Экипировка появится на рисунке, когда персонаж её наденет.
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => _editAppearance(look),
+                        child: AvatarStage(look: look, size: 160),
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => _editAppearance(look),
+                      icon: const Icon(Icons.brush_outlined),
+                      label: const Text('Изменить облик'),
+                    ),
+                    const Gap(8),
                     TileGrid(
                       columns: 3,
                       children: [
@@ -154,10 +171,6 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                         ),
                       ],
                     ),
-                    const Gap(4),
-                    _Field(controller: _hairController, label: 'Цвет волос'),
-                    _Field(controller: _eyesController, label: 'Цвет глаз'),
-                    _Field(controller: _skinController, label: 'Цвет кожи'),
                   ],
                 ),
               ),

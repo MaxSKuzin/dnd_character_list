@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/data/avatar_store.dart';
 import 'package:dnd_character_list/data/sp_source.dart';
+import 'package:dnd_character_list/domain/models/appearance.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
@@ -161,6 +162,12 @@ class PlayerCubit extends Cubit<Player> {
     final newPlayer = state.copyWith(
       personality: state.personality.copyWith(avatar: () => avatar, avatarFrame: frame),
     );
+    await _source.savePlayer(newPlayer);
+    emit(newPlayer);
+  }
+
+  Future<void> setAppearance(Appearance appearance) async {
+    final newPlayer = state.copyWith(personality: state.personality.copyWith(appearance: appearance));
     await _source.savePlayer(newPlayer);
     emit(newPlayer);
   }
