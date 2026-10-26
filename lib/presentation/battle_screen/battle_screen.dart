@@ -46,9 +46,9 @@ class BattleScreen extends StatelessWidget {
           Expanded(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-              children: [
+              children: const [
                 // Бой у мастера, эффекты и нокаут бывают не всегда — появляются плавно.
-                const AnimatedSize(
+                AnimatedSize(
                   duration: Duration(milliseconds: 200),
                   alignment: Alignment.topCenter,
                   child: Column(
@@ -56,30 +56,17 @@ class BattleScreen extends StatelessWidget {
                     children: [BattleQueueBar(), StatusesBar(), KnockoutBanner()],
                   ),
                 ),
-                const SheetHeader(padding: EdgeInsets.symmetric(vertical: 16), child: _Summary()),
-                const Gap(20),
-                const _Heading(icon: Icons.favorite_outline, title: 'Состояние'),
-                const _Counters(),
-                const Gap(20),
-                const _Heading(icon: Icons.sports_martial_arts, title: 'Оружие'),
-                const WeaponsSection(),
-                const Gap(20),
-                // Ячейки — рядом с магией. Без ячеек секция пустая и не занимает места.
-                const SpellSlotsSection(),
-                Builder(
-                  builder: (context) {
-                    final spellStats = PlayerModel.spellStats(context);
-                    if (spellStats.isEmpty) return const SizedBox();
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Gap(20),
-                        const _Heading(icon: Icons.auto_awesome_outlined, title: 'Магия'),
-                        SpellsStatsSection(spellStats),
-                      ],
-                    );
-                  },
-                ),
+                SheetHeader(padding: EdgeInsets.symmetric(vertical: 16), child: _Summary()),
+                Gap(20),
+                _Heading(icon: Icons.favorite_outline, title: 'Состояние'),
+                _Counters(),
+                Gap(20),
+                WeaponsSection(),
+                Gap(20),
+                // Ячейки — рядом с магией, отступ до неё — в самих ячейках. Без ячеек и без магии разделы пустые и
+                // не занимают места.
+                SpellSlotsSection(),
+                SpellsStatsSection(),
               ],
             ),
           ),
@@ -113,39 +100,34 @@ class _Summary extends StatelessWidget {
   }
 }
 
-/// Хиты, кубы здоровья, спасброски от смерти, кость боевых искусств монаха и ресурсы классов — сеткой в две колонки,
-/// все видны сразу.
+/// Хиты, кубы здоровья, спасброски от смерти, кость боевых искусств монаха и ресурсы классов — карточкой с плитками
+/// в две колонки, все видны сразу. Плитки одного ряда — одной высоты.
 class _Counters extends StatelessWidget {
-  static const _spacing = 16.0;
-
   const _Counters();
 
   @override
   Widget build(BuildContext context) {
     final extras = PlayerModel.extras(context);
     final isMonk = PlayerModel.classes(context).any((e) => e is Monk);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = (constraints.maxWidth - _spacing) / 2;
-        // Пропорции плиток прежние: вдвое шире, чем выше.
-        final height = width / 2;
-        return Wrap(
-          spacing: _spacing,
-          runSpacing: _spacing,
+    return SheetCard(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: TileGrid(
+          columns: 2,
           children: [
             const HealthSection(),
             const HitDices(),
             const DeathThrowsWidget(),
             if (isMonk) const MartialArtsDice(),
             for (final extra in extras.entries) ClassExtraWidget(extra: extra.key, count: extra.value),
-          ].map((e) => SizedBox(width: width, height: height, child: e)).toList(),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }
 
-/// Заголовок раздела экрана боя. Плитки разделов со своими рамками, поэтому без общей карточки.
+/// Заголовок раздела экрана боя — над карточкой раздела, как у оружия, ячеек и магии.
 class _Heading extends StatelessWidget {
   final IconData icon;
   final String title;

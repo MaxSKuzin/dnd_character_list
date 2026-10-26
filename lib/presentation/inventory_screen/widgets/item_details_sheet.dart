@@ -174,7 +174,7 @@ class ItemDetailsSheet extends StatelessWidget {
       weight == weight.roundToDouble() ? weight.toInt().toString() : weight.toString();
 
   static String _attackText(WeaponAttack attack) =>
-      'атака ${attack.attackBonus >= 0 ? '+' : ''}${attack.attackBonus}, урон ${attack.damage}';
+      'атака ${attack.attackBonus >= 0 ? '+' : ''}${attack.attackBonus}, урон ${attack.damageText}';
 
   List<Widget> _equipActions(BuildContext context, Player player) {
     final cubit = context.read<PlayerCubit>();

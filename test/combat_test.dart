@@ -6,6 +6,11 @@ import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
+import 'package:dnd_character_list/domain/models/damage_type.dart';
+import 'package:dnd_character_list/domain/models/weapon.dart';
+import 'package:dnd_character_list/domain/models/weapon_kind.dart';
+import 'package:dnd_character_list/domain/models/weapon_type.dart';
+import 'package:dnd_character_list/presentation/extensions/item_texts.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/fixtures.dart';
@@ -55,6 +60,23 @@ void main() {
       expect(attack.damage, '1к8 + 3');
     });
 
+    test('elemental damage is kept apart from the weapon damage with its own type', () {
+      final flameTongue = Weapon(
+        name: 'Язык пламени',
+        damage: Dice.k8,
+        damageType: DamageType.chopping,
+        kind: WeaponKind.martialMelee,
+        type: WeaponType.oneHanded,
+        elementalDamage: [ElementalDamage(type: ElementalType.fire, damage: Dice.k6, count: 2)],
+      );
+      final attack = playerFixture().equipWeapon(flameTongue, WeaponSlot.mainHand).attacks.single;
+
+      expect(attack.damage, '1к8 − 1');
+      expect(attack.extraDamage.single.type, ElementalType.fire);
+      expect(attack.damageText, '1к8 − 1 рубящий + 2к6 огонь');
+      expect(flameTongue.damageText, '1к8 рубящий + 2к6 огонь');
+    });
+
     test('weapon without proficiency does not add proficiency bonus', () {
       final attack = playerFixture().equipWeapon(greatswordFixture, WeaponSlot.mainHand).attacks.single;
 
@@ -72,7 +94,9 @@ void main() {
     });
 
     test('off-hand weapon gets no positive modifier without two-weapon fighting', () {
-      final player = playerFixture().equipWeapon(daggerFixture, WeaponSlot.mainHand).equipWeapon(daggerFixture, WeaponSlot.secondHand);
+      final player = playerFixture()
+          .equipWeapon(daggerFixture, WeaponSlot.mainHand)
+          .equipWeapon(daggerFixture, WeaponSlot.secondHand);
 
       expect(player.attacks.map((e) => e.damage), ['1к4 + 3', '1к4']);
     });
@@ -128,7 +152,9 @@ void main() {
 
   group('equipping', () {
     test('two-handed weapon frees the other hand', () {
-      final player = playerFixture().equipWeapon(daggerFixture, WeaponSlot.mainHand).equipWeapon(daggerFixture, WeaponSlot.secondHand);
+      final player = playerFixture()
+          .equipWeapon(daggerFixture, WeaponSlot.mainHand)
+          .equipWeapon(daggerFixture, WeaponSlot.secondHand);
       final withGreatsword = player.equipShield(shieldFixture).equipWeapon(greatswordFixture, WeaponSlot.mainHand);
 
       expect(withGreatsword.secondWeapon, isNull);
@@ -137,7 +163,9 @@ void main() {
     });
 
     test('shield replaces off-hand weapon', () {
-      final player = playerFixture().equipWeapon(daggerFixture, WeaponSlot.mainHand).equipWeapon(daggerFixture, WeaponSlot.secondHand);
+      final player = playerFixture()
+          .equipWeapon(daggerFixture, WeaponSlot.mainHand)
+          .equipWeapon(daggerFixture, WeaponSlot.secondHand);
 
       expect(player.equipShield(shieldFixture).secondWeapon, isNull);
     });
@@ -149,12 +177,15 @@ void main() {
       final withDagger = playerFixture().equipWeapon(daggerFixture, WeaponSlot.mainHand);
       expect(withDagger.cannotEquip(daggerFixture, WeaponSlot.secondHand), isNull);
 
-      final oneDagger = playerFixture(items: [InventoryItem(quantity: 1, item: daggerFixture)]).equipWeapon(daggerFixture, WeaponSlot.mainHand);
+      final oneDagger = playerFixture(items: [InventoryItem(quantity: 1, item: daggerFixture)])
+          .equipWeapon(daggerFixture, WeaponSlot.mainHand);
       expect(oneDagger.cannotEquip(daggerFixture, WeaponSlot.secondHand), 'Все экземпляры уже экипированы');
     });
 
     test('changing main weapon drops off-hand weapon that is no longer allowed', () {
-      final twoDaggers = playerFixture().equipWeapon(daggerFixture, WeaponSlot.mainHand).equipWeapon(daggerFixture, WeaponSlot.secondHand);
+      final twoDaggers = playerFixture()
+          .equipWeapon(daggerFixture, WeaponSlot.mainHand)
+          .equipWeapon(daggerFixture, WeaponSlot.secondHand);
 
       final withRapier = twoDaggers.equipWeapon(rapierFixture, WeaponSlot.mainHand);
 

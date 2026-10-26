@@ -67,12 +67,16 @@ class WeaponAttack {
   final bool isProficient;
   final int attackBonus;
 
-  /// Урон с модификаторами, например «1к8 + 3».
+  /// Основной урон оружия (тип — `weapon.damageType`) с модификаторами, например «1к8 + 3».
+  /// Стихийный урон сюда не входит: у него свой тип, и монстр может быть к нему иммунен или уязвим.
   final String damage;
   final bool isTwoHanded;
 
   /// Маленькое существо атакует тяжёлым оружием с помехой.
   final bool hasDisadvantage;
+
+  /// Дополнительный урон своего типа: «+1к6 огонь» у пылающего меча. Бросается и учитывается отдельно от [damage].
+  List<ElementalDamage> get extraDamage => weapon.elementalDamage;
 
   const WeaponAttack({
     required this.weapon,
@@ -185,17 +189,16 @@ extension PlayerCombat on Player {
     if (martialArts != null && (dice == null || martialArts.value > dice.value)) dice = martialArts;
     final unarmedFighting = weapon == unarmedStrike ? _unarmedFightingDice : null;
     if (unarmedFighting != null && (dice == null || unarmedFighting.value > dice.value)) dice = unarmedFighting;
-    final elemental = weapon.elementalDamage.map((e) => ' + ${e.count}${e.damage.name}').join();
     final String damage;
     if (dice == null && weapon == unarmedStrike) {
       damage = '${max(1, 1 + damageBonus)}';
     } else if (dice == null && weapon.fixedDamage == null) {
       damage = '—';
     } else if (dice == null) {
-      damage = '${max(1, damageBonus)}$elemental';
+      damage = '${max(1, damageBonus)}';
     } else {
       final bonus = damageBonus == 0 ? '' : (damageBonus > 0 ? ' + $damageBonus' : ' − ${-damageBonus}');
-      damage = '${weapon.damageMultiplier}${dice.name}$bonus$elemental';
+      damage = '${weapon.damageMultiplier}${dice.name}$bonus';
     }
 
     return WeaponAttack(

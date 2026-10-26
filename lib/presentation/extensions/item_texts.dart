@@ -7,16 +7,18 @@ import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/domain/models/weapon_type.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
+import 'package:flutter/material.dart';
 
 /// Подписи предметов для экранов снаряжения и инвентаря.
 extension WeaponTexts on Weapon {
-  /// «1к8 колющий» или «1к8 колющий (двумя руками 1к10)».
+  /// «1к8 колющий», «1к8 колющий (двумя руками 1к10)», «1к8 рубящий + 1к6 огонь» — у каждой части свой тип.
   String get damageText {
     final damageTypeName = damageType?.localizedName.toLowerCase();
     final versatile = type == WeaponType.universal && twoHandedDamage != null
         ? ' (двумя руками ${getRawDamageString(isTwoHanded: true)})'
         : '';
-    return [getRawDamageString(), if (damageTypeName != null) damageTypeName].join(' ') + versatile;
+    final base = [getRawDamageString(), if (damageTypeName != null) damageTypeName].join(' ') + versatile;
+    return [base, ...elementalDamage.map((e) => e.text)].join(' + ');
   }
 
   /// Свойства как на сайте: «лёгкое, метательное (дис. 20/60), фехтовальное».
@@ -35,6 +37,35 @@ extension WeaponTexts on Weapon {
       if (isLoading) 'перезарядка',
       if (isSpecial) 'особое',
     ].join(', ');
+  }
+}
+
+extension ElementalDamageTexts on ElementalDamage {
+  /// «1к6 огонь».
+  String get text => '$count${damage.name} ${type.localizedName.toLowerCase()}';
+}
+
+extension ElementalTypeColor on ElementalType {
+  /// Цвет стихии в чипах урона: огонь сразу отличается от холода и от урона оружия.
+  Color get color => switch (this) {
+        ElementalType.fire => Colors.deepOrangeAccent,
+        ElementalType.cold => Colors.lightBlueAccent,
+        ElementalType.acid => Colors.lightGreenAccent,
+        ElementalType.lightning => Colors.yellowAccent,
+        ElementalType.thunder => Colors.indigoAccent.shade100,
+        ElementalType.poison => Colors.greenAccent,
+        ElementalType.necrotic => Colors.purpleAccent.shade100,
+        ElementalType.radiant => Colors.amberAccent,
+        ElementalType.psychic => Colors.pinkAccent.shade100,
+      };
+}
+
+extension WeaponAttackTexts on WeaponAttack {
+  /// Урон атаки с типами частей: «1к8 + 3 рубящий + 1к6 огонь».
+  String get damageText {
+    final damageTypeName = weapon.damageType?.localizedName.toLowerCase();
+    final base = [damage, if (damageTypeName != null) damageTypeName].join(' ');
+    return [base, ...extraDamage.map((e) => e.text)].join(' + ');
   }
 }
 

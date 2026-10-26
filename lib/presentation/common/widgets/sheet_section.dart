@@ -78,13 +78,8 @@ class SheetSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: color ?? context.customColors?.cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Colors.white),
-      ),
-      clipBehavior: Clip.antiAlias,
+    return SheetCard(
+      color: color,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -99,59 +94,153 @@ class SheetSection extends StatelessWidget {
   }
 }
 
-/// Плитка значения: подпись мелко сверху, значение под ней.
+/// Карточка раздела: цвет карточек, белая рамка. [onTap] — нажатие на всю карточку с подсветкой.
+class SheetCard extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+
+  /// Фон; по умолчанию — цвет карточек.
+  final Color? color;
+
+  const SheetCard({super.key, required this.child, this.onTap, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: color ?? context.customColors?.cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Colors.white),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: onTap == null ? child : InkWell(onTap: onTap, child: child),
+    );
+  }
+}
+
+/// Плитка внутри карточки раздела: фон экрана и тонкая рамка. Основа [InfoTile] и плиток со своим содержимым.
+class SheetTile extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+
+  /// Фон; по умолчанию — цвет экрана.
+  final Color? color;
+  final Color borderColor;
+
+  const SheetTile({super.key, required this.child, this.onTap, this.color, this.borderColor = Colors.white24});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: color ?? context.theme.scaffoldBackgroundColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: borderColor)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(padding: const EdgeInsets.all(8), child: child),
+      ),
+    );
+  }
+}
+
+/// Кнопка «−» или «+» счётчика в плитке. Недоступная гаснет, а не исчезает.
+class StepButton extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback? onPressed;
+
+  const StepButton({super.key, required this.icon, required this.tooltip, required this.onPressed});
+
+  const StepButton.decrease({super.key, this.tooltip = 'Меньше', required this.onPressed}) : icon = Icons.remove;
+
+  const StepButton.increase({super.key, this.tooltip = 'Больше', required this.onPressed}) : icon = Icons.add;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.outlined(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+      style: IconButton.styleFrom(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        side: BorderSide(color: onPressed == null ? Colors.white12 : Colors.white38),
+      ),
+    );
+  }
+}
+
+/// Плитка значения: подпись мелко сверху, значение под ней. С [onDecrease] или [onIncrease] — счётчик с кнопками
+/// «−» и «+» по бокам.
 class InfoTile extends StatelessWidget {
   final String label;
   final String value;
   final String? caption;
   final TextStyle? valueStyle;
   final VoidCallback? onTap;
+  final VoidCallback? onDecrease;
+  final VoidCallback? onIncrease;
+  final String decreaseTooltip;
+  final String increaseTooltip;
 
-  const InfoTile({super.key, required this.label, required this.value, this.caption, this.valueStyle, this.onTap});
+  const InfoTile({
+    super.key,
+    required this.label,
+    required this.value,
+    this.caption,
+    this.valueStyle,
+    this.onTap,
+    this.onDecrease,
+    this.onIncrease,
+    this.decreaseTooltip = 'Меньше',
+    this.increaseTooltip = 'Больше',
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: context.theme.scaffoldBackgroundColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Colors.white24),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          // По центру: в ряду [TileGrid] плитка растягивается до высоты соседей.
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white60),
-              ),
-              const Gap(2),
-              Text(
-                value,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: valueStyle ?? const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              if (caption != null)
-                Text(
-                  caption!,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white54),
-                ),
-            ],
-          ),
+    // По центру: в ряду [TileGrid] плитка растягивается до высоты соседей.
+    final content = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white60),
         ),
-      ),
+        const Gap(2),
+        Text(
+          value,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: valueStyle ?? const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        if (caption != null)
+          Text(
+            caption!,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white54),
+          ),
+      ],
+    );
+    return SheetTile(
+      onTap: onTap,
+      child: onDecrease == null && onIncrease == null
+          ? content
+          : Row(
+              children: [
+                StepButton.decrease(tooltip: decreaseTooltip, onPressed: onDecrease),
+                const Gap(4),
+                Expanded(child: content),
+                const Gap(4),
+                StepButton.increase(tooltip: increaseTooltip, onPressed: onIncrease),
+              ],
+            ),
     );
   }
 }

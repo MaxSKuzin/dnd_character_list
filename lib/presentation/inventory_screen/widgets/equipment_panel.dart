@@ -122,7 +122,7 @@ class EquipmentPanel extends StatelessWidget {
       value: weapon?.name,
       details: attack == null
           ? null
-          : 'Атака ${attack.attackBonus >= 0 ? '+' : ''}${attack.attackBonus} · урон ${attack.damage}'
+          : 'Атака ${attack.attackBonus >= 0 ? '+' : ''}${attack.attackBonus} · урон ${attack.damageText}'
               '${attack.isTwoHanded && weapon!.twoHandedDamage != null ? ' (двумя руками)' : ''}',
       warning: [
         if (attack != null && !attack.isProficient) 'Нет владения: бонус мастерства не добавляется',
