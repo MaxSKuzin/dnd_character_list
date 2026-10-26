@@ -25,6 +25,7 @@ enum ClassKind {
         ClassKind.paladin => '/classes/paladin',
         ClassKind.thief => '/classes/rogue',
         ClassKind.sorcerer => '/classes/sorcerer',
+        ClassKind.monk => '/classes/monk',
         _ => null,
       };
 
@@ -33,7 +34,13 @@ enum ClassKind {
 
   /// Повышение уровня реализовано.
   bool get canLevelUp => switch (this) {
-        ClassKind.bard || ClassKind.barbarian || ClassKind.paladin || ClassKind.thief || ClassKind.sorcerer => true,
+        ClassKind.bard ||
+        ClassKind.barbarian ||
+        ClassKind.paladin ||
+        ClassKind.thief ||
+        ClassKind.sorcerer ||
+        ClassKind.monk =>
+          true,
         _ => false,
       };
 
@@ -58,6 +65,7 @@ enum ClassKind {
         ClassKind.paladin => 2,
         ClassKind.thief => 4,
         ClassKind.sorcerer => 2,
+        ClassKind.monk => 2,
         _ => throw UnimplementedError(),
       };
 
@@ -108,6 +116,14 @@ enum ClassKind {
             Skill.religion,
             Skill.persuasion,
           ],
+        ClassKind.monk => [
+            Skill.acrobatics,
+            Skill.athletics,
+            Skill.history,
+            Skill.insight,
+            Skill.religion,
+            Skill.stealth,
+          ],
         _ => throw UnimplementedError(),
       };
 
@@ -118,6 +134,7 @@ enum ClassKind {
         ClassKind.paladin => level > 1 ? max(1, level ~/ 2 + statBonus(StatKind.charisma)) : 0,
         ClassKind.thief => 0,
         ClassKind.sorcerer => level < 11 ? level + 1 : min(15, 11 + (level - 9) ~/ 2),
+        ClassKind.monk => 0,
         _ => throw UnimplementedError(),
       };
 
@@ -140,6 +157,7 @@ enum ClassKind {
             4: 5,
             10: 6,
           }._getValue(level),
+        ClassKind.monk => 0,
         _ => throw UnimplementedError(),
       };
 
@@ -150,6 +168,7 @@ enum ClassKind {
         ClassKind.paladin => 0.5,
         ClassKind.thief => 0,
         ClassKind.sorcerer => 1,
+        ClassKind.monk => 0,
         _ => throw UnimplementedError(),
       };
 

@@ -1,11 +1,24 @@
 import 'dart:math';
 
 import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
+import 'package:dnd_character_list/domain/models/classes/monk.dart';
+import 'package:dnd_character_list/domain/models/damage_type.dart';
+import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
+import 'package:dnd_character_list/domain/models/weapon_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon_type.dart';
+
+/// Безоружный удар: 1 + модификатор Силы дробящего урона, у монаха — кость боевых искусств.
+const unarmedStrike = Weapon(
+  name: 'Безоружный удар',
+  damage: null,
+  damageType: DamageType.crushing,
+  kind: WeaponKind.simpleMelee,
+  type: WeaponType.oneHanded,
+);
 
 /// Владение оружием: категории и отдельные виды по [Weapon.proficiencyKey] (`weapon.rapier`).
 class WeaponProficiency {
@@ -17,8 +30,7 @@ class WeaponProficiency {
 
   static const none = WeaponProficiency();
 
-  bool covers(Weapon weapon) =>
-      (weapon.kind.isSimple ? simple : martial) || weapons.contains(weapon.proficiencyKey);
+  bool covers(Weapon weapon) => (weapon.kind.isSimple ? simple : martial) || weapons.contains(weapon.proficiencyKey);
 
   WeaponProficiency operator +(WeaponProficiency other) => WeaponProficiency(
         simple: simple || other.simple,
@@ -59,6 +71,9 @@ class WeaponAttack {
   final String damage;
   final bool isTwoHanded;
 
+  /// Маленькое существо атакует тяжёлым оружием с помехой.
+  final bool hasDisadvantage;
+
   const WeaponAttack({
     required this.weapon,
     required this.slot,
@@ -67,6 +82,7 @@ class WeaponAttack {
     required this.attackBonus,
     required this.damage,
     required this.isTwoHanded,
+    this.hasDisadvantage = false,
   });
 }
 
@@ -100,17 +116,30 @@ extension PlayerCombat on Player {
         WeaponSlot.secondRange => secondRangeWeapon,
       };
 
-  List<WeaponAttack> get attacks => WeaponSlot.values
-      .map((slot) => (slot, weaponIn(slot)))
-      .where((e) => e.$2 != null)
-      .map((e) => attackWith(e.$2!, e.$1))
-      .toList();
+  /// Атаки экипированным оружием; у монаха в конце — безоружный удар.
+  List<WeaponAttack> get attacks => [
+        ...WeaponSlot.values
+            .map((slot) => (slot, weaponIn(slot)))
+            .where((e) => e.$2 != null)
+            .map((e) => attackWith(e.$2!, e.$1)),
+        if (classes.any((e) => e is Monk)) attackWith(unarmedStrike, WeaponSlot.mainHand),
+      ];
 
-  /// Характеристика атаки: Ловкость у дальнобойного, лучшая из Силы и Ловкости у фехтовального,
-  /// иначе Сила (в том числе при метании рукопашного оружия).
+  /// Кость боевых искусств, если они применяются к оружию: безоружный удар или монашеское оружие
+  /// без доспеха и щита.
+  Dice? martialArtsDiceFor(Weapon weapon) {
+    final monk = classes.whereType<Monk>().firstOrNull;
+    if (monk == null || !Monk.isUnarmored(this)) return null;
+    if (weapon != unarmedStrike && !Monk.isMonkWeapon(weapon)) return null;
+    return monk.martialArtsDice;
+  }
+
+  /// Характеристика атаки: Ловкость у дальнобойного, лучшая из Силы и Ловкости у фехтовального
+  /// и при боевых искусствах, иначе Сила (в том числе при метании рукопашного оружия).
   StatKind abilityFor(Weapon weapon) {
     if (weapon.kind.isRanged) return StatKind.dexterity;
-    if (weapon.isFencing && dexterity.bonus > strength.bonus) return StatKind.dexterity;
+    final canUseDexterity = weapon.isFencing || martialArtsDiceFor(weapon) != null;
+    if (canUseDexterity && dexterity.bonus > strength.bonus) return StatKind.dexterity;
     return StatKind.strength;
   }
 
@@ -135,10 +164,15 @@ extension PlayerCombat on Player {
       damageBonus += 2;
     }
 
-    final dice = isTwoHanded && weapon.twoHandedDamage != null ? weapon.twoHandedDamage : weapon.damage;
+    var dice = isTwoHanded && weapon.twoHandedDamage != null ? weapon.twoHandedDamage : weapon.damage;
+    // Боевые искусства заменяют кость урона, если она больше.
+    final martialArts = martialArtsDiceFor(weapon);
+    if (martialArts != null && (dice == null || martialArts.value > dice.value)) dice = martialArts;
     final elemental = weapon.elementalDamage.map((e) => ' + ${e.count}${e.damage.name}').join();
     final String damage;
-    if (dice == null && weapon.fixedDamage == null) {
+    if (dice == null && weapon == unarmedStrike) {
+      damage = '${max(1, 1 + damageBonus)}';
+    } else if (dice == null && weapon.fixedDamage == null) {
       damage = '—';
     } else if (dice == null) {
       damage = '${max(1, damageBonus)}$elemental';
@@ -155,6 +189,7 @@ extension PlayerCombat on Player {
       attackBonus: modifier + (isProficient ? proficiencyBonus : 0),
       damage: damage,
       isTwoHanded: isTwoHanded,
+      hasDisadvantage: race.isSmall && weapon.isHeavy,
     );
   }
 

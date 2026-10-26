@@ -16,11 +16,13 @@ import 'package:dnd_character_list/presentation/extensions/localization_extensio
 import 'package:dnd_character_list/data/rules_repository.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
+import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/bard_level_up.dart';
+import 'package:dnd_character_list/presentation/level_up_flow/monk_level_up.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/sorcerer_level_up.dart';
 
 @RoutePage()
@@ -44,7 +46,8 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
 
     final link = classKind.ttgLink;
     final bool passed;
-    if ((classKind == ClassKind.bard || classKind == ClassKind.sorcerer) && link != null) {
+    const ttgClasses = [ClassKind.bard, ClassKind.sorcerer, ClassKind.monk];
+    if (ttgClasses.contains(classKind) && link != null) {
       final ClassInfo info;
       setState(() => _isLoading = true);
       try {
@@ -60,10 +63,11 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
         if (mounted) setState(() => _isLoading = false);
       }
       if (!mounted) return;
-      passed = classKind == ClassKind.bard
-          ? await BardLevelUp(context: context, player: player, info: info, bard: selectedClass as Bard?).run()
-          : await SorcererLevelUp(context: context, player: player, info: info, sorcerer: selectedClass as Sorcerer?)
-              .run();
+      passed = await switch (classKind) {
+        ClassKind.bard => BardLevelUp(context: context, player: player, info: info, bard: selectedClass as Bard?).run(),
+        ClassKind.monk => MonkLevelUp(context: context, player: player, info: info, monk: selectedClass as Monk?).run(),
+        _ => SorcererLevelUp(context: context, player: player, info: info, sorcerer: selectedClass as Sorcerer?).run(),
+      };
     } else {
       passed = await _levelUpLegacy(player, classKind, selectedClass);
     }

@@ -5,12 +5,14 @@ import 'package:dnd_character_list/presentation/battle_screen/widgets/health_sec
 import 'package:dnd_character_list/presentation/battle_screen/widgets/hit_dices.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/initiative_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/knockout_banner.dart';
-import 'package:dnd_character_list/presentation/battle_screen/widgets/long_rest_button.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/martial_arts_dice.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/rest_button.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/protection_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/speed_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/spell_slots_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/spells_stats_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/weapons_section.dart';
+import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/session/battle_queue_bar.dart';
 import 'package:dnd_character_list/presentation/session/session_button.dart';
@@ -36,7 +38,7 @@ class BattleScreen extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(child: Align(alignment: Alignment.centerLeft, child: SessionButton())),
-                LongRestButton(),
+                RestButton(),
               ],
             ),
           ),
@@ -104,7 +106,8 @@ class _Summary extends StatelessWidget {
   }
 }
 
-/// Хиты, кубы здоровья, спасброски от смерти и ресурсы классов — сеткой в две колонки, все видны сразу.
+/// Хиты, кубы здоровья, спасброски от смерти, кость боевых искусств монаха и ресурсы классов — сеткой в две колонки,
+/// все видны сразу.
 class _Counters extends StatelessWidget {
   static const _spacing = 16.0;
 
@@ -113,6 +116,7 @@ class _Counters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final extras = PlayerModel.extras(context);
+    final isMonk = PlayerModel.classes(context).any((e) => e is Monk);
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = (constraints.maxWidth - _spacing) / 2;
@@ -125,6 +129,7 @@ class _Counters extends StatelessWidget {
             const HealthSection(),
             const HitDices(),
             const DeathThrowsWidget(),
+            if (isMonk) const MartialArtsDice(),
             for (final extra in extras.entries) ClassExtraWidget(extra: extra.key, count: extra.value),
           ].map((e) => SizedBox(width: width, height: height, child: e)).toList(),
         );

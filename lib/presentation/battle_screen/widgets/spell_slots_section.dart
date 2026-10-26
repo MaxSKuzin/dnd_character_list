@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 /// Ячейки заклинаний: по плитке на уровень с остатком и максимумом, как счётчики здоровья и ресурсов классов.
-/// Восстанавливаются продолжительным отдыхом (`LongRestButton`).
+/// Восстанавливаются продолжительным отдыхом (`RestButton`).
 class SpellSlotsSection extends StatelessWidget {
   static const _columns = 3;
   static const _spacing = 12.0;

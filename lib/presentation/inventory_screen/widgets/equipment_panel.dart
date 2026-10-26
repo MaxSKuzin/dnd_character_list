@@ -126,7 +126,10 @@ class EquipmentPanel extends StatelessWidget {
           ? null
           : 'Атака ${attack.attackBonus >= 0 ? '+' : ''}${attack.attackBonus} · урон ${attack.damage}'
               '${attack.isTwoHanded && weapon!.twoHandedDamage != null ? ' (двумя руками)' : ''}',
-      warning: attack == null || attack.isProficient ? null : 'Нет владения: бонус мастерства не добавляется',
+      warning: [
+        if (attack != null && !attack.isProficient) 'Нет владения: бонус мастерства не добавляется',
+        if (attack?.hasDisadvantage ?? false) 'Тяжёлое оружие: маленький персонаж атакует с помехой',
+      ].join('\n').emptyAsNull,
       onTap: () => _pick<Weapon>(
         context,
         title: slot.localizedName,
@@ -229,4 +232,8 @@ class _SlotTile extends StatelessWidget {
       onTap: onTap,
     );
   }
+}
+
+extension on String {
+  String? get emptyAsNull => isEmpty ? null : this;
 }

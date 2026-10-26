@@ -1,7 +1,9 @@
 import 'package:dnd_character_list/data/ttg/ttg_class_mapper.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
+import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
+import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -104,6 +106,54 @@ void main() {
       expect(info.level(4).hasFeature(Sorcerer.abilityScoreImprovement), isTrue);
       expect(info.level(8).hasFeature(Sorcerer.abilityScoreImprovement), isTrue);
       expect(info.feature(Sorcerer.sorcerousVersatility)?.isOptional, isTrue);
+    });
+  });
+
+  group('monk', () {
+    final info = mapper.map(ttgFixture('class_monk'), subclasses: [ttgFixture('class_monk_open_hand')]);
+
+    test('reads proficiencies and equipment', () {
+      expect(info.link, '/classes/monk');
+      expect(info.savingThrows, [StatKind.strength, StatKind.dexterity]);
+      expect(info.skillsCount, 2);
+      expect(info.skillOptions, [
+        Skill.acrobatics,
+        Skill.athletics,
+        Skill.history,
+        Skill.insight,
+        Skill.religion,
+        Skill.stealth,
+      ]);
+      final tool = info.tools.single;
+      expect((tool.isChoice, tool.choose), (true, 1));
+      expect(tool.categories, [ToolCategory.craftsmenTool, ToolCategory.musicalInstrument]);
+      final darts = info.startingEquipment.last.options.single.items.single;
+      expect((darts.id, darts.quantity), ('/weapons/dart', 10));
+      expect(info.level(1).cantripsKnown, isNull);
+      expect(info.quickBuildHtml, contains('Ловкости'));
+    });
+
+    test('chooses tradition at third level', () {
+      expect(info.subclassLevel, 3);
+      expect(info.subclassTitle, 'Монастырские традиции');
+      final openHand = info.subclass('open_hand')!;
+      expect(openHand.name, 'Путь Открытой Ладони');
+      expect(openHand.featuresAt(3).map((e) => e.name), ['Техники Открытой ладони']);
+    });
+
+    test('reads martial arts, ki and unarmored movement from the table', () {
+      expect(Monk.martialArtsDiceAt(info, 1), Dice.k4);
+      expect(Monk.martialArtsDiceAt(info, 5), Dice.k6);
+      expect(Monk.martialArtsDiceAt(info, 17), Dice.k10);
+      expect(Monk.kiPointsAt(info, 1), 0);
+      expect(Monk.kiPointsAt(info, 2), 2);
+      expect(Monk.unarmoredMovementAt(info, 1), 0);
+      expect(Monk.unarmoredMovementAt(info, 6), 15);
+      expect(info.level(4).hasFeature(Monk.abilityScoreImprovement), isTrue);
+      expect(Monk.featuresAt(info, 1).map((e) => e.name), ['ЗАЩИТА БЕЗ ДОСПЕХОВ', 'БОЕВЫЕ ИСКУССТВА']);
+      expect(Monk.featuresAt(info, 2).map((e) => e.name), ['ЦИ', 'ДВИЖЕНИЕ БЕЗ ДОСПЕХОВ', 'ВЫБРАННОЕ ОРУЖИЕ']);
+      expect(Monk.featuresAt(info, 3, traditionId: 'open_hand').map((e) => e.name),
+          ['ОТРАЖЕНИЕ СНАРЯДОВ', 'АТАКА НАДЕЛЁННАЯ ЦИ', 'ТЕХНИКИ ОТКРЫТОЙ ЛАДОНИ']);
     });
   });
 }

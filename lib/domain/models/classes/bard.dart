@@ -37,6 +37,8 @@ final class Bard extends Specialization {
   /// Уровень, на котором коллегия знаний даёт «Дополнительные тайны магии».
   static const loreAdditionalSecretsLevel = 6;
 
+  static const fontOfInspirationLevel = 5;
+
   /// Сколько навыков даёт коллегия знаний и сколько заклинаний — одни «Тайны магии».
   static const loreSkillsCount = 3;
   static const magicalSecretsCount = 2;
@@ -192,6 +194,10 @@ final class Bard extends Specialization {
   /// Количество вдохновений равно модификатору Харизмы, но не меньше одного.
   @override
   int getClassExtrasCount(Player player, ClassExtras extra) => max(1, player.charisma.bonus);
+
+  /// «Источник вдохновения»: с 5 уровня вдохновение восстанавливается и коротким отдыхом.
+  @override
+  List<ClassExtras> get shortRestExtras => level >= fontOfInspirationLevel ? const [ClassExtras.inspiration] : const [];
 
   @override
   String classExtraDescription(ClassExtras extra) =>

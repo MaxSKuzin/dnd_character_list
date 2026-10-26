@@ -187,7 +187,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                               final newHeight = await EnterNumberDialog.show(
                                 context,
                                 title: 'Рост',
-                                labelText: 'Введите рост',
+                                labelText: 'Рост в см. ${context.read<CreateCharacterCubit>().race!.heightHint}',
                               );
                               if (newHeight == null || !mounted) {
                                 return;
@@ -230,7 +230,7 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
                               final newWeight = await EnterNumberDialog.show(
                                 context,
                                 title: 'Вес',
-                                labelText: 'Введите вес',
+                                labelText: 'Вес в кг. ${context.read<CreateCharacterCubit>().race!.weightHint}',
                               );
                               if (newWeight == null || !mounted) {
                                 return;

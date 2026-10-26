@@ -9,7 +9,7 @@ enum ClassExtras {
   String get name => switch (this) {
         ClassExtras.rage => 'Ярость',
         ClassExtras.inspiration => 'Вдоховение',
-        ClassExtras.ci => 'Ци',
+        ClassExtras.ci => 'Очки ци',
         ClassExtras.godFeeling => 'Божественное чувство',
         ClassExtras.layingOfHands => 'Наложение рук',
         ClassExtras.sorceryPoints => 'Единицы чародейства',

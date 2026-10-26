@@ -118,7 +118,7 @@ class _ProficienciesScreenState extends State<ProficienciesScreen> {
                         ],
                         for (final option in _choices) ...[
                           _Header(
-                            'Выберите ${option.category!.localizedName.toLowerCase()} '
+                            'Выберите ${option.categories.map((e) => e.localizedName.toLowerCase()).join(' или ')} '
                             '(${_selectedTools[option]!.length}/${option.choose})',
                             subtitle: [
                               'Владение инструментами: ${option.title.toLowerCase()}',
@@ -128,8 +128,8 @@ class _ProficienciesScreenState extends State<ProficienciesScreen> {
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: catalog
-                                .toolsOf(option.category!)
+                            children: option.categories
+                                .expand(catalog.toolsOf)
                                 .map(
                                   (tool) => FilterChip(
                                     label: Text(tool.name),

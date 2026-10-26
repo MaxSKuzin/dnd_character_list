@@ -300,8 +300,13 @@ class Player {
   int get initiative =>
       dexterity.bonus + unskilledCheckBonus + feats.fold(0, (previous, e) => previous + e.feat.initiativeBonus);
 
-  /// Без нужной Силы тяжёлый доспех уменьшает скорость на 10 футов.
-  int get speed => 30 + feats.fold<int>(0, (previous, e) => previous + e.feat.speedBonus) - (isArmorTooHeavy ? 10 : 0);
+  /// Скорость расы; черты и умения классов (движение без доспехов монаха) увеличивают её, без нужной Силы тяжёлый
+  /// доспех уменьшает её на 10 футов.
+  int get speed =>
+      race.speed +
+      feats.fold<int>(0, (previous, e) => previous + e.feat.speedBonus) +
+      classes.fold<int>(0, (previous, e) => previous + e.speedBonus(this)) -
+      (isArmorTooHeavy ? 10 : 0);
 
   int get _passiveBonus => feats.fold(0, (previous, e) => previous + e.feat.passiveBonus);
 
@@ -316,10 +321,18 @@ class Player {
 
   bool get canCastSpells => classes.any((e) => e.spellKind != null);
 
-  List<StatKind> get savingThrowProficiencies => [
-        ...classes.firstWhere((e) => e.isMain).chosenSaveThrows,
-        ...feats.map((e) => e.savingThrow).nonNulls,
-      ];
+  /// Владение спасбросками основного класса и черт. Спасброски, которыми наделяют умения классов
+  /// («Алмазная душа»), добавляются только недостающие: каждое повторение в списке удваивает бонус.
+  List<StatKind> get savingThrowProficiencies {
+    final proficiencies = [
+      ...classes.firstWhere((e) => e.isMain).chosenSaveThrows,
+      ...feats.map((e) => e.savingThrow).nonNulls,
+    ];
+    return [
+      ...proficiencies,
+      ...classes.expand((e) => e.grantedSaveThrows).toSet().where((e) => !proficiencies.contains(e)),
+    ];
+  }
 
   List<PlayerSkill> get skills => Skill.values
       .map(
@@ -426,6 +439,23 @@ class Player {
         currentSpellSlots: () => null,
         classExtras: () => null,
       );
+
+  /// Ресурсы классов, которые восстанавливаются и коротким отдыхом (очки ци, вдохновение барда с 5 уровня).
+  Set<ClassExtras> get shortRestExtras =>
+      classes.expand((e) => e.shortRestExtras).where((e) => maxExtras.containsKey(e)).toSet();
+
+  /// Короткий отдых что-то восстановит: хиты или ресурсы классов из [shortRestExtras] ниже максимума.
+  bool get canRestOnShortRest =>
+      currentHits < maxHits || shortRestExtras.any((e) => (currentExtras[e] ?? 0) < maxExtras[e]!);
+
+  /// Короткий отдых: хиты, восстановленные костями хитов (их бросают вживую, вводится сумма),
+  /// и ресурсы классов из [shortRestExtras].
+  Player shortRest(int health) {
+    final healed = health > 0 ? heal(health) : this;
+    return healed.copyWith(
+      classExtras: () => {...currentExtras, for (final extra in shortRestExtras) extra: maxExtras[extra]!},
+    );
+  }
 
   int get currentSorceryPoints => currentExtras[ClassExtras.sorceryPoints] ?? 0;
 

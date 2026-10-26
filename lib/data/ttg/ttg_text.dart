@@ -162,17 +162,29 @@ abstract final class TtgText {
     return _toolKeywords.entries.where((e) => lower.contains(e.key)).map((e) => e.value).firstOrNull;
   }
 
-  /// Разбирает строку вида «Воровские инструменты, один игровой набор.».
+  /// Все категории инструментов в тексте по порядку: «инструмента ремесленников либо музыкального инструмента».
+  static List<ToolCategory> toolCategoriesIn(String text) {
+    final lower = text.toLowerCase();
+    final found = _toolKeywords.entries.where((e) => lower.contains(e.key)).toList()
+      ..sort((a, b) => lower.indexOf(a.key).compareTo(lower.indexOf(b.key)));
+    return found.map((e) => e.value).toSet().toList();
+  }
+
+  /// Разбирает строку вида «Воровские инструменты, один игровой набор.» или «Выберите один вид инструмента
+  /// ремесленников либо музыкального инструмента».
   static List<ToolProficiencyOption> toolOptions(String? html) {
     final options = <ToolProficiencyOption>[];
     for (final part in splitTopLevel(html ?? '')) {
       final text = plainText(part).replaceAll(RegExp(r'[.;]$'), '');
       if (text.isEmpty || text.toLowerCase() == 'нет') continue;
+      final categories = toolCategoriesIn(text);
+      final alternatives = RegExp(r'\s(либо|или)\s').hasMatch(text) ? categories.skip(1).toList() : <ToolCategory>[];
       options.add(
         ToolProficiencyOption(
           title: capitalize(text),
-          category: toolCategoryIn(text),
-          choose: leadingNumber(text) ?? 0,
+          category: alternatives.isEmpty ? toolCategoryIn(text) : categories.first,
+          choose: leadingNumber(text.replaceFirst(RegExp(r'^выберите\s+', caseSensitive: false), '')) ?? 0,
+          alternatives: alternatives,
         ),
       );
     }

@@ -8,35 +8,49 @@ import 'package:dnd_character_list/domain/models/stat_kind.dart';
 enum Race with ItemWithName {
   tiefling,
   tieflingFaerun,
-  halfElf;
+  halfElf,
+
+  /// Своя раса: особенности тифлинга в теле полурослика — размер, скорость, рост и вес как у полурослика.
+  dwarfTiefling;
 
   @override
   String get name => switch (this) {
         tiefling => 'Тифлинг',
         tieflingFaerun => 'Тифлинг Фаэруна',
         halfElf => 'Полуэльф',
+        dwarfTiefling => 'Карликовый тифлинг',
       };
 
   List<Language> get knownLanguages => switch (this) {
-        tiefling => [Language.common, Language.infernal],
+        tiefling || dwarfTiefling => [Language.common, Language.infernal],
         tieflingFaerun => [Language.common, Language.infernal],
         halfElf => [Language.common, Language.elvish],
       };
 
   int get additionalLanguagesCount => switch (this) {
-        tiefling => 0,
+        tiefling || dwarfTiefling => 0,
         tieflingFaerun => 0,
         halfElf => 1,
       };
 
+  /// Скорость ходьбы в футах.
   int get speed => switch (this) {
         tiefling => 30,
         tieflingFaerun => 30,
         halfElf => 30,
+        dwarfTiefling => 25,
       };
 
+  /// Маленький размер, как у полурослика: тяжёлое оружие атакует с помехой.
+  bool get isSmall => this == dwarfTiefling;
+
+  /// Подсказки при вводе роста и веса персонажа.
+  String get heightHint => isSmall ? 'Обычно около 90 см' : 'Обычно 150–185 см';
+
+  String get weightHint => isSmall ? 'Обычно около 18 кг' : 'Обычно 50–90 кг';
+
   Map<StatKind, int> get statBonuses => switch (this) {
-        tiefling => {
+        tiefling || dwarfTiefling => {
             StatKind.charisma: 2,
             StatKind.intelligence: 1,
           },
@@ -50,7 +64,7 @@ enum Race with ItemWithName {
       };
 
   int get additionalStatsCount => switch (this) {
-        tiefling => 0,
+        tiefling || dwarfTiefling => 0,
         tieflingFaerun => 0,
         halfElf => 2,
       };
@@ -81,6 +95,18 @@ enum Race with ItemWithName {
                   'Персонаж получает скоростью полёта 30 футов, если не носит тяжёлый доспех.',
             ),
           ],
+        dwarfTiefling => [
+            ...tiefling.peculiarities,
+            const Peculiarity(
+              name: 'Маленький размер',
+              description: 'Рост и сложение как у полурослика: размер Маленький, скорость 25 футов. '
+                  'Атаки тяжёлым оружием совершаются с помехой.',
+            ),
+            const Peculiarity(
+              name: 'Проворство полурослика',
+              description: 'Вы можете проходить сквозь пространство, занятое существами, чей размер больше вашего.',
+            ),
+          ],
         halfElf => [
             const Peculiarity(
               name: 'Темное зрение',
@@ -97,7 +123,7 @@ enum Race with ItemWithName {
 
   /// Ссылки на заклинания ttg.club, которые раса даёт к указанному уровню.
   Map<SpellSlot, String> spellForLevel(int level) => switch (this) {
-        tiefling => {
+        tiefling || dwarfTiefling => {
             1: {
               SpellSlot.conspiracy: '/spells/thaumaturgy',
             },

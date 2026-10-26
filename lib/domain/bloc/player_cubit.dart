@@ -34,7 +34,7 @@ class PlayerCubit extends Cubit<Player> {
   }
 
   void shortRest(int health) {
-    emit(state.heal(health));
+    emit(state.shortRest(health));
   }
 
   void longRest() {

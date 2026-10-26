@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/martial_arts_dice.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/common/widgets/separated_column.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
@@ -53,18 +54,20 @@ class _AttackWidget extends StatelessWidget {
 
   const _AttackWidget(this.attack);
 
+  bool get isUnarmed => attack.weapon == unarmedStrike;
+
   @override
   Widget build(BuildContext context) {
     final cell = context.theme.scaffoldBackgroundColor;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () => ItemDetailsSheet.show(context, attack.weapon),
+      onTap: () => isUnarmed ? MartialArtsDice.showDescription(context) : ItemDetailsSheet.show(context, attack.weapon),
       child: Row(
         children: [
           Expanded(
             child: LabeledBorder(
               backgroundColor: cell,
-              text: attack.slot.labelFor(attack.weapon).toUpperCase(),
+              text: (isUnarmed ? 'Без оружия' : attack.slot.labelFor(attack.weapon)).toUpperCase(),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                 child: Center(child: Text(attack.weapon.name, textAlign: TextAlign.center)),
@@ -75,7 +78,8 @@ class _AttackWidget extends StatelessWidget {
           Expanded(
             child: LabeledBorder(
               backgroundColor: cell,
-              text: '1${Dice.k20.name} ${attack.ability.localizedName.substring(0, 3).toUpperCase()}',
+              text: '1${Dice.k20.name} ${attack.ability.localizedName.substring(0, 3).toUpperCase()}'
+                  '${attack.hasDisadvantage ? ' · ПОМЕХА' : ''}',
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                 child: Center(

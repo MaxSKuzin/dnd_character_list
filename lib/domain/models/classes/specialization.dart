@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/thief.dart';
@@ -55,6 +56,9 @@ abstract class Specialization {
 
   int additionalDamage(Player player) => 0;
 
+  /// Прибавка к скорости от умений класса (например, движение без доспехов монаха), в футах.
+  int speedBonus(Player player) => 0;
+
   int hitPoints(Player player) {
     return (isMain ? startHealth : 0) + player.constitution.bonus * level + healthPerLevel * (level - 1);
   }
@@ -62,6 +66,9 @@ abstract class Specialization {
   Dice get hitDice;
 
   List<StatKind> get chosenSaveThrows;
+
+  /// Спасброски, которыми класс наделяет на любом месте в мультиклассе (например, «Алмазная душа» монаха).
+  List<StatKind> get grantedSaveThrows => [];
 
   double get magicLevelMultiplier => classKind.magicLevelMultiplier;
 
@@ -72,6 +79,9 @@ abstract class Specialization {
   String classExtraDescription(ClassExtras extra) => '';
 
   int getClassExtrasCount(Player player, ClassExtras extra) => 0;
+
+  /// Ресурсы класса, которые восстанавливаются и после короткого отдыха.
+  List<ClassExtras> get shortRestExtras => [];
 
   Map<StatKind, int> get statBonuses;
 
@@ -133,6 +143,7 @@ abstract class Specialization {
         'Paladin' => Paladin.fromJson(json),
         'Thief' => Thief.fromJson(json),
         'Sorcerer' => Sorcerer.fromJson(json),
+        'Monk' => Monk.fromJson(json),
         _ => throw 'No such class',
       };
 }

@@ -9,6 +9,7 @@ import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/thief.dart';
@@ -156,6 +157,12 @@ class CreateCharacterCubit extends Cubit<Player?> {
           dragonAncestor: dragonAncestor,
           divineAffinity: divineAffinity,
         ),
+      ClassKind.monk => Monk(
+          level: 1,
+          isMain: true,
+          features: Monk.featuresAt(classInfo!, 1),
+          martialArtsDice: Monk.martialArtsDiceAt(classInfo!, 1),
+        ),
       _ => throw UnimplementedError(),
     };
     final player = Player(
@@ -194,7 +201,8 @@ class CreateCharacterCubit extends Cubit<Player?> {
     final items = player.inventory.items.map((e) => e.item);
     var result = player;
 
-    final armor = items.whereType<Armor>().where((e) => result.armorProficiencies.contains(e.kind.proficiency)).firstOrNull;
+    final armor =
+        items.whereType<Armor>().where((e) => result.armorProficiencies.contains(e.kind.proficiency)).firstOrNull;
     if (armor != null) result = result.equipArmor(armor);
 
     final weapons = items.whereType<Weapon>().sortedBy<num>((e) => result.isProficientWith(e) ? 0 : 1);

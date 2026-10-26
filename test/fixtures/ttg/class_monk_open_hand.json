@@ -1,0 +1,1302 @@
+{
+  "id": 12,
+  "name": {
+    "rus": "Монах Путь Открытой Ладони",
+    "eng": "Monk Open Hand"
+  },
+  "url": "/classes/monk",
+  "source": {
+    "shortName": "PHB",
+    "name": "Книга игрока",
+    "group": {
+      "name": "Официальные источники",
+      "shortName": "Basic"
+    }
+  },
+  "dice": "к8",
+  "archetypes": [
+    {
+      "name": {
+        "rus": "Путь Открытой Ладони",
+        "eng": "Open Hand"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "PHB",
+        "name": "Книга игрока",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/open_hand"
+    },
+    {
+      "name": {
+        "rus": "Путь Тени",
+        "eng": "Shadow"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "PHB",
+        "name": "Книга игрока",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/shadow"
+    },
+    {
+      "name": {
+        "rus": "Путь Четырёх Стихий",
+        "eng": "Four Elements"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "PHB",
+        "name": "Книга игрока",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/four_elements"
+    },
+    {
+      "name": {
+        "rus": "Путь Кенсэя",
+        "eng": "Kensei"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "XGE",
+        "name": "Руководство Занатара обо всем",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/kensei"
+    },
+    {
+      "name": {
+        "rus": "Путь Пьяного Мастера",
+        "eng": "Drunken Master"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "XGE",
+        "name": "Руководство Занатара обо всем",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/drunken_master"
+    },
+    {
+      "name": {
+        "rus": "Путь Солнечной Души",
+        "eng": "Sun Soul"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "XGE",
+        "name": "Руководство Занатара обо всем",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/sun_soul"
+    },
+    {
+      "name": {
+        "rus": "Путь Шипов",
+        "eng": "Thorns"
+      },
+      "type": {
+        "name": "Homebrew",
+        "order": 5
+      },
+      "source": {
+        "shortName": "PG",
+        "name": "Путеводитель игрока: Прорастающий хаос",
+        "group": {
+          "name": "Хомбрю ",
+          "shortName": "HB"
+        },
+        "homebrew": true
+      },
+      "url": "/classes/monk/thorns"
+    },
+    {
+      "name": {
+        "rus": "Путь Долгой Смерти",
+        "eng": "Long Death"
+      },
+      "type": {
+        "name": "Сеттинги",
+        "order": 2
+      },
+      "source": {
+        "shortName": "SCAG",
+        "name": "Путеводитель приключенца по Побережью меча",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/long_death"
+    },
+    {
+      "name": {
+        "rus": "Путь Милосердия",
+        "eng": "Mercy"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "TCE",
+        "name": "Котел Таши со всякой всячиной",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/mercy"
+    },
+    {
+      "name": {
+        "rus": "Путь Астрального Я",
+        "eng": "Astral self"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "TCE",
+        "name": "Котел Таши со всякой всячиной",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/astral_self"
+    },
+    {
+      "name": {
+        "rus": "Путь Искупления",
+        "eng": "Atonement"
+      },
+      "type": {
+        "name": "Homebrew",
+        "order": 5
+      },
+      "source": {
+        "shortName": "LPZAE",
+        "name": "Потерянные страницы Занатара обо всем",
+        "group": {
+          "name": "Хомбрю ",
+          "shortName": "HB"
+        },
+        "homebrew": true
+      },
+      "url": "/classes/monk/atonement"
+    },
+    {
+      "name": {
+        "rus": "Путь Сочувствия",
+        "eng": "Empathy"
+      },
+      "type": {
+        "name": "Homebrew",
+        "order": 5
+      },
+      "source": {
+        "shortName": "LPZAE",
+        "name": "Потерянные страницы Занатара обо всем",
+        "group": {
+          "name": "Хомбрю ",
+          "shortName": "HB"
+        },
+        "homebrew": true
+      },
+      "url": "/classes/monk/empathy"
+    },
+    {
+      "name": {
+        "rus": "Путь Щита",
+        "eng": "Shield"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "ODL",
+        "name": "Одиссея Повелителей драконов",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/monk/shield"
+    },
+    {
+      "name": {
+        "rus": "Путь Живого Оружия",
+        "eng": "Living Weapon"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "EB",
+        "name": "Исследование Эберона",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/monk/living_weapon"
+    },
+    {
+      "name": {
+        "rus": "Путь Восходящего Дракона",
+        "eng": "Ascendant Dragon"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "FTD",
+        "name": "Сокровищница драконов Фицбана",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/monk/ascendant_dragon"
+    },
+    {
+      "name": {
+        "rus": "Путь Кобальтовой Души",
+        "eng": "Cobalt Soul"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "TDCS",
+        "name": "Сеттинг кампании Тал`Дорей",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/monk/cobalt_soul"
+    },
+    {
+      "name": {
+        "rus": "Путь Свинцовой Короны",
+        "eng": "Leaden Crown"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "GHtPG",
+        "name": "Руководство игрока в Мрачной лощине",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/monk/leaden_crown"
+    },
+    {
+      "name": {
+        "rus": "Путь Гордости",
+        "eng": "Pride"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "GHtPG",
+        "name": "Руководство игрока в Мрачной лощине",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/monk/pride"
+    },
+    {
+      "name": {
+        "rus": "Путь Демона",
+        "eng": "Demon"
+      },
+      "type": {
+        "name": "Homebrew",
+        "order": 5
+      },
+      "source": {
+        "shortName": "MoE",
+        "name": "Монстры Эдны",
+        "group": {
+          "name": "Хомбрю ",
+          "shortName": "HB"
+        },
+        "homebrew": true
+      },
+      "url": "/classes/monk/demon"
+    },
+    {
+      "name": {
+        "rus": "Путь Умиротворения",
+        "eng": "Tranquility"
+      },
+      "type": {
+        "name": "Unearthed Arcana",
+        "order": 3
+      },
+      "source": {
+        "shortName": "UAM",
+        "name": "Unearthed Arcana: Монах",
+        "group": {
+          "name": "Тестовый материал",
+          "shortName": "UA"
+        }
+      },
+      "url": "/classes/monk/tranquility"
+    }
+  ],
+  "tabs": [
+    {
+      "name": "Навыки",
+      "url": "/classes/monk/architypes/open_hand",
+      "type": "traits",
+      "order": 0,
+      "raw": true
+    },
+    {
+      "name": "Описание",
+      "url": "/classes/monk/archetype/open_hand/description",
+      "type": "description",
+      "order": 1,
+      "raw": true
+    }
+  ],
+  "traits": {
+    "diceHp": 8,
+    "armor": "Нет",
+    "weapon": "Простое оружие, короткие мечи",
+    "tools": "Выберите один вид <detail-tooltip type=\"screen\"><a href=\"/screens/artisan_s_tools\">инструмента ремесленников</a></detail-tooltip> либо <detail-tooltip type=\"screen\"><a href=\"/screens/musical_instruments\">музыкального инструмента</a></detail-tooltip>",
+    "savingThrows": "Сила, Ловкость",
+    "skillAvailableCount": 2,
+    "availableSkills": [
+      "Акробатика",
+      "Атлетика",
+      "История",
+      "Проницательность",
+      "Религия",
+      "Скрытность"
+    ],
+    "equipment": "<ul><li>а) <detail-tooltip type=\"weapon\"><a href=\"/weapons/Shortsword\">короткий меч [shortsword]</a></detail-tooltip> или б) любое простое оружие</li><li>а) <detail-tooltip type=\"item\"><a href=\"/items/Dungeoneer's_Pack\">набор исследователя подземелий [dungeoneer's pack]</a></detail-tooltip> или б) <detail-tooltip type=\"item\"><a href=\"/items/Explorer's_Pack\">набор путешественника [explorer's pack]</a></detail-tooltip></li><li>10 <detail-tooltip type=\"weapon\"><a href=\"/weapons/Dart\">дротиков [dart]</a></detail-tooltip></li></ul><p>В качестве альтернативы базовому снаряжению класса и предыстории, вы можете получить <dice-roller formula=\"5к4\">5к4</dice-roller> зм. монет и приобрести себе <a href=\"/items\">снаряжение</a> самостоятельно.</p>",
+    "classFeatureLevels": [
+      {
+        "name": "Боевые искусства",
+        "prefix": "1к",
+        "suffix": null
+      },
+      {
+        "name": "Очки ци",
+        "prefix": null,
+        "suffix": null
+      },
+      {
+        "name": "Скорость без доспехов",
+        "prefix": "+",
+        "suffix": " фт."
+      }
+    ],
+    "archetypeFeatureLevels": [],
+    "levels": [
+      {
+        "level": 1,
+        "proficiencyBonus": 2,
+        "traits": [
+          {
+            "name": "защита без доспехов",
+            "anchor": "#c91",
+            "tooltipUrl": "/classes/feature/91",
+            "archetypeFeature": false
+          },
+          {
+            "name": "боевые искусства",
+            "anchor": "#c92",
+            "tooltipUrl": "/classes/feature/92",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к4",
+          "—",
+          "—"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 2,
+        "proficiencyBonus": 2,
+        "traits": [
+          {
+            "name": "ци",
+            "anchor": "#c93",
+            "tooltipUrl": "/classes/feature/93",
+            "archetypeFeature": false
+          },
+          {
+            "name": "движение без доспехов",
+            "anchor": "#c94",
+            "tooltipUrl": "/classes/feature/94",
+            "archetypeFeature": false
+          },
+          {
+            "name": "выбранное оружие",
+            "anchor": "#c292",
+            "tooltipUrl": "/classes/feature/292",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к4",
+          "2",
+          "+10 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 3,
+        "proficiencyBonus": 2,
+        "traits": [
+          {
+            "name": "техники открытой ладони",
+            "anchor": "#a152",
+            "tooltipUrl": "/classes/archetype/feature/152",
+            "archetypeFeature": true
+          },
+          {
+            "name": "отражение снарядов",
+            "anchor": "#c96",
+            "tooltipUrl": "/classes/feature/96",
+            "archetypeFeature": false
+          },
+          {
+            "name": "атака наделённая ци",
+            "anchor": "#c293",
+            "tooltipUrl": "/classes/feature/293",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к4",
+          "3",
+          "+10 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 4,
+        "proficiencyBonus": 2,
+        "traits": [
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c97",
+            "tooltipUrl": "/classes/feature/97",
+            "archetypeFeature": false
+          },
+          {
+            "name": "медленное падение",
+            "anchor": "#c98",
+            "tooltipUrl": "/classes/feature/98",
+            "archetypeFeature": false
+          },
+          {
+            "name": "ускоренное исцеление",
+            "anchor": "#c294",
+            "tooltipUrl": "/classes/feature/294",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к4",
+          "4",
+          "+10 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 5,
+        "proficiencyBonus": 3,
+        "traits": [
+          {
+            "name": "дополнительная атака",
+            "anchor": "#c99",
+            "tooltipUrl": "/classes/feature/99",
+            "archetypeFeature": false
+          },
+          {
+            "name": "ошеломляющий удар",
+            "anchor": "#c100",
+            "tooltipUrl": "/classes/feature/100",
+            "archetypeFeature": false
+          },
+          {
+            "name": "фокусировка на цели",
+            "anchor": "#c295",
+            "tooltipUrl": "/classes/feature/295",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к6",
+          "5",
+          "+10 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 6,
+        "proficiencyBonus": 3,
+        "traits": [
+          {
+            "name": "исцеление тела",
+            "anchor": "#a153",
+            "tooltipUrl": "/classes/archetype/feature/153",
+            "archetypeFeature": true
+          },
+          {
+            "name": "энергетические удары",
+            "anchor": "#c101",
+            "tooltipUrl": "/classes/feature/101",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к6",
+          "6",
+          "+15 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 7,
+        "proficiencyBonus": 3,
+        "traits": [
+          {
+            "name": "увёртливость",
+            "anchor": "#c102",
+            "tooltipUrl": "/classes/feature/102",
+            "archetypeFeature": false
+          },
+          {
+            "name": "спокойствие разума",
+            "anchor": "#c103",
+            "tooltipUrl": "/classes/feature/103",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к6",
+          "7",
+          "+15 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 8,
+        "proficiencyBonus": 3,
+        "traits": [
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c97",
+            "tooltipUrl": "/classes/feature/236",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к6",
+          "8",
+          "+15 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 9,
+        "proficiencyBonus": 4,
+        "traits": [
+          {
+            "name": "улучшенное движение без доспехов",
+            "anchor": "#c232",
+            "tooltipUrl": "/classes/feature/232",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к6",
+          "9",
+          "+15 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 10,
+        "proficiencyBonus": 4,
+        "traits": [
+          {
+            "name": "чистота тела",
+            "anchor": "#c104",
+            "tooltipUrl": "/classes/feature/104",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к6",
+          "10",
+          "+20 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 11,
+        "proficiencyBonus": 4,
+        "traits": [
+          {
+            "name": "умиротворение",
+            "anchor": "#a154",
+            "tooltipUrl": "/classes/archetype/feature/154",
+            "archetypeFeature": true
+          }
+        ],
+        "classFeatureValues": [
+          "1к8",
+          "11",
+          "+20 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 12,
+        "proficiencyBonus": 4,
+        "traits": [
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c97",
+            "tooltipUrl": "/classes/feature/237",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к8",
+          "12",
+          "+20 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 13,
+        "proficiencyBonus": 5,
+        "traits": [
+          {
+            "name": "язык солнца и луны",
+            "anchor": "#c105",
+            "tooltipUrl": "/classes/feature/105",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к8",
+          "13",
+          "+20 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 14,
+        "proficiencyBonus": 5,
+        "traits": [
+          {
+            "name": "алмазная душа",
+            "anchor": "#c106",
+            "tooltipUrl": "/classes/feature/106",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к8",
+          "14",
+          "+25 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 15,
+        "proficiencyBonus": 5,
+        "traits": [
+          {
+            "name": "безвременное тело",
+            "anchor": "#c107",
+            "tooltipUrl": "/classes/feature/107",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к8",
+          "15",
+          "+25 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 16,
+        "proficiencyBonus": 5,
+        "traits": [
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c97",
+            "tooltipUrl": "/classes/feature/238",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к8",
+          "16",
+          "+25 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 17,
+        "proficiencyBonus": 6,
+        "traits": [
+          {
+            "name": "дрожащая ладонь",
+            "anchor": "#a155",
+            "tooltipUrl": "/classes/archetype/feature/155",
+            "archetypeFeature": true
+          }
+        ],
+        "classFeatureValues": [
+          "1к10",
+          "17",
+          "+25 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 18,
+        "proficiencyBonus": 6,
+        "traits": [
+          {
+            "name": "пустое тело",
+            "anchor": "#c108",
+            "tooltipUrl": "/classes/feature/108",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к10",
+          "18",
+          "+30 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 19,
+        "proficiencyBonus": 6,
+        "traits": [
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c97",
+            "tooltipUrl": "/classes/feature/239",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к10",
+          "19",
+          "+30 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      },
+      {
+        "level": 20,
+        "proficiencyBonus": 6,
+        "traits": [
+          {
+            "name": "совершенство",
+            "anchor": "#c109",
+            "tooltipUrl": "/classes/feature/109",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "1к10",
+          "20",
+          "+30 фт."
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": []
+      }
+    ],
+    "features": [
+      {
+        "id": "c91",
+        "name": "Защита без доспехов",
+        "level": 1,
+        "type": "1-й уровень",
+        "description": "<p>Начиная с 1 уровня, если вы не носите ни доспех,&nbsp;ни щит, ваш <strong>Класс Доспеха</strong> равен <span class=\"dice_text\">10</span>&nbsp;+&nbsp;модификатор <strong>Ловкости</strong> + модификатор <strong>Мудрости</strong>.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c92",
+        "name": "Боевые искусства",
+        "level": 1,
+        "type": "1-й уровень",
+        "description": "<p>На 1 уровне ваше знание боевых искусств позволяет вам эффективно использовать в бою безоружные удары и оружие монахов &mdash; короткие мечи, а также любое простое оружие, не имеющее свойств <detail-tooltip type=\"screen\"><a href=\"/screens/two-handed\">Двуручное</a></detail-tooltip> и <detail-tooltip type=\"screen\"><a href=\"/screens/heavy\">Тяжёлое</a></detail-tooltip>. Если вы безоружны или используете только монашеское оружие, и не носите ни доспехов, ни щита, вы получаете следующие преимущества:</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c93",
+        "name": "Ци",
+        "level": 2,
+        "type": "2-й уровень",
+        "description": "<p>Начиная со 2 уровня ваши тренировки позволяют&nbsp;вам управлять мистической энергией ци. Ваш доступ к этой энергии выражается количеством очков ци. Ваш уровень монаха определяет это количество, согласно колонке &laquo;очки ци&raquo;.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c94",
+        "name": "Движение без доспехов",
+        "level": 2,
+        "type": "2-й уровень",
+        "description": "<p>Начиная со 2 уровня ваша скорость увеличивается&nbsp;на 10 футов, если вы не носите доспехов и щит.&nbsp;Этот бонус увеличивается с ростом вашего уровня,&nbsp;как показано в таблице.&nbsp;&nbsp;На 9 уровне вы получаете возможность в свой&nbsp;ход перемещаться по вертикальным поверхностям&nbsp;и по поверхности жидкости, не падая во время&nbsp;движения.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c292",
+        "name": "Выбранное оружие",
+        "level": 2,
+        "type": "2-й уровень",
+        "description": "<p>Вы тренируетесь использовать в качестве монашеского оружия не только простое оружие и короткие мечи, но и другие виды оружия.</p>",
+        "source": {
+          "name": "Котел Таши со всякой всячиной",
+          "shortName": "TCE"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c96",
+        "name": "Отражение снарядов",
+        "level": 3,
+        "type": "3-й уровень",
+        "description": "<p>Начиная с 3 уровня вы можете <em>реакцией</em> отразить&nbsp;или поймать снаряд, если по вам попали дальнобойной атакой оружием.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c293",
+        "name": "Атака наделённая Ци",
+        "level": 3,
+        "type": "3-й уровень",
+        "description": "<p>Если вы частью действия в свой ход тратите хотя бы 1 очко ци, то можете до окончания своего хода <em>бонусным действием</em> совершить одну <a href=\"/screens/Unarmed_Strike\">безоружную атаку</a> или атаку <a href=\"#c292\">монашеским оружием</a>.</p>",
+        "source": {
+          "name": "Котел Таши со всякой всячиной",
+          "shortName": "TCE"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "a152",
+        "name": "Техники Открытой ладони",
+        "level": 3,
+        "type": "3-й уровень, умение пути открытой ладони",
+        "description": "<p>При выборе этой традиции на 3&nbsp;уровне вы получаете возможность манипулировать вражеской энергией <a href=\"#c93\">ци</a>, направляя свою собственную. Каждый раз, когда вы попадаете по существу одной из атак, дарованных <a href=\"#su\">Шквалом ударов</a>, вы можете наложить на цель один из следующих эффектов:</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": true,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c97",
+        "name": "Увеличение характеристик",
+        "level": 4,
+        "type": "4-й уровень",
+        "description": "<p>При достижении 4, 8, 12, 16 и 19 уровней вы можете повысить значение одной из ваших характеристик на 2 или двух характеристик на 1 или выбрать <a href=\"/feats\">черту</a>. Как обычно, значение характеристики при этом не должно превысить 20.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c98",
+        "name": "Медленное падение",
+        "level": 4,
+        "type": "4-й уровень",
+        "description": "<p>Начиная с 4 уровня, если вы упали, вы можете реакцией уменьшить урон от падения на значение,&nbsp;равное вашему уровню монаха, умноженному на&nbsp;пять.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c294",
+        "name": "Ускоренное исцеление",
+        "level": 4,
+        "type": "4-й уровень",
+        "description": "<p>Действием вы можете потратить 2 очка <a href=\"#c93\">ци</a> и совершить бросок <a href=\"#c92\">кости боевых искусств</a>. Вы восстанавливаете количество хитов, равное результату броска кости боевых искусств + ваш бонус мастерства.</p>",
+        "source": {
+          "name": "Котел Таши со всякой всячиной",
+          "shortName": "TCE"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c99",
+        "name": "Дополнительная атака",
+        "level": 5,
+        "type": "5-й уровень",
+        "description": "<p>Начиная с 5 уровня, если вы в свой ход совершаете действие <em>Атака</em>, вы можете совершить две атаки вместо одной.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c100",
+        "name": "Ошеломляющий удар",
+        "level": 5,
+        "type": "5-й уровень",
+        "description": "<p>Начиная с 5 уровня вы можете взаимодействовать с энергией ци, текущей в теле вашего противника. Если вы попали по другому существу атакой рукопашным оружием, вы можете потратить 1 очко <a href=\"#c93\">ци</a>, чтобы нанести ошеломляющий удар. Цель должна преуспеть в спасброске <span class=\"saving_throw\">Телосложения</span>, иначе она станет <a href=\"/screens/Stunned\">ошеломлённой</a> до конца вашего&nbsp;следующего хода.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c295",
+        "name": "Фокусировка на цели",
+        "level": 5,
+        "type": "5-й уровень",
+        "description": "<p>Когда вы промахиваетесь броском атаки, вы можете потратить от 1 до 3 очков <a href=\"#c93\">ци</a>, чтобы увеличить результат броска атаки на 2 за каждое затраченное очко ци, что потенциально может обратить промах в попадание.</p>",
+        "source": {
+          "name": "Котел Таши со всякой всячиной",
+          "shortName": "TCE"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c101",
+        "name": "Энергетические удары",
+        "level": 6,
+        "type": "6-й уровень",
+        "description": "<p>Начиная с 6 уровня ваши безоружные удары считаются магическими при определении преодоления сопротивления и иммунитета к немагическим&nbsp;атакам и урону.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "a153",
+        "name": "Исцеление тела",
+        "level": 6,
+        "type": "6-й уровень, умение пути открытой ладони",
+        "description": "<p>На 6 уровне вы получаете способность лечить себя.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": true,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c102",
+        "name": "Увёртливость",
+        "level": 7,
+        "type": "7-й уровень",
+        "description": "<p>На 7 уровне ваше инстинктивное проворство позволяет вам уклоняться от эффектов, направленных на определённую область, вроде дыхания синего дракона или заклинания <detail-tooltip type=\"spell\"><a class=\"tip_spell\" href=\"/spells/Fireball\">огненный шар [fireball]</a></detail-tooltip>.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c103",
+        "name": "Спокойствие разума",
+        "level": 7,
+        "type": "7-й уровень",
+        "description": "<p>Начиная с 7 уровня вы можете <em>Действием</em> окончить один из действующих на вас эффектов, делающих вас <detail-tooltip type=\"screen\"><a href=\"/screens/charmed\">очарованным</a></detail-tooltip> или <detail-tooltip type=\"screen\"><a href=\"/screens/frightened\">испуганным</a></detail-tooltip>.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c232",
+        "name": "Улучшенное движение без доспехов",
+        "level": 9,
+        "type": "9-й уровень",
+        "description": "<p>На 9 уровне вы получаете возможность в свой ход перемещаться по вертикальным поверхностям и по поверхности жидкости, не падая во время движения, если не носите доспехов.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c104",
+        "name": "Чистота тела",
+        "level": 10,
+        "type": "10-й уровень",
+        "description": "<p>На 10 уровне ваше мастерство ци даёт вам <em><detail-tooltip type=\"screen\"><a href=\"/screens/immunity\"><em>иммунитет</em></a></detail-tooltip></em> к болезням и яду.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "a154",
+        "name": "Умиротворение",
+        "level": 11,
+        "type": "11-й уровень, умение пути открытой ладони",
+        "description": "<p>Начиная с 11 уровня вы можете совершить специальную медитацию, окружающую вас аурой мира.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": true,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c105",
+        "name": "Язык солнца и луны",
+        "level": 13,
+        "type": "13-й уровень",
+        "description": "<p>Начиная с 13 уровня вы понимаете, как взаимодействовать с энергией ци в чужом разуме, и теперь вы понимаете речь на любом языке. Кроме&nbsp;того, все существа, способные понимать хотя бы&nbsp;один язык, понимают то, что вы сказали.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c106",
+        "name": "Алмазная душа",
+        "level": 14,
+        "type": "14-й уровень",
+        "description": "<p>Начиная с 14 уровня ваше мастерство ци предоставляет вам владение всеми спасбросками.&nbsp;Кроме того, если вы провалили спасбросок, вы&nbsp;можете повторить его, потратив 1 очко <a href=\"#c93\">ци</a>, и&nbsp;должны использовать второй результат</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c107",
+        "name": "Безвременное тело",
+        "level": 15,
+        "type": "15-й уровень",
+        "description": "<p>На 15 уровне ваша <a href=\"#c93\">ци</a> поддерживает вас, и ваше тело больше не подвержено признакам старения. Вы не можете быть состарены магически. Впрочем, вы всё ещё можете умереть от старости. Кроме того, вам больше не требуется еда и вода.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "a155",
+        "name": "Дрожащая ладонь",
+        "level": 17,
+        "type": "17-й уровень, умение пути открытой ладони",
+        "description": "<p>На 17 уровне вы получаете возможность создавать смертельные колебания в чужом теле.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": true,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c108",
+        "name": "Пустое тело",
+        "level": 18,
+        "type": "18-й уровень",
+        "description": "<p>Начиная с 18 уровня вы можете действием потратить 4 очка <a href=\"#c93\">ци</a>, чтобы стать <detail-tooltip type=\"screen\"><a href=\"/screens/Invisible\">невидимым</a></detail-tooltip> на 1 минуту.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c109",
+        "name": "Совершенство",
+        "level": 20,
+        "type": "20-й уровень",
+        "description": "<p>На 20 уровне, если при броске инициативы у вас нет очков <a href=\"#c93\">ци</a>, вы получаете 4 таких очка.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      }
+    ],
+    "archetype": {
+      "id": "ad30",
+      "name": "Путь Открытой Ладони",
+      "level": 3,
+      "type": "Монастырские традиции",
+      "description": "<p>Монахи, избравшие этот путь, являются непревзойдёнными мастерами боевых искусств, вне зависимости от того, вооружены ли они. Они изучают техники, позволяющие толкать и опрокидывать противника, а также лечить себя, манипулируя энергией ци. Используемые ими медитации позволяют защититься от получаемого вреда.</p>",
+      "source": {
+        "name": "Книга игрока",
+        "shortName": "PHB"
+      },
+      "optional": false,
+      "archetypeFeature": true,
+      "archetypeRoot": true
+    }
+  },
+  "enabledArhitypeLevel": 0,
+  "archetypeSpellTable": {
+    "levelType": "CLASS_LEVEL",
+    "classNameGenitive": "монаха",
+    "levels": []
+  }
+}

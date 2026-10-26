@@ -28,7 +28,7 @@ class LevelUpCubit extends Cubit<Player?> {
 
   List<Skill>? _newSkills;
 
-  /// Готовая специализация нового уровня (бард и чародей собираются по таблице класса с ttg.club).
+  /// Готовая специализация нового уровня (бард, чародей и монах собираются по таблице класса с ttg.club).
   Specialization? _specialization;
 
   List<String> _newTools = [];
@@ -79,6 +79,7 @@ class LevelUpCubit extends Cubit<Player?> {
     switch (_classToUpdate!) {
       case ClassKind.bard:
       case ClassKind.sorcerer:
+      case ClassKind.monk:
         newClass = _specialization!;
       case ClassKind.paladin:
         {
@@ -135,7 +136,6 @@ class LevelUpCubit extends Cubit<Player?> {
       case ClassKind.cliric:
       case ClassKind.inventor:
       case ClassKind.witch:
-      case ClassKind.monk:
       case ClassKind.ranger:
         throw UnimplementedError();
     }
