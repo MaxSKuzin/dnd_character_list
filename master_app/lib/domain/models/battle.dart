@@ -188,8 +188,7 @@ class Battle {
   factory Battle.fromEncounter(Encounter encounter) {
     var battle = Battle(id: encounter.id, name: encounter.name);
     for (final group in encounter.monsters) {
-      final template = group.template;
-      if (template != null) battle = battle.addMonster(template, count: group.count);
+      battle = battle.addMonster(group.template, count: group.count);
     }
     return battle;
   }

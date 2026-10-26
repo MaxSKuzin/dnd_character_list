@@ -1,0 +1,100 @@
+{
+ "name": {
+  "rus": "Гоблин",
+  "eng": "Goblin"
+ },
+ "size": {
+  "rus": "Маленький",
+  "eng": "small",
+  "cell": "1 клетка"
+ },
+ "type": {
+  "name": "гуманоид",
+  "tags": [
+   "гоблиноид"
+  ]
+ },
+ "challengeRating": "1/4",
+ "url": "/bestiary/goblin",
+ "source": {
+  "shortName": "MM",
+  "name": "Бестиарий",
+  "group": {
+   "name": "Официальные источники",
+   "shortName": "Basic"
+  }
+ },
+ "id": 38,
+ "experience": 50,
+ "proficiencyBonus": "2",
+ "alignment": "нейтрально-злой",
+ "armorClass": 15,
+ "armors": [
+  {
+   "name": "кожаный доспех",
+   "type": "armor",
+   "url": "/armors/leather_armor"
+  },
+  {
+   "name": "щит",
+   "type": "armor",
+   "url": "/armors/shield"
+  }
+ ],
+ "hits": {
+  "average": 7,
+  "formula": "2к6"
+ },
+ "speed": [
+  {
+   "value": 30
+  }
+ ],
+ "ability": {
+  "str": 8,
+  "dex": 14,
+  "con": 10,
+  "int": 10,
+  "wiz": 8,
+  "cha": 8
+ },
+ "skills": [
+  {
+   "name": "Скрытность",
+   "value": 6
+  }
+ ],
+ "senses": {
+  "passivePerception": "9",
+  "senses": [
+   {
+    "name": "тёмное зрение",
+    "value": 60
+   }
+  ]
+ },
+ "languages": [
+  "Гоблинский",
+  "Общий"
+ ],
+ "feats": [
+  {
+   "name": "Ловкий побег",
+   "value": "<p>Гоблин может в каждом своём ходу <em>бонусным действием</em> совершать действие <detail-tooltip type=\"screen\"><a href=\"/screens/hide\">Засада</a></detail-tooltip> или <detail-tooltip type=\"screen\"><a href=\"/screens/disengage\">Отход</a></detail-tooltip>.</p>",
+   "markdown": false
+  }
+ ],
+ "actions": [
+  {
+   "name": "Скимитар",
+   "value": "<p><em>Рукопашная атака оружием:</em> <dice-roller label=\"Атака\" formula=\"к20 + 4\">+4</dice-roller> к попаданию, досягаемость 5 фт., одна цель. <em>Попадание:</em>&nbsp;5&nbsp;(<dice-roller label=\"Урон\" formula=\"1к6 + 2\"/>) рубящего урона.</p>",
+   "markdown": true
+  },
+  {
+   "name": "Короткий лук",
+   "englishName": "Shortbow",
+   "value": "<p><em>Дальнобойная атака оружием:</em> <dice-roller label=\"Атака\" formula=\"к20 + 4\">+4</dice-roller> к попаданию, дистанция 80/320 фт., <em>Попадание:</em>&nbsp;5&nbsp;(<dice-roller label=\"Урон\" formula=\"1к6 + 2\"/>) колющего урона.</p>",
+   "markdown": true
+  }
+ ]
+}

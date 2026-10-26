@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:dnd_master/domain/bestiary.dart';
@@ -29,8 +30,8 @@ const _ambush = Encounter(
   id: 'ambush',
   name: 'Засада',
   monsters: [
-    EncounterMonster(monsterId: 'goblin', count: 2),
-    EncounterMonster(monsterId: 'bugbear', count: 1),
+    EncounterMonster(template: Bestiary.goblin, count: 2),
+    EncounterMonster(template: Bestiary.bugbear, count: 1),
   ],
 );
 
@@ -54,12 +55,17 @@ void main() {
     expect(Bestiary.kobold.hitDice.toString(), '2к6 − 2');
   });
 
-  test('ситуация сохраняется и разбирается, неизвестные монстры отбрасываются', () {
-    final json = _ambush.toJson();
-    (json['monsters'] as List).add({'monsterId': 'dragon', 'count': 1});
-    final restored = Encounter.fromJson(json);
-    expect(restored.monsters.map((e) => e.monsterId), ['goblin', 'bugbear']);
+  test('ситуация сохраняется и разбирается вместе со статблоками', () {
+    final restored = Encounter.fromJson(jsonDecode(jsonEncode(_ambush.toJson())));
+    expect(restored.monsters.map((e) => e.template.id), ['goblin', 'bugbear']);
+    expect(restored.monsters.map((e) => e.count), [2, 1]);
     expect(restored.experience, 50 * 2 + 200);
+    final bugbear = restored.monsters[1].template;
+    expect(bugbear.hitDice.toString(), '5к8 + 5');
+    expect(bugbear.abilities[Ability.strength], 15);
+    expect(bugbear.armorNote, 'шкурный доспех, щит');
+    expect(bugbear.traits.map((e) => e.name), ['Громила', 'Внезапное нападение']);
+    expect(bugbear.actions.last.text, Bestiary.bugbear.actions.last.text);
   });
 
   test('бой из ситуации: монстры пронумерованы, одиночный — без номера', () {

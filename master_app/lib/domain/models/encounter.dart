@@ -1,19 +1,17 @@
-import 'package:dnd_master/domain/bestiary.dart';
 import 'package:dnd_master/domain/models/monster.dart';
 
-/// Монстры одного вида в боевой ситуации: «Гоблин × 4».
+/// Монстры одного вида в боевой ситуации: «Гоблин × 4». Статблок хранится целиком, чтобы монстры,
+/// загруженные с ttg.club, были доступны без сети.
 class EncounterMonster {
-  final String monsterId;
+  final MonsterTemplate template;
   final int count;
 
-  const EncounterMonster({required this.monsterId, required this.count});
+  const EncounterMonster({required this.template, required this.count});
 
-  MonsterTemplate? get template => Bestiary.byId(monsterId);
-
-  Map<String, dynamic> toJson() => {'monsterId': monsterId, 'count': count};
+  Map<String, dynamic> toJson() => {'template': template.toJson(), 'count': count};
 
   factory EncounterMonster.fromJson(Map<String, dynamic> json) =>
-      EncounterMonster(monsterId: json['monsterId'], count: json['count']);
+      EncounterMonster(template: MonsterTemplate.fromJson(json['template']), count: json['count']);
 }
 
 /// Заранее подготовленная боевая ситуация: «Засада на тракте» — 4 гоблина и багбир.
@@ -28,7 +26,7 @@ class Encounter {
   const Encounter({required this.id, required this.name, this.notes = '', this.monsters = const []});
 
   /// Опыт за всех монстров ситуации.
-  int get experience => monsters.fold(0, (sum, e) => sum + (e.template?.experience ?? 0) * e.count);
+  int get experience => monsters.fold(0, (sum, e) => sum + e.template.experience * e.count);
 
   int get monsterCount => monsters.fold(0, (sum, e) => sum + e.count);
 
@@ -42,14 +40,10 @@ class Encounter {
     'monsters': monsters.map((e) => e.toJson()).toList(),
   };
 
-  /// Монстры, которых больше нет в бестиарии, отбрасываются.
   factory Encounter.fromJson(Map<String, dynamic> json) => Encounter(
     id: json['id'],
     name: json['name'],
     notes: json['notes'] ?? '',
-    monsters: (json['monsters'] as List)
-        .map((e) => EncounterMonster.fromJson(e))
-        .where((e) => e.template != null)
-        .toList(),
+    monsters: (json['monsters'] as List).map((e) => EncounterMonster.fromJson(e)).toList(),
   );
 }

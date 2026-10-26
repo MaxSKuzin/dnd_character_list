@@ -1,0 +1,105 @@
+[
+ {
+  "name": {
+   "rus": "Взрослый лесной дракон",
+   "eng": "Forest Dragon"
+  },
+  "type": "растение",
+  "challengeRating": "15",
+  "url": "/bestiary/forest_dragon",
+  "source": {
+   "shortName": "PG",
+   "name": "Путеводитель игрока: Прорастающий хаос",
+   "group": {
+    "name": "Хомбрю ",
+    "shortName": "HB"
+   },
+   "homebrew": true
+  }
+ },
+ {
+  "name": {
+   "rus": "Гоблин",
+   "eng": "Goblin"
+  },
+  "type": "гуманоид",
+  "challengeRating": "1/4",
+  "url": "/bestiary/goblin",
+  "source": {
+   "shortName": "MM",
+   "name": "Бестиарий",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Совомед",
+   "eng": "Owlbear"
+  },
+  "type": "монстр",
+  "challengeRating": "3",
+  "url": "/bestiary/owlbear",
+  "source": {
+   "shortName": "MM",
+   "name": "Бестиарий",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Хобгоблин",
+   "eng": "Hobgoblin"
+  },
+  "type": "гуманоид",
+  "challengeRating": "1/2",
+  "url": "/bestiary/hobgoblin",
+  "source": {
+   "shortName": "MM",
+   "name": "Бестиарий",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Взрослый красный дракон",
+   "eng": "Adult Red Dragon"
+  },
+  "type": "дракон",
+  "challengeRating": "17",
+  "url": "/bestiary/adult_red_dragon",
+  "source": {
+   "shortName": "MM",
+   "name": "Бестиарий",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Босс гоблинов",
+   "eng": "Goblin Boss"
+  },
+  "type": "гуманоид",
+  "challengeRating": "1",
+  "url": "/bestiary/goblin_boss",
+  "source": {
+   "shortName": "MM",
+   "name": "Бестиарий",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ }
+]

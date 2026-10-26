@@ -12,6 +12,8 @@ dependencies:
   dnd_session:
     path: ../packages/dnd_session
   flutter_bloc: ^8.1.6
+  html: ^0.15.7
+  http: ^1.6.0
   shared_preferences: ^2.3.3
 
 dev_dependencies:

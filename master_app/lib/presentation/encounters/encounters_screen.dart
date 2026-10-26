@@ -11,7 +11,7 @@ class EncountersScreen extends StatelessWidget {
 
   static String summary(Encounter encounter) {
     if (encounter.monsters.isEmpty) return 'Без монстров';
-    final monsters = encounter.monsters.map((e) => e.count == 1 ? e.template!.name : '${e.template!.name} ×${e.count}');
+    final monsters = encounter.monsters.map((e) => e.count == 1 ? e.template.name : '${e.template.name} ×${e.count}');
     return '${monsters.join(', ')} · ${encounter.experience} опыта';
   }
 

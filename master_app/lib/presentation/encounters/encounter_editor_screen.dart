@@ -42,10 +42,10 @@ class _EncounterEditorScreenState extends State<EncounterEditorScreen> {
   Future<void> _addMonster() async {
     final monster = await pickMonster(context);
     if (monster == null) return;
-    final index = _monsters.indexWhere((e) => e.monsterId == monster.id);
+    final index = _monsters.indexWhere((e) => e.template.id == monster.id);
     setState(() {
       if (index < 0) {
-        _monsters = [..._monsters, EncounterMonster(monsterId: monster.id, count: 1)];
+        _monsters = [..._monsters, EncounterMonster(template: monster, count: 1)];
       } else {
         _changeCount(index, 1);
       }
@@ -58,7 +58,7 @@ class _EncounterEditorScreenState extends State<EncounterEditorScreen> {
     final count = group.count + delta;
     _monsters = [
       for (final (i, e) in _monsters.indexed)
-        if (i != index) e else if (count > 0) EncounterMonster(monsterId: group.monsterId, count: count),
+        if (i != index) e else if (count > 0) EncounterMonster(template: group.template, count: count),
     ];
   }
 
@@ -102,9 +102,9 @@ class _EncounterEditorScreenState extends State<EncounterEditorScreen> {
             for (final (index, group) in _monsters.indexed)
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(group.template!.name),
-                subtitle: Text('ПО ${group.template!.challenge} · КД ${group.template!.armorClass}'),
-                onTap: () => showMonsterStatBlock(context, group.template!),
+                title: Text(group.template.name),
+                subtitle: Text('ПО ${group.template.challenge} · КД ${group.template.armorClass}'),
+                onTap: () => showMonsterStatBlock(context, group.template),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

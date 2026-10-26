@@ -66,7 +66,7 @@ class MonsterStatBlock extends StatelessWidget {
         const Divider(),
         Text('Класс доспеха: ${monster.armorClass}${monster.armorNote == null ? '' : ' (${monster.armorNote})'}'),
         Text('Хиты: ${hits ?? '${monster.averageHits} (${monster.hitDice})'}'),
-        Text('Скорость: ${monster.speed} фт.'),
+        Text('Скорость: ${[if (monster.speed > 0) '${monster.speed} фт.', ?monster.speedNote].join(', ')}'),
         const Divider(),
         Row(
           children: [
@@ -82,13 +82,22 @@ class MonsterStatBlock extends StatelessWidget {
           ],
         ),
         const Divider(),
+        for (final property in monster.properties) Text('${property.name}: ${property.text}'),
         Text('Пассивная Внимательность: ${monster.passivePerception}'),
         Text('Опасность: ${monster.challenge} (${monster.experience} опыта)'),
         const Divider(),
         ...monster.traits.map(feature),
-        Text('Действия', style: theme.textTheme.titleMedium),
-        const SizedBox(height: 8),
-        ...monster.actions.map(feature),
+        for (final (title, features) in [
+          ('Действия', monster.actions),
+          ('Бонусные действия', monster.bonusActions),
+          ('Реакции', monster.reactions),
+          ('Легендарные действия', monster.legendaryActions),
+        ])
+          if (features.isNotEmpty) ...[
+            Text(title, style: theme.textTheme.titleMedium),
+            const SizedBox(height: 8),
+            ...features.map(feature),
+          ],
       ],
     );
   }

@@ -1,9 +1,7 @@
 import 'package:dnd_master/domain/models/monster.dart';
 
-/// Типовые монстры для быстрого добавления в бой. Статблоки — «Бестиарий» (SRD 5e, правила 2014 года).
+/// Типовые монстры для быстрого добавления в бой без сети; остальные ищутся на ttg.club (`TtgBestiary`). Статблоки — «Бестиарий» (SRD 5e, правила 2014 года).
 abstract final class Bestiary {
-  static MonsterTemplate? byId(String id) => monsters.where((e) => e.id == id).firstOrNull;
-
   static const monsters = [goblin, hobgoblin, bugbear, kobold, bandit, orc, skeleton, zombie, wolf, giantRat];
 
   static const goblin = MonsterTemplate(
