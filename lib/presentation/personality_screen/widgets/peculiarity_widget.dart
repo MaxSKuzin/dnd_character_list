@@ -34,13 +34,17 @@ class PeculiarityWidget extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 4,
-            horizontal: 16,
-          ),
-          child: Text(
-            classAbility.name.toUpperCase(),
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  classAbility.name.toUpperCase(),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+              const Icon(Icons.chevron_right, size: 20, color: Colors.white38),
+            ],
           ),
         ),
       ),

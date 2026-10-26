@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/data/avatar_store.dart';
 import 'package:dnd_character_list/domain/bloc/created_characters_cubit.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
+import 'package:dnd_character_list/presentation/common/widgets/character_avatar.dart';
 import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -36,11 +38,7 @@ class SelectCharacterScreen extends StatelessWidget {
                       },
                       child: Stack(
                         children: [
-                          Positioned.fill(
-                            child: ClassImage(
-                              classType: character.classes.first.classKind,
-                            ),
-                          ),
+                          Positioned.fill(child: _CharacterPicture(character: character)),
                           Center(
                             child: DecoratedBox(
                               decoration: BoxDecoration(
@@ -71,13 +69,6 @@ class SelectCharacterScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
-                              onPressed: () => context.read<CreatedCharactersCubit>().removePlayer(character),
-                              icon: const Icon(Icons.delete),
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -92,6 +83,30 @@ class SelectCharacterScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Аватар персонажа, а без него — картинка основного класса.
+class _CharacterPicture extends StatelessWidget {
+  final Player character;
+
+  const _CharacterPicture({required this.character});
+
+  @override
+  Widget build(BuildContext context) {
+    final avatar = character.personality.avatar;
+    final classImage = ClassImage(classType: character.classes.first.classKind);
+    if (avatar == null) return classImage;
+    return FutureBuilder(
+      future: getIt<AvatarStore>().file(avatar),
+      builder: (context, snapshot) => switch (snapshot.data) {
+        final file? => ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: FramedAvatarImage(file: file, frame: character.personality.avatarFrame),
+          ),
+        null => classImage,
+      },
     );
   }
 }

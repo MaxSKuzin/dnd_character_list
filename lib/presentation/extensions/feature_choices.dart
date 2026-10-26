@@ -27,6 +27,15 @@ extension PlayerFeatureChoices on Player {
 }
 
 extension SpecializationFeatureChoices on Specialization {
+  /// Умения класса с выбором в названии и в начале описания.
+  List<Peculiarity> get abilitiesWithChoices {
+    final choices = featureChoices;
+    return [
+      for (final ability in abilities)
+        choices[ability.name] == null ? ability : ability.withChoice(choices[ability.name]!)
+    ];
+  }
+
   /// Что выбрано в умениях класса: название умения → выбор.
   Map<String, String> get featureChoices => {
         ...switch (this) {

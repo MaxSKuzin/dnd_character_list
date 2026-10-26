@@ -747,6 +747,8 @@ class Player {
     isEqual &= deathThrows == other.deathThrows;
     isEqual &= race == other.race;
     isEqual &= inventory == other.inventory;
+    // Иначе кубит не выпустит состояние с новым аватаром: bloc пропускает равные состояния.
+    isEqual &= personality == other.personality;
     currentExtras.forEach((key, value) {
       if (other.currentExtras[key] != value) {
         isEqual = false;
@@ -780,6 +782,7 @@ class Player {
         currentExtras,
         race,
         inventory,
+        personality,
       ]);
 
   Player copyWith({
@@ -806,10 +809,11 @@ class Player {
     Inventory? inventory,
     Map<SpellSlot, Spell>? raceSpells,
     List<String>? toolProficiencies,
+    Personality? personality,
   }) =>
       Player(
         inventory: inventory ?? this.inventory,
-        personality: personality,
+        personality: personality ?? this.personality,
         strength: strength ?? _rawStrength,
         dexterity: dexterity ?? _rawDexterity,
         constitution: constitution ?? _rawConstitution,

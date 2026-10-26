@@ -1,276 +1,502 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
+import 'package:dnd_character_list/domain/models/peculiarity.dart';
+import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/presentation/common/widgets/character_avatar.dart';
 import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
 import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
-import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
-import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/extensions/feature_choices.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
+import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/personality_screen/widgets/peculiarity_widget.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
+/// Лист персонажа: шапка с аватаром, внешность, классы, особенности по источникам, языки и владения,
+/// характер и предыстория.
 @RoutePage()
-class PersonalityScreen extends StatefulWidget {
+class PersonalityScreen extends StatelessWidget {
   const PersonalityScreen({super.key});
 
   @override
-  State<PersonalityScreen> createState() => _PersonalityScreenState();
-}
-
-class _PersonalityScreenState extends State<PersonalityScreen> {
-  @override
   Widget build(BuildContext context) {
     final player = PlayerModel.watch(context);
-    final languages = player.knownLanguages;
-    // В умениях с выбором он виден в названии: «ИЗБРАННЫЙ ВРАГ: НЕЖИТЬ».
-    final abilities = player.abilitiesWithChoices;
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        children: [
+          _Header(player: player),
+          const Gap(16),
+          _Appearance(player: player),
+          const Gap(16),
+          _Classes(classes: player.classes),
+          const Gap(16),
+          _Features(player: player),
+          const Gap(16),
+          _LanguagesAndProficiencies(player: player),
+          if (player.personality.traits.isNotEmpty) ...[
+            const Gap(16),
+            _Traits(traits: player.personality.traits),
+          ],
+          const Gap(16),
+          _Background(player: player),
+          const Gap(24),
+          const _DeleteCharacter(),
+        ],
+      ),
+    );
+  }
+}
+
+/// Карточка раздела: значок, заголовок и содержимое, в стиле остальных экранов (белая рамка, цвет карточек).
+class _Section extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Widget child;
+  final Widget? trailing;
+  final EdgeInsets padding;
+
+  const _Section({
+    required this.icon,
+    required this.title,
+    required this.child,
+    this.trailing,
+    this.padding = const EdgeInsets.fromLTRB(16, 0, 16, 16),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: ShapeDecoration(
+        color: context.customColors?.cardColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Colors.white),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, 12, trailing == null ? 16 : 4, 8),
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: Colors.white70),
+                const Gap(8),
+                Expanded(
+                  child: Text(
+                    title.toUpperCase(),
+                    style: context.theme.textTheme.labelLarge?.copyWith(letterSpacing: 1.2, color: Colors.white70),
+                  ),
+                ),
+                if (trailing != null) trailing!,
+              ],
+            ),
+          ),
+          Padding(padding: padding, child: child),
+        ],
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  final Player player;
+
+  const _Header({required this.player});
+
+  @override
+  Widget build(BuildContext context) {
     final personality = player.personality;
+    final textTheme = context.theme.textTheme;
+    return DecoratedBox(
+      decoration: ShapeDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [context.customColors?.cardColor ?? Colors.black, context.theme.colorScheme.primaryContainer],
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Colors.white),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                // Аватар меняется нажатием; хранится только на этом устройстве.
+                GestureDetector(
+                  onTap: () => changeAvatar(context),
+                  child: Stack(
+                    children: [
+                      CharacterAvatar(
+                          avatar: personality.avatar, frame: personality.avatarFrame, name: personality.name),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: context.theme.colorScheme.primary,
+                            border: Border.all(color: Colors.white),
+                          ),
+                          child: Icon(Icons.photo_camera, size: 14, color: context.theme.colorScheme.onPrimary),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Gap(16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(personality.name, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                      const Gap(2),
+                      Text('${player.race.name} · ${player.level} уровень', style: textTheme.bodyMedium),
+                      Text(player.background.name, style: textTheme.bodySmall?.copyWith(color: Colors.white70)),
+                      const Gap(8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          for (final spec in player.classes) _Badge('${spec.classKind.localizedName} ${spec.level}')
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const Gap(16),
+            FilledButton.icon(
+              onPressed: () => context.pushRoute(LevelUpFlowRoute(player: PlayerModel.getPlayer(context))),
+              icon: const Icon(Icons.arrow_upward),
+              label: const Text('Новый уровень'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final String text;
+
+  const _Badge(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(border: Border.all(color: Colors.white54), borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: Text(text, style: context.theme.textTheme.labelMedium),
+      ),
+    );
+  }
+}
+
+class _Appearance extends StatelessWidget {
+  final Player player;
+
+  const _Appearance({required this.player});
+
+  @override
+  Widget build(BuildContext context) {
+    final personality = player.personality;
+    final values = [
+      ('Возраст', '${personality.age}'),
+      ('Рост', '${personality.height} см'),
+      ('Вес', '${personality.weight} кг'),
+      ('Глаза', personality.eyesColor),
+      ('Кожа', personality.skinColor),
+      ('Волосы', personality.hairColor),
+    ];
+    return _Section(
+      icon: Icons.face_outlined,
+      title: 'Внешность',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const spacing = 8.0;
+          final width = (constraints.maxWidth - spacing * 2) / 3;
+          return Wrap(
+            spacing: spacing,
+            runSpacing: spacing,
+            children: [
+              for (final (label, value) in values)
+                SizedBox(width: width, child: _InfoTile(label: label, value: value.trim().isEmpty ? '—' : value)),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _InfoTile({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.theme.scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Column(
+          children: [
+            Text(label, style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white60)),
+            const Gap(2),
+            Text(
+              value,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Classes extends StatelessWidget {
+  final List<Specialization> classes;
+
+  const _Classes({required this.classes});
+
+  @override
+  Widget build(BuildContext context) {
+    return _Section(
+      icon: Icons.shield_moon_outlined,
+      title: classes.length > 1 ? 'Классы' : 'Класс',
+      child: Column(
+        children: [
+          for (final (index, spec) in classes.indexed) ...[
+            if (index > 0) const Divider(height: 16, color: Colors.white12),
+            Row(
+              children: [
+                SizedBox.square(dimension: 56, child: ClassImage(classType: spec.classKind)),
+                const Gap(12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(spec.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                      Text(
+                        '${spec.level} уровень · кость хитов ${spec.hitDice.name}',
+                        style: context.theme.textTheme.bodySmall?.copyWith(color: Colors.white70),
+                      ),
+                      if (spec.choicesDescription case final choices?)
+                        Text(choices, style: context.theme.textTheme.bodySmall),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Особенности по источникам: раса, предыстория, каждый класс, черты. Выбор в умениях виден в названии.
+class _Features extends StatelessWidget {
+  final Player player;
+
+  const _Features({required this.player});
+
+  @override
+  Widget build(BuildContext context) {
+    final background = player.background;
+    final groups = <(String, List<Peculiarity>)>[
+      (player.race.name, player.race.peculiarities),
+      if (background.featureName != null)
+        (
+          'Предыстория',
+          [
+            Peculiarity(
+              name: background.featureName!.toUpperCase(),
+              description: background.featureHtml ?? '',
+              isHtml: true,
+            ),
+          ],
+        ),
+      for (final spec in player.classes) (spec.name, spec.abilitiesWithChoices),
+      (
+        'Черты',
+        [
+          for (final e in player.feats)
+            Peculiarity(name: 'ЧЕРТА: ${e.feat.name.toUpperCase()}', description: e.feat.descriptionHtml, isHtml: true),
+        ],
+      ),
+    ].where((e) => e.$2.isNotEmpty).toList();
+    if (groups.isEmpty) return const SizedBox.shrink();
+    return _Section(
+      icon: Icons.auto_awesome_outlined,
+      title: 'Особенности',
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final (index, (title, features)) in groups.indexed) ...[
+            Padding(
+              padding: EdgeInsets.fromLTRB(16, index == 0 ? 0 : 12, 16, 4),
+              child: Text(
+                title,
+                style: context.theme.textTheme.labelMedium?.copyWith(color: context.theme.colorScheme.primary),
+              ),
+            ),
+            for (final feature in features) PeculiarityWidget(classAbility: feature),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _LanguagesAndProficiencies extends StatelessWidget {
+  final Player player;
+
+  const _LanguagesAndProficiencies({required this.player});
+
+  @override
+  Widget build(BuildContext context) {
     final proficiencies = {
       if (player.armorProficiencies.isNotEmpty)
         'Доспехи': player.armorProficiencies.map((e) => e.localizedName).join(', '),
       if (player.toolProficiencies.isNotEmpty) 'Инструменты': player.toolProficiencies.join(', '),
     };
-    final classes = PlayerModel.classes(context);
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 2),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              OutlinedButton(
-                onPressed: () => context.pushRoute(LevelUpFlowRoute(
-                  player: PlayerModel.getPlayer(context),
-                )),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.arrow_upward),
-                    Text('Новый уровень'),
-                  ],
-                ),
-              ),
-              const Gap(16),
-              LabeledBorder(
-                backgroundColor: context.customColors?.cardColor,
-                text: personality.name.toUpperCase(),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Center(
-                              child: Text('Возраст: ${personality.age}'),
-                            ),
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text('Рост: ${personality.height}'),
-                            ),
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text('Вес: ${personality.weight}'),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Gap(16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                'Цвет глаз: ${personality.eyesColor}',
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          const Gap(16),
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                'Цвет кожи: ${personality.skinColor}',
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          const Gap(16),
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                'Цвет волос: ${personality.hairColor}',
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              LabeledBorder(
-                backgroundColor: context.customColors?.cardColor,
-                text: 'КЛАССЫ',
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                  child: GridView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                    ),
-                    shrinkWrap: true,
-                    children: classes
-                        .map(
-                          (e) => Center(
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: ClassImage(
-                                    classType: e.classKind,
-                                  ),
-                                ),
-                                Text('${e.name} (${e.level})'),
-                                if (e.choicesDescription != null)
-                                  Text(e.choicesDescription!, style: context.theme.textTheme.bodySmall),
-                              ],
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              if (abilities.isNotEmpty) ...[
-                LabeledBorder(
-                  backgroundColor: context.customColors?.cardColor,
-                  text: 'ОСОБЕННОСТИ',
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 12, 0, 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: abilities
-                          .map(
-                            (e) => PeculiarityWidget(classAbility: e),
-                          )
-                          .toList(),
-                    ),
-                  ),
-                ),
-                const Gap(16),
-              ],
-              LabeledBorder(
-                backgroundColor: context.customColors?.cardColor,
-                text: 'ЯЗЫКИ',
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: languages
-                        .map(
-                          (e) => Text(
-                            e.localizedName.toUpperCase(),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              ),
-              if (proficiencies.isNotEmpty) ...[
-                const Gap(16),
-                LabeledBorder(
-                  backgroundColor: context.customColors?.cardColor,
-                  text: 'ВЛАДЕНИЯ',
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: proficiencies.entries
-                          .map(
-                            (e) => Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(text: '${e.key}: ', style: const TextStyle(fontWeight: FontWeight.bold)),
-                                  TextSpan(text: e.value),
-                                ],
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ),
-                ),
-              ],
-              if (personality.traits.isNotEmpty) ...[
-                const Gap(16),
-                LabeledBorder(
-                  backgroundColor: context.customColors?.cardColor,
-                  text: 'ХАРАКТЕР',
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        for (final trait in personality.traits.entries) ...[
-                          Text(trait.key.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold)),
-                          Text(trait.value),
-                          const Gap(8),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-              const Gap(16),
-              LabeledBorder(
-                backgroundColor: context.customColors?.cardColor,
-                text: 'ПРЕДЫСТОРИЯ',
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              player.background.name.toUpperCase(),
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () => showDialog(
-                              context: context,
-                              builder: (_) => HtmlDialog(
-                                title: player.background.name,
-                                html: player.background.descriptionHtml,
-                              ),
-                            ),
-                            icon: const Icon(Icons.info),
-                          ),
-                        ],
-                      ),
-                      Text(personality.story),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+    return _Section(
+      icon: Icons.translate,
+      title: 'Языки и владения',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [for (final language in player.knownLanguages) _Badge(language.localizedName)],
           ),
-        ),
+          for (final MapEntry(key: title, value: value) in proficiencies.entries) ...[
+            const Gap(12),
+            Text(title, style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white60)),
+            Text(value),
+          ],
+        ],
       ),
+    );
+  }
+}
+
+class _Traits extends StatelessWidget {
+  final Map<String, String> traits;
+
+  const _Traits({required this.traits});
+
+  @override
+  Widget build(BuildContext context) {
+    return _Section(
+      icon: Icons.psychology_outlined,
+      title: 'Характер',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final (index, MapEntry(key: title, value: value)) in traits.entries.indexed) ...[
+            if (index > 0) const Gap(12),
+            Text(title, style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white60)),
+            const Gap(2),
+            Text(value),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _Background extends StatelessWidget {
+  final Player player;
+
+  const _Background({required this.player});
+
+  @override
+  Widget build(BuildContext context) {
+    final background = player.background;
+    final story = player.personality.story.trim();
+    return _Section(
+      icon: Icons.menu_book_outlined,
+      title: 'Предыстория: ${background.name}',
+      trailing: IconButton(
+        tooltip: 'Описание предыстории',
+        onPressed: () => showDialog(
+          context: context,
+          builder: (_) => HtmlDialog(title: background.name, html: background.descriptionHtml),
+        ),
+        icon: const Icon(Icons.info_outline),
+      ),
+      child: Text(
+        story.isEmpty ? 'История персонажа пока не написана.' : story,
+        style: story.isEmpty ? const TextStyle(color: Colors.white54, fontStyle: FontStyle.italic) : null,
+      ),
+    );
+  }
+}
+
+/// Удаление персонажа с подтверждением; после него — экран выбора персонажа.
+class _DeleteCharacter extends StatelessWidget {
+  const _DeleteCharacter();
+
+  Future<void> _delete(BuildContext context) async {
+    final cubit = context.read<PlayerCubit>();
+    final name = cubit.state.personality.name;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Удалить «$name»?'),
+        content: const Text('Персонаж и его аватар удалятся с этого устройства. Отменить это нельзя.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Отмена')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: context.theme.colorScheme.error),
+            child: const Text('Удалить'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    final router = context.router.root;
+    await cubit.delete();
+    router.popUntilRouteWithName(SelectCharacterRoute.name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.theme.colorScheme.error;
+    return OutlinedButton.icon(
+      onPressed: () => _delete(context),
+      style: OutlinedButton.styleFrom(foregroundColor: color, side: BorderSide(color: color)),
+      icon: const Icon(Icons.delete_outline),
+      label: const Text('Удалить персонажа'),
     );
   }
 }

@@ -9,6 +9,7 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:dnd_character_list/data/avatar_store.dart' as _i338;
 import 'package:dnd_character_list/data/rules_repository.dart' as _i890;
 import 'package:dnd_character_list/data/session/session_source.dart' as _i359;
 import 'package:dnd_character_list/data/sp_source.dart' as _i895;
@@ -64,6 +65,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i595.TtgClient(),
       dispose: (i) => i.dispose(),
     );
+    gh.lazySingleton<_i338.AvatarStore>(() => _i338.AvatarStore());
     gh.factoryParam<_i571.PlayerCubit, _i747.Player, dynamic>((
       player,
       _,

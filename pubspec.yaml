@@ -28,6 +28,7 @@ dependencies:
   path_provider: ^2.1.6
   dnd_session:
     path: packages/dnd_session
+  image_picker: ^1.2.4
 
 dev_dependencies:
   flutter_test:

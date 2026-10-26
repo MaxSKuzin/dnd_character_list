@@ -66,6 +66,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Чтобы выбрать аватар персонажа. Изображение хранится только на этом устройстве.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Чтобы сфотографировать аватар персонажа. Снимок хранится только на этом устройстве.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Чтобы найти сессию мастера и передавать ему хиты персонажа в бою.</string>
 	<key>NSBonjourServices</key>

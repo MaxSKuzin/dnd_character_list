@@ -22,8 +22,4 @@ class CreatedCharactersCubit extends Cubit<List<Player>> {
     await _subscription.cancel();
     return super.close();
   }
-
-  void removePlayer(Player player) {
-    _source.removePlayer(player);
-  }
 }

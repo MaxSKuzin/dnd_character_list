@@ -1,3 +1,4 @@
+import 'package:dnd_character_list/data/avatar_store.dart';
 import 'package:dnd_character_list/data/sp_source.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
@@ -5,10 +6,12 @@ import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
+import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
+import 'package:dnd_character_list/injection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
@@ -143,6 +146,21 @@ class PlayerCubit extends Cubit<Player> {
 
   Future<void> addItemQuantity(InventoryItem item) async {
     final newPlayer = state.addItemQuantity(item);
+    await _source.savePlayer(newPlayer);
+    emit(newPlayer);
+  }
+
+  /// Удаляет персонажа с устройства вместе с файлом аватара.
+  Future<void> delete() async {
+    await _source.removePlayer(state);
+    await getIt<AvatarStore>().delete(state.personality.avatar);
+  }
+
+  /// Новый аватар (имя файла в `AvatarStore`) или `null` — убрать аватар; [frame] — положение фотографии в круге.
+  Future<void> setAvatar(String? avatar, {AvatarFrame frame = AvatarFrame.initial}) async {
+    final newPlayer = state.copyWith(
+      personality: state.personality.copyWith(avatar: () => avatar, avatarFrame: frame),
+    );
     await _source.savePlayer(newPlayer);
     emit(newPlayer);
   }
