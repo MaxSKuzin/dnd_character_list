@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/session/initiative_prompt.dart';
+import 'package:dnd_character_list/presentation/session/write_note.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:dnd_session/dnd_session.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,9 @@ class _MainFlowState extends State<MainFlow> {
   late final StreamSubscription<BattleSnapshot?> _battle;
   late final StreamSubscription<int> _hitsChanges;
   late final StreamSubscription<String> _revivals;
+  late final StreamSubscription<({String from, Reaction reaction})> _reactions;
   late final StreamSubscription<List<StatusEffect>> _statuses;
+  late final StreamSubscription<({String from, String? fromId, String text})> _notes;
 
   /// Эффекты при прошлом обновлении — уведомление только о новых.
   Set<String> _statusIds = {};
@@ -72,6 +75,26 @@ class _MainFlowState extends State<MainFlow> {
       HapticFeedback.mediumImpact();
       _notify(by == 'Мастер' ? 'Мастер приводит вас в чувство' : '$by приводит вас в чувство');
     });
+    // Реакции от мастера и других игроков: только анимация и вибрация, персонаж не меняется.
+    _reactions = _session.reactions.listen((e) {
+      if (!mounted || !_session.isJoined(_cubit.state)) return;
+      e.reaction == Reaction.poop ? HapticFeedback.heavyImpact() : HapticFeedback.mediumImpact();
+      ReactionOverlay.show(context, reaction: e.reaction, from: e.from);
+      _notify('${e.from} ${e.reaction.phrase} ${e.reaction.emoji}');
+    });
+    // Сообщения от мастера и других игроков — отдельно от снекбаров, сверху экрана, с ответом в одно нажатие.
+    _notes = _session.notes.listen((e) {
+      if (!mounted || !_session.isJoined(_cubit.state)) return;
+      HapticFeedback.mediumImpact();
+      NoteOverlay.show(
+        context,
+        from: e.from,
+        text: e.text,
+        onReply: () {
+          if (mounted) writeNote(context, targetId: e.fromId, to: e.from, replyTo: e.text);
+        },
+      );
+    });
     _statusIds = _session.statuses.map((e) => e.id).toSet();
     _statuses = _session.statusesStream.listen((statuses) {
       final added = statuses.where((e) => !_statusIds.contains(e.id)).toList();
@@ -90,8 +113,10 @@ class _MainFlowState extends State<MainFlow> {
     });
   }
 
+  /// Новое уведомление сразу заменяет прежнее (`SingleSnackBarMessenger` над приложением).
   void _notify(String text) {
-    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
   @override
@@ -100,7 +125,9 @@ class _MainFlowState extends State<MainFlow> {
     _battle.cancel();
     _hitsChanges.cancel();
     _revivals.cancel();
+    _reactions.cancel();
     _statuses.cancel();
+    _notes.cancel();
     _cubit.close();
     // Персонаж закрыт — мастеру он больше не виден на связи.
     if (_session.isJoined(widget.player)) _session.leave();

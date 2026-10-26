@@ -4,7 +4,9 @@ import 'package:dnd_master/presentation/battle/statuses_section.dart';
 import 'package:dnd_master/presentation/common/number_dialogs.dart';
 import 'package:dnd_master/presentation/extensions/monster_marker_colors.dart';
 import 'package:dnd_master/presentation/monsters/monster_stat_block.dart';
+import 'package:dnd_master/presentation/widgets/note_to_player.dart';
 import 'package:dnd_master/presentation/widgets/player_card.dart';
+import 'package:dnd_session/dnd_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -327,6 +329,44 @@ class _PlayerSheet extends StatelessWidget {
                     label: const Text('Привести в чувство'),
                   ),
                 ],
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: player.player.isConnected
+                      ? () => writeToPlayer(context, playerId: player.id, name: player.name)
+                      : null,
+                  icon: const Icon(Icons.mail_outline),
+                  label: const Text('Написать'),
+                ),
+                const SizedBox(height: 8),
+                // Для настроения за столом: у игрока на экране анимация реакции.
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        player.player.isConnected ? 'Реакция' : 'Реакция — игрок не на связи',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    for (final reaction in Reaction.values)
+                      IconButton(
+                        tooltip: '${reaction.emoji} → ${player.name}',
+                        visualDensity: VisualDensity.compact,
+                        onPressed: player.player.isConnected
+                            ? () {
+                                final sent = context.read<BattleCubit>().react(player.id, reaction);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      sent ? '${reaction.emoji} летит: ${player.name}' : '${player.name} не на связи',
+                                    ),
+                                  ),
+                                );
+                              }
+                            : null,
+                        icon: Text(reaction.emoji, style: const TextStyle(fontSize: 20)),
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 16),
                 StatusesSection(combatantId: player.id, statuses: player.statuses),
               ],

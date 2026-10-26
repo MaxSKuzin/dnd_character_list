@@ -15,7 +15,7 @@ class SpellTile extends StatelessWidget {
   const SpellTile({super.key, required this.spell, required this.onTap, this.isRacial = false});
 
   /// Высота плитки в сетке: все плитки одинаковые, чтобы ряды не прыгали.
-  static const height = 156.0;
+  static const height = 116.0;
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +45,22 @@ class SpellTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Название и школа — по одной строке; метки — справа от школы, чтобы не занимать отдельный ряд.
                   Text(
                     spell.name,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                   ),
-                  Text(spell.school, maxLines: 1, overflow: TextOverflow.ellipsis, style: secondary),
-                  const Spacer(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(spell.school, maxLines: 1, overflow: TextOverflow.ellipsis, style: secondary),
+                      ),
+                      for (final mark in marks) ...[const SizedBox(width: 4), _Mark(mark)],
+                    ],
+                  ),
+                  const SizedBox(height: 6),
                   _Line(icon: Icons.timer_outlined, text: details?.castTime ?? '—'),
                   _Line(icon: Icons.straighten, text: details?.distance ?? '—'),
                   // Только буквы «В, С, М»: материалы целиком — в описании заклинания.
@@ -60,13 +68,6 @@ class SpellTile extends StatelessWidget {
                     icon: Icons.back_hand_outlined,
                     text: spell.components.map((e) => e.localizedName).join(', '),
                   ),
-                  if (marks.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Wrap(
-                      spacing: 4,
-                      children: [for (final mark in marks) _Mark(mark)],
-                    ),
-                  ],
                 ],
               ),
             ),

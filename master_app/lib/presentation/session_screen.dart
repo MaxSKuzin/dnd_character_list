@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:dnd_master/data/master_session_source.dart';
 import 'package:dnd_master/presentation/battle/battle_view.dart';
+import 'package:dnd_master/presentation/widgets/note_to_player.dart';
 import 'package:dnd_master/presentation/widgets/player_card.dart';
 import 'package:dnd_session/dnd_session.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Запущенная сессия: адрес для подключения и игроки с их боевыми данными.
 class SessionScreen extends StatefulWidget {
@@ -16,6 +20,42 @@ class SessionScreen extends StatefulWidget {
 
 class _SessionScreenState extends State<SessionScreen> {
   late final _addresses = widget.source.addresses();
+  late final StreamSubscription<({String from, Reaction reaction})> _reactions;
+  late final StreamSubscription<({String playerId, String from, String text})> _notes;
+
+  @override
+  void initState() {
+    super.initState();
+    // Реакция от игрока (букет, какашка…): анимация поверх экрана и уведомление.
+    _reactions = widget.source.reactions.listen((e) {
+      if (!mounted) return;
+      HapticFeedback.mediumImpact();
+      ReactionOverlay.show(context, reaction: e.reaction, from: e.from);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${e.from} ${e.reaction.phrase} ${e.reaction.emoji}')));
+    });
+    // Сообщение от игрока — отдельно от снекбаров, сверху экрана, с ответом в одно нажатие.
+    _notes = widget.source.notes.listen((e) {
+      if (!mounted) return;
+      HapticFeedback.mediumImpact();
+      NoteOverlay.show(
+        context,
+        from: e.from,
+        text: e.text,
+        onReply: () {
+          if (mounted) writeToPlayer(context, playerId: e.playerId, name: e.from, replyTo: e.text);
+        },
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _reactions.cancel();
+    _notes.cancel();
+    super.dispose();
+  }
 
   Future<void> _confirmStop() async {
     final confirmed = await showDialog<bool>(

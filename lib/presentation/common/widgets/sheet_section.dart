@@ -63,6 +63,9 @@ class SheetSection extends StatelessWidget {
   final Widget? trailing;
   final EdgeInsets padding;
 
+  /// Фон; по умолчанию — цвет карточек.
+  final Color? color;
+
   const SheetSection({
     super.key,
     required this.icon,
@@ -70,12 +73,13 @@ class SheetSection extends StatelessWidget {
     required this.child,
     this.trailing,
     this.padding = const EdgeInsets.fromLTRB(16, 0, 16, 16),
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: context.customColors?.cardColor,
+      color: color ?? context.customColors?.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: const BorderSide(color: Colors.white),

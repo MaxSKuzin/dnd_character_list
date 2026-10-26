@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 
 class SpellSearchField extends StatefulWidget {
   final ValueChanged<String> onChanged;
+  final FocusNode? focusNode;
+
+  /// Текст поиска, если им владеет экран; иначе поле создаёт свой.
+  final TextEditingController? controller;
 
   const SpellSearchField({
     super.key,
     required this.onChanged,
+    this.focusNode,
+    this.controller,
   });
 
   @override
@@ -13,11 +19,13 @@ class SpellSearchField extends StatefulWidget {
 }
 
 class _SpellSearchFieldState extends State<SpellSearchField> {
-  final _controller = TextEditingController();
+  TextEditingController? _ownController;
+
+  TextEditingController get _controller => widget.controller ?? (_ownController ??= TextEditingController());
 
   @override
   void dispose() {
-    _controller.dispose();
+    _ownController?.dispose();
     super.dispose();
   }
 
@@ -25,7 +33,10 @@ class _SpellSearchFieldState extends State<SpellSearchField> {
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,
+      focusNode: widget.focusNode,
       onChanged: widget.onChanged,
+      // Нажатие мимо поля закрывает клавиатуру, и экран поиска возвращается к обычному виду.
+      onTapOutside: (_) => widget.focusNode?.unfocus(),
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
         isDense: true,

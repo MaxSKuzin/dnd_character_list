@@ -163,6 +163,57 @@ void main() {
     expect(client.sendInitiative(15), isFalse);
   });
 
+  test('игроки видят друг друга и кидают друг другу реакции через мастера', () async {
+    final second = SessionClient();
+    addTearDown(second.dispose);
+    await client.connect(session, playerId: 'p1', profile: _profile, state: _state);
+    final bothVisible = client.rosterStream.firstWhere((e) => e.length == 2).timeout(const Duration(seconds: 5));
+    await second.connect(
+      session,
+      playerId: 'p2',
+      profile: const CombatantProfile(
+        name: 'Борин',
+        classes: [CombatClass(kind: 'warrior', name: 'Воин', level: 1)],
+        abilities: {},
+        savingThrows: {},
+        armorClass: 16,
+        maxHits: 12,
+        initiative: 0,
+        speed: 25,
+        passivePerception: 10,
+      ),
+      state: const CombatantState(currentHits: 12),
+    );
+    // Новый игрок получает список сразу, остальные — при изменении.
+    expect(await bothVisible, const [SessionMate(id: 'p1', name: 'Лира'), SessionMate(id: 'p2', name: 'Борин')]);
+    // Второй мог получить список ещё до подписки — тогда он уже на месте.
+    if (second.roster.length != 2) {
+      await second.rosterStream.firstWhere((e) => e.length == 2).timeout(const Duration(seconds: 5));
+    }
+    expect(second.roster.map((e) => e.name), ['Лира', 'Борин']);
+
+    final peach = second.reactions.first.timeout(const Duration(seconds: 5));
+    expect(client.react(Reaction.peach, targetId: 'p2'), isTrue);
+    expect(await peach, (from: 'Лира', reaction: Reaction.peach));
+
+    // Сообщение другому игроку идёт через мастера, получатель знает, кому ответить; мастеру оно не показывается.
+    var masterNotes = 0;
+    final masterListener = host.notes.listen((_) => masterNotes++);
+    addTearDown(masterListener.cancel);
+    final whisper = second.notes.first.timeout(const Duration(seconds: 5));
+    expect(client.note('Прикрой меня', targetId: 'p2'), isTrue);
+    expect(await whisper, (from: 'Лира', fromId: 'p1', text: 'Прикрой меня'));
+    final back = client.notes.first.timeout(const Duration(seconds: 5));
+    expect(second.note('Есть', targetId: 'p1'), isTrue);
+    expect(await back, (from: 'Борин', fromId: 'p2', text: 'Есть'));
+    expect(masterNotes, 0);
+
+    // Ушедший игрок пропадает из списка у остальных.
+    final alone = client.rosterStream.firstWhere((e) => e.length == 1).timeout(const Duration(seconds: 5));
+    await second.disconnect();
+    expect((await alone).single.name, 'Лира');
+  });
+
   test('мастер наносит урон и ставит эффекты; эффекты приходят снова после переподключения', () async {
     await client.connect(session, playerId: 'p1', profile: _profile, state: _state);
 
@@ -170,6 +221,30 @@ void main() {
     expect(host.changeHits('p1', -6), isTrue);
     expect(await damage, -6);
     expect(host.changeHits('нет такого', -6), isFalse);
+
+    // Игрок дарит мастеру букет: мастер узнаёт, от кого.
+    final flowers = host.reactions.first.timeout(const Duration(seconds: 5));
+    expect(client.react(Reaction.flowers), isTrue);
+    expect(await flowers, (from: 'Лира', reaction: Reaction.flowers));
+
+    final poop = client.reactions.first.timeout(const Duration(seconds: 5));
+    expect(host.react('p1', Reaction.poop), isTrue);
+    expect(await poop, (from: 'Мастер', reaction: Reaction.poop));
+    expect(host.react('нет такого', Reaction.poop), isFalse);
+
+    // Сообщения в обе стороны: мастер узнаёт, от кого, пустые не уходят, длинные обрезаются.
+    final question = host.notes.first.timeout(const Duration(seconds: 5));
+    expect(client.note('  Можно осмотреть сундук?  '), isTrue);
+    expect(await question, (playerId: 'p1', from: 'Лира', text: 'Можно осмотреть сундук?'));
+    expect(client.note('   '), isFalse);
+
+    final answer = client.notes.first.timeout(const Duration(seconds: 5));
+    expect(host.note('p1', 'Да' * NoteMessage.maxLength), isTrue);
+    final reply = await answer;
+    expect((from: reply.from, fromId: reply.fromId), (from: 'Мастер', fromId: null));
+    expect(reply.text.length, NoteMessage.maxLength);
+    expect(host.note('p1', ''), isFalse);
+    expect(host.note('нет такого', 'Привет'), isFalse);
 
     const statuses = [
       StatusEffect.condition(Condition.poisoned, id: 's1'),

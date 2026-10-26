@@ -5,6 +5,7 @@ import 'package:dnd_session/src/discovery/session_discovery.dart';
 import 'package:dnd_session/src/models/battle_snapshot.dart';
 import 'package:dnd_session/src/models/combatant.dart';
 import 'package:dnd_session/src/models/condition.dart';
+import 'package:dnd_session/src/models/reaction.dart';
 import 'package:dnd_session/src/protocol/session_message.dart';
 
 /// Состояние подключения игрока к сессии мастера.
@@ -57,7 +58,11 @@ class SessionClient {
   BattleSnapshot? _battle;
   final _initiativeRequestsController = StreamController<void>.broadcast();
   final _hitsChangesController = StreamController<int>.broadcast();
+  final _reactionsController = StreamController<({String from, Reaction reaction})>.broadcast();
+  final _rosterController = StreamController<List<SessionMate>>.broadcast();
+  List<SessionMate> _roster = const [];
   final _revivalsController = StreamController<String>.broadcast();
+  final _notesController = StreamController<({String from, String? fromId, String text})>.broadcast();
   final _statusesController = StreamController<List<StatusEffect>>.broadcast();
   List<StatusEffect> _statuses = const [];
 
@@ -90,8 +95,29 @@ class SessionClient {
   /// забота приложения игрока.
   Stream<int> get hitsChanges => _hitsChangesController.stream;
 
+  /// Реакции от мастера и других игроков: имя отправителя («Мастер») и реакция.
+  Stream<({String from, Reaction reaction})> get reactions => _reactionsController.stream;
+
+  /// Подключённые игроки сессии, включая этого. Без подключения — пусто.
+  List<SessionMate> get roster => _roster;
+
+  Stream<List<SessionMate>> get rosterStream => _rosterController.stream;
+
   /// Персонажа привели в чувство из нокаута: имя союзника или «Мастер».
   Stream<String> get revivals => _revivalsController.stream;
+
+  /// Сообщения от мастера и других игроков: имя отправителя («Мастер»), его `playerId` (`null` — мастер), текст.
+  Stream<({String from, String? fromId, String text})> get notes => _notesController.stream;
+
+  /// Сообщение другому игроку ([targetId]) или мастеру (`null`): у него уведомление с именем персонажа.
+  /// Пробелы по краям убираются, длинное обрезается. `false` — нет подключения или сообщение пустое.
+  bool note(String text, {String? targetId}) {
+    final socket = _socket;
+    final note = NoteMessage.clean(text);
+    if (socket == null || _status is! SessionConnected || note == null) return false;
+    socket.add(WriteMessage(note, targetId: targetId).encode());
+    return true;
+  }
 
   /// Привести в чувство союзника в нокауте. `false` — нет подключения.
   bool revive(String targetId) {
@@ -105,6 +131,14 @@ class SessionClient {
   List<StatusEffect> get statuses => _statuses;
 
   Stream<List<StatusEffect>> get statusesStream => _statusesController.stream;
+
+  /// Реакция другому игроку ([targetId]) или мастеру (`null`). `false` — нет подключения.
+  bool react(Reaction reaction, {String? targetId}) {
+    final socket = _socket;
+    if (socket == null || _status is! SessionConnected) return false;
+    socket.add(ReactMessage(reaction, targetId: targetId).encode());
+    return true;
+  }
 
   /// Отправляет мастеру результат броска инициативы. `false` — нет подключения.
   bool sendInitiative(int value) {
@@ -159,7 +193,10 @@ class SessionClient {
     await _battleController.close();
     await _initiativeRequestsController.close();
     await _hitsChangesController.close();
+    await _reactionsController.close();
+    await _rosterController.close();
     await _revivalsController.close();
+    await _notesController.close();
     await _statusesController.close();
   }
 
@@ -200,10 +237,16 @@ class SessionClient {
             _initiativeRequestsController.add(null);
           case HitsChangeMessage(:final delta):
             _hitsChangesController.add(delta);
+          case ReactionMessage(:final reaction, :final from):
+            _reactionsController.add((from: from, reaction: reaction));
+          case RosterMessage(:final players):
+            _setRoster(players);
           case RevivedMessage(:final by):
             _revivalsController.add(by);
           case StatusesMessage(:final statuses):
             _setStatuses(statuses);
+          case NoteMessage(:final text, :final from, :final fromId):
+            _notesController.add((from: from, fromId: fromId, text: text));
           default:
         }
       },
@@ -288,6 +331,11 @@ class SessionClient {
     if (!_battleController.isClosed) _battleController.add(battle);
   }
 
+  void _setRoster(List<SessionMate> roster) {
+    _roster = roster;
+    if (!_rosterController.isClosed) _rosterController.add(roster);
+  }
+
   void _setStatuses(List<StatusEffect> statuses) {
     _statuses = statuses;
     if (!_statusesController.isClosed) _statusesController.add(statuses);
@@ -297,6 +345,7 @@ class SessionClient {
     // Без связи бой и эффекты не показываются: при переподключении мастер пришлёт их заново.
     if (status is! SessionConnected && _battle != null) _setBattle(null);
     if (status is! SessionConnected && _statuses.isNotEmpty) _setStatuses(const []);
+    if (status is! SessionConnected && _roster.isNotEmpty) _setRoster(const []);
     _status = status;
     if (!_statusController.isClosed) _statusController.add(status);
   }

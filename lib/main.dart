@@ -1,6 +1,7 @@
 import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/extensions/theme_extensions.dart';
 import 'package:dnd_character_list/router.dart';
+import 'package:dnd_session/dnd_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -33,6 +34,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Flutter Demo',
+      // Одно уведомление за раз: новое сразу убирает прежнее, без очереди.
+      builder: (context, child) => SingleSnackBarMessenger(child: child!),
       theme: ThemeData(
         extensions: [
           CustomColors(

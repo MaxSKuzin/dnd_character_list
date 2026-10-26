@@ -47,6 +47,21 @@ void main() {
   Future<BattleSnapshot?> nextBattle(bool Function(BattleSnapshot?) test) =>
       client.battleStream.firstWhere(test).timeout(const Duration(seconds: 5));
 
+  test('игрок дарит мастеру букет — мастер узнаёт, от кого', () async {
+    final flowers = source.reactions.first.timeout(const Duration(seconds: 5));
+    expect(client.react(Reaction.flowers), isTrue);
+    expect(await flowers, (from: 'Лира', reaction: Reaction.flowers));
+  });
+
+  test('мастер кидает в игрока какашкой — игрок её получает, бой не меняется', () async {
+    final before = cubit.state.active;
+    final poop = client.reactions.first.timeout(const Duration(seconds: 5));
+    expect(cubit.react('p1', Reaction.poop), isTrue);
+    expect(await poop, (from: 'Мастер', reaction: Reaction.poop));
+    expect(cubit.state.active, same(before));
+    expect(cubit.react('нет такого', Reaction.poop), isFalse);
+  });
+
   test('игрок вводит инициативу у себя — она в очереди мастера', () async {
     final received = cubit.stream
         .firstWhere((e) => e.active.initiative['p1'] == 14)

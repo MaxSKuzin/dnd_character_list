@@ -63,6 +63,22 @@ class SessionSource {
   /// Персонажа привели в чувство из нокаута: имя союзника или «Мастер».
   Stream<String> get revivals => _client.revivals;
 
+  /// Реакции от мастера и других игроков — `MainFlow` показывает анимацию.
+  Stream<({String from, Reaction reaction})> get reactions => _client.reactions;
+
+  /// Сообщения от мастера и других игроков — `MainFlow` показывает их сверху экрана. `fromId` — кому отвечать,
+  /// `null` — мастеру.
+  Stream<({String from, String? fromId, String text})> get notes => _client.notes;
+
+  /// Сообщение другому игроку ([targetId]) или мастеру (`null`) — у него уведомление с именем персонажа.
+  /// `false` — нет подключения или сообщение пустое.
+  bool note(String text, {String? targetId}) => _client.note(text, targetId: targetId);
+
+  /// Подключённые игроки сессии, включая этого персонажа.
+  List<SessionMate> get roster => _client.roster;
+
+  Stream<List<SessionMate>> get rosterStream => _client.rosterStream;
+
   /// Привести в чувство союзника в нокауте. `false` — нет подключения.
   bool revive(String targetId) => _client.revive(targetId);
 
@@ -70,6 +86,10 @@ class SessionSource {
   List<StatusEffect> get statuses => _client.statuses;
 
   Stream<List<StatusEffect>> get statusesStream => _client.statusesStream;
+
+  /// Реакция другому игроку ([targetId]) или мастеру (`null`) — у него анимация с именем персонажа.
+  /// `false` — нет подключения.
+  bool react(Reaction reaction, {String? targetId}) => _client.react(reaction, targetId: targetId);
 
   /// Результат броска инициативы (к20 + бонус). `false` — нет подключения.
   bool sendInitiative(int value) => _client.sendInitiative(value);

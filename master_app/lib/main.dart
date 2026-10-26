@@ -4,6 +4,7 @@ import 'package:dnd_master/data/ttg/ttg_bestiary.dart';
 import 'package:dnd_master/domain/bloc/battle_cubit.dart';
 import 'package:dnd_master/domain/bloc/encounters_cubit.dart';
 import 'package:dnd_master/presentation/start_session_screen.dart';
+import 'package:dnd_session/dnd_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -32,6 +33,8 @@ class MasterApp extends StatelessWidget {
         ],
         child: MaterialApp(
           title: 'DnD Мастер',
+          // Одно уведомление за раз: новое сразу убирает прежнее, без очереди.
+          builder: (context, child) => SingleSnackBarMessenger(child: child!),
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
               seedColor: const Color.fromARGB(255, 29, 31, 48),

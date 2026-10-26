@@ -139,6 +139,12 @@ class BattleCubit extends Cubit<BattleState> {
   /// Мастер приводит в чувство игрока в нокауте. `false` — игрок не на связи.
   bool revive(String playerId) => _source.revivePlayer(playerId);
 
+  /// Реакция игроку от мастера (какашка, букет…): у игрока анимация, на бой не влияет. `false` — игрок не на связи.
+  bool react(String playerId, Reaction reaction) => _source.react(playerId, reaction);
+
+  /// Сообщение игроку от мастера: у игрока уведомление. `false` — игрок не на связи.
+  bool note(String playerId, String text) => _source.note(playerId, text);
+
   void addStatus(String combatantId, {Condition? condition, String? title, String description = '', int? turns}) =>
       _update(
         state.active.addStatus(combatantId, condition: condition, title: title, description: description, turns: turns),

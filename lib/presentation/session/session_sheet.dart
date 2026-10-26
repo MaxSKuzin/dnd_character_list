@@ -1,6 +1,7 @@
 import 'package:dnd_character_list/data/session/session_source.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
+import 'package:dnd_character_list/presentation/session/write_note.dart';
 import 'package:dnd_session/dnd_session.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -80,6 +81,13 @@ class _SessionSheetState extends State<SessionSheet> {
           textAlign: TextAlign.center,
         ),
         const Gap(16),
+        // Для настроения за столом: реакции мастеру и другим игрокам, у них на экране анимация.
+        if (status is SessionConnected) ...[
+          _Notes(source: _source),
+          const Gap(16),
+          _Reactions(source: _source),
+        ],
+        const Gap(8),
         OutlinedButton(onPressed: _source.leave, child: const Text('Отключиться')),
       ];
 
@@ -150,6 +158,117 @@ class _SessionsListState extends State<_SessionsList> {
               .toList(),
         );
       },
+    );
+  }
+}
+
+/// Сообщения мастеру и другим подключённым игрокам: по кнопке на каждого.
+class _Notes extends StatelessWidget {
+  final SessionSource source;
+
+  const _Notes({required this.source});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<List<SessionMate>>(
+      stream: source.rosterStream,
+      initialData: source.roster,
+      builder: (context, snapshot) {
+        final mates = (snapshot.data ?? const <SessionMate>[]).where((e) => !source.isMe(e.id));
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Написать', style: Theme.of(context).textTheme.titleMedium),
+            const Gap(8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => writeNote(context, to: 'Мастер'),
+                  icon: const Icon(Icons.shield_moon_outlined, size: 18),
+                  label: const Text('Мастеру'),
+                ),
+                for (final mate in mates)
+                  OutlinedButton.icon(
+                    onPressed: () => writeNote(context, targetId: mate.id, to: mate.name),
+                    icon: const Icon(Icons.mail_outline, size: 18),
+                    label: Text(mate.name),
+                  ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Реакции мастеру и другим подключённым игрокам: по ряду кнопок на каждого.
+class _Reactions extends StatelessWidget {
+  final SessionSource source;
+
+  const _Reactions({required this.source});
+
+  void _send(BuildContext context, Reaction reaction, {String? targetId, required String to}) {
+    final sent = source.react(reaction, targetId: targetId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(sent ? '${reaction.emoji} летит: $to' : 'Нет связи с мастером')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<List<SessionMate>>(
+      stream: source.rosterStream,
+      initialData: source.roster,
+      builder: (context, snapshot) {
+        final mates = (snapshot.data ?? const <SessionMate>[]).where((e) => !source.isMe(e.id)).toList();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Реакции', style: Theme.of(context).textTheme.titleMedium),
+            const Gap(4),
+            _ReactionRow(title: 'Мастеру', onSelected: (reaction) => _send(context, reaction, to: 'мастеру')),
+            for (final mate in mates)
+              _ReactionRow(
+                title: mate.name,
+                onSelected: (reaction) => _send(context, reaction, targetId: mate.id, to: mate.name),
+              ),
+            if (mates.isEmpty)
+              Text(
+                'Других игроков в сессии пока нет.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white54),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ReactionRow extends StatelessWidget {
+  final String title;
+  final ValueChanged<Reaction> onSelected;
+
+  const _ReactionRow({required this.title, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Expanded(child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis)),
+          for (final reaction in Reaction.values)
+            IconButton(
+              tooltip: '${reaction.emoji} → $title',
+              visualDensity: VisualDensity.compact,
+              onPressed: () => onSelected(reaction),
+              icon: Text(reaction.emoji, style: const TextStyle(fontSize: 20)),
+            ),
+        ],
+      ),
     );
   }
 }

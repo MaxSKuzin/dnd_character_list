@@ -37,6 +37,12 @@ class MasterSessionSource {
   /// Приводит в чувство персонажа в нокауте. `false` — игрок не на связи.
   bool revivePlayer(String playerId) => _host.revive(playerId, by: 'Мастер');
 
+  /// Реакция игроку от мастера — у игрока анимация. `false` — игрок не на связи.
+  bool react(String playerId, Reaction reaction) => _host.react(playerId, reaction);
+
+  /// Сообщение игроку — у него уведомление. `false` — игрок не на связи или сообщение пустое.
+  bool note(String playerId, String text) => _host.note(playerId, text);
+
   /// Эффекты на персонаже — игрок видит их у себя.
   void setPlayerStatuses(String playerId, List<StatusEffect> statuses) => _host.setStatuses(playerId, statuses);
 
@@ -45,6 +51,12 @@ class MasterSessionSource {
 
   /// Результаты бросков инициативы, которые игроки ввели у себя.
   Stream<({String playerId, int value})> get initiatives => _host.initiatives;
+
+  /// Реакции мастеру от игроков: имя персонажа и реакция.
+  Stream<({String from, Reaction reaction})> get reactions => _host.reactions;
+
+  /// Сообщения мастеру от игроков: кто (`playerId` — чтобы ответить) и текст.
+  Stream<({String playerId, String from, String text})> get notes => _host.notes;
 
   /// Адреса вида «192.168.1.5:4040» для подключения вручную, если поиск в сети у игрока не работает.
   Future<List<String>> addresses() async {
