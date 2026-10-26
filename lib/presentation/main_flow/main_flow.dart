@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/data/session/session_source.dart';
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
@@ -21,11 +22,22 @@ class MainFlow extends StatefulWidget {
 }
 
 class _MainFlowState extends State<MainFlow> {
+  final _session = getIt<SessionSource>();
+
+  @override
+  void dispose() {
+    // Персонаж закрыт — мастеру он больше не виден на связи.
+    if (_session.isJoined(widget.player)) _session.leave();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<PlayerCubit>(param1: widget.player),
-      child: BlocBuilder<PlayerCubit, Player>(
+      child: BlocConsumer<PlayerCubit, Player>(
+        // Хиты, ячейки и ресурсы уходят мастеру при каждом изменении, если персонаж подключён к сессии.
+        listener: (context, player) => _session.updatePlayer(player),
         builder: (context, state) => PlayerModel(
           player: state,
           child: AutoTabsScaffold(

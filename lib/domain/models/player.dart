@@ -380,7 +380,7 @@ class Player {
           proficiencyBonus: proficiencyBonus,
         ),
       )
-      .whereNotNull()
+      .nonNulls
       .toList();
 
   Player spendSpellSlot(SpellSlot slot) {

@@ -83,7 +83,6 @@ class LevelUpCubit extends Cubit<Player?> {
       case ClassKind.paladin:
         {
           spec as Paladin?;
-          final fightingStyle = spec?.fightingStyle;
           final abilities = spec?.baseAbilities ?? [];
           switch (spec != null ? spec.level + 1 : 1) {
             case 1:

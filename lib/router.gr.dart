@@ -59,7 +59,7 @@ import 'package:dnd_character_list/presentation/create_character_flow/screens/se
     as _i25;
 import 'package:dnd_character_list/presentation/create_character_flow/screens/starting_equipment_screen/starting_equipment_screen.dart'
     as _i27;
-import 'package:dnd_character_list/presentation/Inventory_add_item_screen/Inventory_add_item_screen.dart'
+import 'package:dnd_character_list/presentation/Inventory_add_item_screen/inventory_add_item_screen.dart'
     as _i5;
 import 'package:dnd_character_list/presentation/inventory_screen/inventory_screen.dart'
     as _i6;

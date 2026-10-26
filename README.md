@@ -45,6 +45,7 @@ lib/
     rules_repository.dart   классы, предыстории, черты, каталог предметов
     spells_repository.dart  заклинания
     sp_source.dart          сохранение персонажей (SharedPreferences, JSON)
+    session/                подключение к сессии мастера (SessionSource) и снимок персонажа для боя
   domain/
     bloc/                   кубиты: создание, повышение уровня, лист персонажа, список персонажей
     models/                 Player, классы, заклинания, предметы, боевые расчёты (combat.dart)
@@ -52,6 +53,8 @@ lib/
   router.dart               маршруты; router.gr.dart и injection.config.dart генерируются
 test/                       тесты; support/fixtures.dart — общий тестовый персонаж и предметы,
                             fixtures/ttg/ — сокращённые реальные ответы api (support/ttg_fixtures.dart)
+packages/dnd_session/       общий пакет игрока и мастера: протокол, сервер, клиент, поиск в сети
+master_app/                 приложение мастера (dnd_master)
 ```
 
 - DI: `get_it` + `injectable` (`getIt<RulesRepository>()` и т.п.).
@@ -63,6 +66,36 @@ test/                       тесты; support/fixtures.dart — общий т�
   Для значений, которые зависят от многих полей (атаки, инициатива, скорость, пассивное восприятие),
   используйте `PlayerModel.watch`; для отдельных полей — аспектные методы (`PlayerModel.inventory` и т.п.).
   Инвентарь и панель экипировки используют `BlocBuilder<PlayerCubit, Player>`.
+
+## Сессия мастера
+
+Связка приложений: это — для игроков, `master_app/` — менеджер битвы мастера (пока только сессия и список
+игроков; дальше — инициатива, монстры мастера). Мастер создаёт сессию, игроки в той же локальной сети
+подключаются кнопкой вверху экрана боя (`SessionButton` → `SessionSheet`).
+
+- **Пакет `dnd_session`** (Flutter-пакет, путь `packages/dnd_session`, свои тесты: `cd packages/dnd_session && flutter test`):
+  - `SessionHost` — сервер мастера: `HttpServer` + WebSocket на `/session`, любой свободный порт. Игрок после
+    разрыва связи остаётся в списке офлайн; переподключение с тем же `playerId` обновляет запись.
+  - `SessionClient` — клиент игрока: сам переподключается каждые 2 с, пока не вызван `disconnect` или мастер
+    не завершил сессию. Отправляет только изменившуюся часть данных.
+  - Поиск — Bonjour/mDNS (`bonsoir`), тип `_dndsession._tcp`, в TXT — версия протокола. Если поиск не работает
+    (некоторые роутеры режут multicast), игрок вводит адрес «IP:порт», который показан на экране мастера.
+  - Протокол — JSON-сообщения `SessionMessage` (`join`, `profile`, `state` от игрока; `welcome`, `reject`,
+    `closed` от мастера). `sessionProtocolVersion` без обратной совместимости: при несовпадении мастер отклоняет
+    подключение.
+- **Что уходит мастеру** — только боевые данные (`data/session/player_combatant.dart`):
+  `CombatantProfile` (имя, классы и уровни, характеристики, спасброски, КД, максимум хитов, инициатива,
+  скорость, пассивное восприятие) — при подключении и когда меняется; `CombatantState` (хиты, спасброски от
+  смерти, ячейки 1–9 уровней, ресурсы классов по `ClassExtras.name`) — при каждом изменении. Описания умений,
+  предыстория, внешность и инвентарь не передаются.
+- `SessionSource` (singleton) — постоянный `playerId` = id устройства (в SharedPreferences) + имя + основной
+  класс. `MainFlow` пересылает каждое состояние `PlayerCubit` в `SessionSource.updatePlayer`; при выходе из
+  персонажа подключение закрывается.
+- Мастер: `MasterSessionSource` (`master_app/lib/data`) поверх `SessionHost` с объявлением в сети,
+  экраны `StartSessionScreen` → `SessionScreen` (карточки игроков `PlayerCard`).
+- Разрешения: `NSLocalNetworkUsageDescription` и `NSBonjourServices` в Info.plist (iOS и macOS) обоих
+  приложений; у мастера на macOS — `network.server` и `network.client`; Android — `INTERNET`
+  (`CHANGE_WIFI_MULTICAST_STATE` добавляет плагин).
 
 ## Работа с ttg.club
 
@@ -224,6 +257,8 @@ test/                       тесты; support/fixtures.dart — общий т�
 | `sorcerer_player_test.dart` | механика чародея: хиты, КД и язык драконьей крови, заклинания происхождений, метамагия, единицы чародейства, сохранение |
 | `ttg_options_mapper_test.dart` | вариант метамагии |
 | `combat_test.dart` | КД, атаки, правила экипировки, «Мастер оружия» |
+| `player_combatant_test.dart` | снимок персонажа для мастера: только боевые данные, ячейки без заговоров, ресурсы |
+| `packages/dnd_session/test/session_test.dart` | протокол; мастер и игрок на реальных сокетах: подключение, хиты, офлайн, переподключение, завершение |
 | `weapons_section_test.dart`, `proficiencies_screen_test.dart`, `html_content_test.dart` | виджеты |
 
 Фикстуры в тестах — сокращённые копии реальных ответов api ttg.club. Проверка репозиториев на живом api делалась

@@ -66,5 +66,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Чтобы найти сессию мастера и передавать ему хиты персонажа в бою.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dndsession._tcp</string>
+	</array>
 </dict>
 </plist>

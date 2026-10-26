@@ -2,8 +2,15 @@
  "version": "0.2.0",
  "configurations": [
   {
-   "name": "adguard_email_dev",
+   "name": "client_app",
    "program": "lib/main.dart",
+   "request": "launch",
+   "type": "dart",
+   "args": []
+  },
+  {
+   "name": "master_app",
+   "program": "master_app/lib/main.dart",
    "request": "launch",
    "type": "dart",
    "args": []

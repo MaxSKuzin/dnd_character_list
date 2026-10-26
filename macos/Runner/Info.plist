@@ -28,5 +28,11 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Чтобы найти сессию мастера и передавать ему хиты персонажа в бою.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dndsession._tcp</string>
+	</array>
 </dict>
 </plist>

@@ -11,6 +11,7 @@ import 'package:dnd_character_list/presentation/battle_screen/widgets/spell_slot
 import 'package:dnd_character_list/presentation/battle_screen/widgets/spells_stats_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/weapons_section.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
+import 'package:dnd_character_list/presentation/session/session_button.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -66,6 +67,7 @@ class _BattleScreenState extends State<BattleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SessionButton(),
             const LongRestButton(),
             LayoutBuilder(
               builder: (context, constraints) {

@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:dnd_character_list/data/rules_repository.dart' as _i890;
+import 'package:dnd_character_list/data/session/session_source.dart' as _i359;
 import 'package:dnd_character_list/data/sp_source.dart' as _i895;
 import 'package:dnd_character_list/data/spells_repository.dart' as _i809;
 import 'package:dnd_character_list/data/ttg/ttg_backgrounds_mapper.dart'
@@ -46,6 +47,11 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i895.SpSource.init(),
       preResolve: true,
     );
+    await gh.singletonAsync<_i359.SessionSource>(
+      () => _i359.SessionSource.init(),
+      preResolve: true,
+    );
+    gh.lazySingleton<_i626.TtgOptionsMapper>(() => _i626.TtgOptionsMapper());
     gh.lazySingleton<_i153.TtgClassMapper>(() => _i153.TtgClassMapper());
     gh.lazySingleton<_i594.TtgSpellsMapper>(() => _i594.TtgSpellsMapper());
     gh.lazySingleton<_i841.TtgCache>(() => _i841.TtgCache());
@@ -58,7 +64,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i595.TtgClient(),
       dispose: (i) => i.dispose(),
     );
-    gh.lazySingleton<_i626.TtgOptionsMapper>(() => _i626.TtgOptionsMapper());
     gh.factoryParam<_i571.PlayerCubit, _i747.Player, dynamic>((
       player,
       _,

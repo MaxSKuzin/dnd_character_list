@@ -2,7 +2,6 @@ import 'package:dnd_character_list/domain/models/item_with_name.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
-import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
@@ -126,21 +125,6 @@ enum Race with ItemWithName {
         halfElf => [StatKind.charisma],
         _ => [],
       };
-}
-
-extension on Map<int, List<Spell>> {
-  List<Spell> _getSpells(int level) {
-    final spells = entries.fold(
-      <Spell>[],
-      (previousValue, element) {
-        if (element.key <= level) {
-          return [...previousValue, ...element.value];
-        }
-        return previousValue;
-      },
-    );
-    return spells;
-  }
 }
 
 extension on Map<int, Map<SpellSlot, String>> {
