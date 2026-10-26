@@ -1,7 +1,8 @@
 import 'package:dnd_character_list/domain/models/balance.dart';
 
-/// Предмет снаряжения из таблицы https://dnd.su/articles/inventory/98-equipment/.
+/// Предмет снаряжения с https://5e14.ttg.club/items.
 class Gear {
+  /// Ссылка на ttg.club, например `/items/backpack`.
   final String? id;
   final String name;
 
@@ -9,7 +10,7 @@ class Gear {
   final String? group;
   final Balance? cost;
 
-  /// Вес как на сайте: «2 фнт.», «½ фнт.», «—».
+  /// Вес как на сайте: «2 фнт.», «½ фнт.», «—». В каталоге ttg.club не указывается.
   final String? weight;
 
   const Gear({

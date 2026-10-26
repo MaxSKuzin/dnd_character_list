@@ -7,7 +7,7 @@ const _html = '''<p>Цель должна бросать к10.</p>
 <tbody><tr class="table_header">
 <td>к10</td> <td>Поведение</td> </tr> <tr>
 <td><nobr>9-10</nobr></td> <td>Действует как обычно.</td> </tr> <tr>
-</tr> </tbody></table><br><p><strong><em>На больших уровнях.</em></strong> Смотрите <a href="/spells/9-bless/">благословение [bless]</a> и <a href="/bestiary/333-raven/">ворона</a>.</p>
+</tr> </tbody></table><br><p><strong><em>На больших уровнях.</em></strong> Смотрите <a href="/spells/bless">благословение [bless]</a> и <a href="/bestiary/raven">ворона</a>.</p>
 <ul>
 <li>Первый эффект.</li>
 <li>Второй эффект.</li>
@@ -50,7 +50,7 @@ void main() {
 
     final spellLink = spans.firstWhere((e) => e.text == 'благословение [bless]');
     (spellLink.recognizer as dynamic).onTap();
-    expect(tappedLink, '/spells/9-bless/');
+    expect(tappedLink, '/spells/bless');
     expect(spans.firstWhere((e) => e.text == 'ворона').recognizer, isNull);
   });
 }

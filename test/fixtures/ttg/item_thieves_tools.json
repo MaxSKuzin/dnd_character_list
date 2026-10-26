@@ -1,0 +1,29 @@
+{
+ "name": {
+  "rus": "Воровские инструменты",
+  "eng": "Thieves' Tools"
+ },
+ "price": "25.0 зм",
+ "source": {
+  "shortName": "PHB",
+  "name": "Книга игрока",
+  "group": {
+   "name": "Официальные источники",
+   "shortName": "Basic"
+  }
+ },
+ "id": 103,
+ "weight": 1.0,
+ "description": "<p>Набор инструментов взломщика включает в себя:</p>",
+ "categories": [
+  "Инструменты",
+  "Снаряжение"
+ ],
+ "altName": "Djhjdcrbt bycnhevtyns",
+ "cost": 2500,
+ "currency": "GM",
+ "categoriesRaw": [
+  "TOOL",
+  "ADVENTURING_GEAR"
+ ]
+}

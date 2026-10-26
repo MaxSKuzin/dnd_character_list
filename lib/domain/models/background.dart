@@ -1,7 +1,7 @@
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart';
 
-/// Предыстория со страницы dnd.su (например, https://dnd.su/backgrounds/757-entertainer/).
+/// Предыстория с ttg.club (например, https://5e14.ttg.club/backgrounds/entertainer).
 class Background {
   final int id;
   final String link;

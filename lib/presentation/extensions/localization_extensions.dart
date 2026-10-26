@@ -1,12 +1,13 @@
 import 'package:dnd_character_list/domain/models/armor_kind.dart';
 import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/damage_type.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
-import 'package:dnd_character_list/domain/models/spell/spell_time.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
@@ -44,16 +45,6 @@ extension SpellSlotLocalization on SpellSlot {
         SpellSlot.level7 => '7 уровень',
         SpellSlot.level8 => '8 уровень',
         SpellSlot.level9 => '9 уровень',
-      };
-}
-
-extension SpellTimeLocalization on SpellTime {
-  String get localizedName => switch (this) {
-        SpellTime.action => 'Действие',
-        SpellTime.bonusAction => 'Бонусное действие',
-        SpellTime.reaction => 'Реакция',
-        SpellTime.minute => 'Минуты',
-        SpellTime.hour => 'Часы',
       };
 }
 
@@ -190,11 +181,55 @@ extension ElementalTypeLocalization on ElementalType {
         ElementalType.fire => 'Огонь',
         ElementalType.cold => 'Холод',
         ElementalType.acid => 'Кислота',
-        ElementalType.lightning => 'Молния',
+        ElementalType.lightning => 'Электричество',
         ElementalType.thunder => 'Гром',
         ElementalType.poison => 'Яд',
         ElementalType.necrotic => 'Некротический',
         ElementalType.radiant => 'Лучистый',
         ElementalType.psychic => 'Психический',
+      };
+}
+
+extension DragonAncestorLocalization on DragonAncestor {
+  String get localizedName => switch (this) {
+        DragonAncestor.black => 'Чёрный',
+        DragonAncestor.blue => 'Синий',
+        DragonAncestor.brass => 'Латунный',
+        DragonAncestor.bronze => 'Бронзовый',
+        DragonAncestor.copper => 'Медный',
+        DragonAncestor.gold => 'Золотой',
+        DragonAncestor.green => 'Зелёный',
+        DragonAncestor.red => 'Красный',
+        DragonAncestor.silver => 'Серебряный',
+        DragonAncestor.white => 'Белый',
+      };
+}
+
+extension DivineAffinityLocalization on DivineAffinity {
+  String get localizedName => switch (this) {
+        DivineAffinity.good => 'Добро',
+        DivineAffinity.evil => 'Зло',
+        DivineAffinity.law => 'Закон',
+        DivineAffinity.chaos => 'Хаос',
+        DivineAffinity.neutrality => 'Нейтралитет',
+      };
+
+  /// Название заклинания склонности, как в таблице умения «Божественная магия».
+  String get spellName => switch (this) {
+        DivineAffinity.good => 'Лечение ран',
+        DivineAffinity.evil => 'Нанесение ран',
+        DivineAffinity.law => 'Благословение',
+        DivineAffinity.chaos => 'Порча',
+        DivineAffinity.neutrality => 'Защита от добра и зла',
+      };
+}
+
+extension SpecializationChoices on Specialization {
+  /// Выборы внутри подкласса для листа персонажа: «Предок: Золотой (огонь)».
+  String? get choicesDescription => switch (this) {
+        Sorcerer(dragonAncestor: final ancestor?) =>
+          'Предок: ${ancestor.localizedName} (${ancestor.damageType.localizedName.toLowerCase()})',
+        Sorcerer(divineAffinity: final affinity?) => 'Склонность: ${affinity.localizedName}',
+        _ => null,
       };
 }

@@ -18,12 +18,36 @@ enum ClassKind {
   ranger,
   sorcerer;
 
-  /// Страница класса на dnd.su. Классы без ссылки пока не поддерживаются.
-  String? get dndSuLink => switch (this) {
-        ClassKind.bard => '/class/88-bard/',
-        ClassKind.barbarian => '/class/87-barbarian/',
-        ClassKind.paladin => '/class/94-paladin/',
-        ClassKind.thief => '/class/99-rogue/',
+  /// Класс на ttg.club. Классы без ссылки пока не поддерживаются.
+  String? get ttgLink => switch (this) {
+        ClassKind.bard => '/classes/bard',
+        ClassKind.barbarian => '/classes/barbarian',
+        ClassKind.paladin => '/classes/paladin',
+        ClassKind.thief => '/classes/rogue',
+        ClassKind.sorcerer => '/classes/sorcerer',
+        _ => null,
+      };
+
+  /// Персонажа этого класса можно создать: для него есть описание на ttg.club и механики в коде.
+  bool get canCreate => ttgLink != null;
+
+  /// Повышение уровня реализовано (у чародея пока нет).
+  bool get canLevelUp => switch (this) {
+        ClassKind.bard || ClassKind.barbarian || ClassKind.paladin || ClassKind.thief => true,
+        _ => false,
+      };
+
+  /// Идентификатор класса в фильтре заклинаний ttg.club (`POST /filters/spells`).
+  int? get ttgSpellsFilterId => switch (this) {
+        ClassKind.bard => 1,
+        ClassKind.wizard => 2,
+        ClassKind.driud => 3,
+        ClassKind.cliric => 4,
+        ClassKind.witch => 5,
+        ClassKind.paladin => 6,
+        ClassKind.ranger => 7,
+        ClassKind.sorcerer => 8,
+        ClassKind.inventor => 14,
         _ => null,
       };
 
@@ -33,6 +57,7 @@ enum ClassKind {
         ClassKind.wizard => 2,
         ClassKind.paladin => 2,
         ClassKind.thief => 4,
+        ClassKind.sorcerer => 2,
         _ => throw UnimplementedError(),
       };
 
@@ -75,6 +100,14 @@ enum ClassKind {
             Skill.stealth,
             Skill.persuasion,
           ],
+        ClassKind.sorcerer => [
+            Skill.intimidation,
+            Skill.arcana,
+            Skill.deception,
+            Skill.insight,
+            Skill.religion,
+            Skill.persuasion,
+          ],
         _ => throw UnimplementedError(),
       };
 
@@ -84,6 +117,7 @@ enum ClassKind {
         ClassKind.wizard => max(1, level + statBonus(StatKind.intelligence)),
         ClassKind.paladin => level > 1 ? max(1, level ~/ 2 + statBonus(StatKind.charisma)) : 0,
         ClassKind.thief => 0,
+        ClassKind.sorcerer => level < 11 ? level + 1 : min(15, 11 + (level - 9) ~/ 2),
         _ => throw UnimplementedError(),
       };
 
@@ -101,6 +135,11 @@ enum ClassKind {
             10: 5,
           }._getValue(level),
         ClassKind.thief => 0,
+        ClassKind.sorcerer => {
+            1: 4,
+            4: 5,
+            10: 6,
+          }._getValue(level),
         _ => throw UnimplementedError(),
       };
 
@@ -110,6 +149,7 @@ enum ClassKind {
         ClassKind.wizard => 1,
         ClassKind.paladin => 0.5,
         ClassKind.thief => 0,
+        ClassKind.sorcerer => 1,
         _ => throw UnimplementedError(),
       };
 

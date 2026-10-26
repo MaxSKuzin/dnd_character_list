@@ -4,7 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
 
-/// Отображает html-фрагмент с dnd.su: абзацы, жирный и курсив, списки,
+/// Отображает html-фрагмент с ttg.club: абзацы, жирный и курсив, списки,
 /// таблицы, заголовки и ссылки.
 class HtmlContent extends StatefulWidget {
   final String html;
@@ -239,7 +239,7 @@ class _HtmlContentState extends State<HtmlContent> {
       );
 }
 
-/// Диалог с заголовком и описанием с dnd.su.
+/// Диалог с заголовком и описанием с ttg.club.
 class HtmlDialog extends StatelessWidget {
   final String title;
   final String html;

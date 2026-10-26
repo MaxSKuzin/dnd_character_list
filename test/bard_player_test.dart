@@ -18,7 +18,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 const _entertainer = Background(
   id: 757,
-  link: '/backgrounds/757-entertainer/',
+  link: '/backgrounds/entertainer',
   name: 'Артист',
   nameEn: 'Entertainer',
   descriptionHtml: '<p>Вам нравится выступать на публике.</p>',
@@ -34,7 +34,7 @@ const _entertainer = Background(
 
 Feat _feat(String slug, {List<StatKind> statIncrease = const []}) => Feat(
       id: slug.hashCode,
-      link: '/feats/1-$slug/',
+      link: '/feats/$slug',
       name: slug,
       nameEn: slug,
       requirementText: null,
@@ -153,7 +153,7 @@ void main() {
             level: 4,
             feat: ChosenFeat(feat: _feat('linguist'), languages: const [Language.draconic]),
           ),
-          AbilityScoreImprovement(level: 4, feat: ChosenFeat(feat: _feat('moderately-armored'))),
+          AbilityScoreImprovement(level: 4, feat: ChosenFeat(feat: _feat('moderately_armored'))),
         ],
       ),
     );

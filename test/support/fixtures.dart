@@ -16,9 +16,9 @@ import 'package:dnd_character_list/domain/models/weapon_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon_type.dart';
 import 'package:dnd_character_list/domain/models/weapon_weight.dart';
 
-// Персонаж и предметы для тестов, с характеристиками из таблиц dnd.su.
+// Персонаж и предметы для тестов, с характеристиками из «Книги игрока».
 final rapierFixture = Weapon(
-  id: 'weapon.rapier',
+  id: '/weapons/rapier',
   name: 'Рапира',
   damage: Dice.k8,
   damageType: DamageType.pricking,
@@ -27,7 +27,7 @@ final rapierFixture = Weapon(
   isFencing: true,
 );
 final daggerFixture = Weapon(
-  id: 'weapon.dagger',
+  id: '/weapons/dagger',
   name: 'Кинжал',
   damage: Dice.k4,
   damageType: DamageType.pricking,
@@ -40,7 +40,7 @@ final daggerFixture = Weapon(
   maxRange: 60,
 );
 final longswordFixture = Weapon(
-  id: 'weapon.longsword',
+  id: '/weapons/longsword',
   name: 'Длинный меч',
   damage: Dice.k8,
   twoHandedDamage: Dice.k10,

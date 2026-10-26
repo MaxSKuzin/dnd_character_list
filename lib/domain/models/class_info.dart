@@ -4,8 +4,9 @@ import 'package:dnd_character_list/domain/models/starting_equipment.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart';
 
-/// Описание класса со страницы dnd.su (например, https://dnd.su/class/88-bard/).
+/// Описание класса с ttg.club (например, https://5e14.ttg.club/classes/bard).
 class ClassInfo {
+  /// Ссылка на класс, например `/classes/bard`.
   final String link;
   final String name;
   final String nameEn;
@@ -34,6 +35,13 @@ class ClassInfo {
   final List<ClassFeature> features;
   final List<Subclass> subclasses;
 
+  /// Уровень, на котором выбирается подкласс: самый ранний уровень умений подклассов
+  /// (у чародея — 1, у барда — 3). `null` — подклассов нет.
+  final int? subclassLevel;
+
+  /// Как называются подклассы: «Коллегии бардов», «Происхождение чародея».
+  final String? subclassTitle;
+
   const ClassInfo({
     required this.link,
     required this.name,
@@ -50,6 +58,8 @@ class ClassInfo {
     required this.levels,
     required this.features,
     required this.subclasses,
+    required this.subclassLevel,
+    this.subclassTitle,
   });
 
   ClassLevel level(int level) => levels.firstWhere((e) => e.level == level);
@@ -93,6 +103,8 @@ class ClassInfo {
         'levels': levels.map((e) => e.toJson()).toList(),
         'features': features.map((e) => e.toJson()).toList(),
         'subclasses': subclasses.map((e) => e.toJson()).toList(),
+        'subclassLevel': subclassLevel,
+        'subclassTitle': subclassTitle,
       };
 
   factory ClassInfo.fromJson(Map<String, dynamic> json) => ClassInfo(
@@ -112,6 +124,8 @@ class ClassInfo {
         levels: (json['levels'] as List).map((e) => ClassLevel.fromJson(e)).toList(),
         features: (json['features'] as List).map((e) => ClassFeature.fromJson(e)).toList(),
         subclasses: (json['subclasses'] as List).map((e) => Subclass.fromJson(e)).toList(),
+        subclassLevel: json['subclassLevel'],
+        subclassTitle: json['subclassTitle'],
       );
 }
 
@@ -161,7 +175,7 @@ class ClassLevel {
 
 /// Умение в таблице класса: ссылка на описание и подпись, например «Вдохновение барда (к8)».
 class ClassLevelFeature {
-  /// Якорь описания, например `feature.bardic-inspiration`.
+  /// Идентификатор умения на ttg.club, например `c1` для «Вдохновения барда».
   final String id;
   final String title;
 
@@ -211,12 +225,16 @@ class ClassFeature {
 
 /// Подкласс (например, коллегия бардов).
 class Subclass {
-  /// Якорь на странице класса, например `college.lore`.
+  /// Последняя часть ссылки на подкласс, например `lore` для `/classes/bard/lore`.
   final String id;
   final String name;
   final String? source;
   final String descriptionHtml;
   final List<SubclassFeature> features;
+
+  /// Заклинания подкласса по уровням класса, например у «Аберрантного разума»: ссылки на заклинания,
+  /// которые всегда известны и не учитываются в числе известных заклинаний.
+  final Map<int, List<String>> spells;
 
   const Subclass({
     required this.id,
@@ -224,9 +242,14 @@ class Subclass {
     required this.source,
     required this.descriptionHtml,
     required this.features,
+    this.spells = const {},
   });
 
   List<SubclassFeature> featuresAt(int level) => features.where((e) => e.level == level).toList();
+
+  /// Заклинания подкласса, полученные к [level] уровню класса.
+  List<String> spellsUpTo(int level) =>
+      spells.entries.where((e) => e.key <= level).expand((e) => e.value).toList();
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -234,6 +257,7 @@ class Subclass {
         'source': source,
         'descriptionHtml': descriptionHtml,
         'features': features.map((e) => e.toJson()).toList(),
+        'spells': spells.map((key, value) => MapEntry('$key', value)),
       };
 
   factory Subclass.fromJson(Map<String, dynamic> json) => Subclass(
@@ -242,6 +266,7 @@ class Subclass {
         source: json['source'],
         descriptionHtml: json['descriptionHtml'],
         features: (json['features'] as List).map((e) => SubclassFeature.fromJson(e)).toList(),
+        spells: (json['spells'] as Map).map((key, value) => MapEntry(int.parse(key), (value as List).cast<String>())),
       );
 }
 

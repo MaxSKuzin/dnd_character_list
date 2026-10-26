@@ -16,20 +16,20 @@ import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
-/// Бард по правилам https://dnd.su/class/88-bard/.
+/// Бард по правилам https://5e14.ttg.club/classes/bard.
 ///
 /// Тексты умений берутся со страницы класса в момент получения уровня и хранятся в
 /// персонаже, поэтому лист работает без сети. В коде описаны только механики выбора.
 final class Bard extends Specialization {
-  static const bardicInspiration = 'feature.bardic-inspiration';
-  static const bardCollege = 'feature.bard-college';
-  static const expertiseFeature = 'feature.expertise';
-  static const abilityScoreImprovement = 'feature.ASI';
-  static const magicalSecrets = 'feature.magical-secrets';
+  // Идентификаторы умений в таблице класса на ttg.club.
+  static const bardicInspiration = 'c1';
+  static const expertiseFeature = 'c5';
+  static const abilityScoreImprovement = 'c6';
+  static const magicalSecrets = 'c9';
 
-  static const valorCollege = 'college.valor';
-  static const loreCollege = 'college.lore';
-  static const swordsCollege = 'college.swords';
+  static const valorCollege = 'valor';
+  static const loreCollege = 'lore';
+  static const swordsCollege = 'swords';
 
   /// Уровень, на котором коллегия знаний даёт «Дополнительные тайны магии».
   static const loreAdditionalSecretsLevel = 6;
@@ -154,11 +154,11 @@ final class Bard extends Specialization {
         simple: true,
         martial: collegeId == valorCollege,
         weapons: {
-          'weapon.longsword',
-          'weapon.shortsword',
-          'weapon.rapier',
-          'weapon.crossbow-hand',
-          if (collegeId == swordsCollege) 'weapon.scimitar',
+          '/weapons/longsword',
+          '/weapons/shortsword',
+          '/weapons/rapier',
+          '/weapons/crossbow,_hand',
+          if (collegeId == swordsCollege) '/weapons/scimitar',
         },
       );
 

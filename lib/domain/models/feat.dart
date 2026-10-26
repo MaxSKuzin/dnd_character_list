@@ -6,7 +6,7 @@ import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
-/// Черта со страницы dnd.su (например, https://dnd.su/feats/140-resilient/).
+/// Черта с ttg.club (например, https://5e14.ttg.club/feats/resilient).
 class Feat {
   final int id;
   final String link;
@@ -32,8 +32,8 @@ class Feat {
     required this.statIncreaseOptions,
   });
 
-  /// Английское имя из ссылки: `/feats/140-resilient/` → `resilient`.
-  String get slug => RegExp(r'/feats/\d+-([^/]+)').firstMatch(link)!.group(1)!;
+  /// Английское имя из ссылки: `/feats/resilient` → `resilient`.
+  String get slug => link.split('/').last;
 
   // Эффекты, которые нельзя вывести из текста на сайте.
 
@@ -47,10 +47,10 @@ class Feat {
   int get languageChoices => slug == 'linguist' ? 3 : 0;
 
   /// «Мастер оружия»: владение четырьмя видами простого или воинского оружия.
-  int get weaponChoices => slug == 'weapon-master' ? 4 : 0;
+  int get weaponChoices => slug == 'weapon_master' ? 4 : 0;
 
   /// «Посвящённый в магию»: два заговора и заклинание 1 уровня выбранного класса.
-  bool get grantsMagicInitiate => slug == 'magic-initiate';
+  bool get grantsMagicInitiate => slug == 'magic_initiate';
 
   int get hitPointsPerLevel => slug == 'tough' ? 2 : 0;
 
@@ -62,9 +62,9 @@ class Feat {
   int get passiveBonus => slug == 'observant' ? 5 : 0;
 
   ArmorProficiency? get armorProficiency => switch (slug) {
-        'lightly-armored' => ArmorProficiency.light,
-        'moderately-armored' => ArmorProficiency.medium,
-        'heavily-armored' => ArmorProficiency.heavy,
+        'lightly_armored' => ArmorProficiency.light,
+        'moderately_armored' => ArmorProficiency.medium,
+        'heavily_armored' => ArmorProficiency.heavy,
         _ => null,
       };
 

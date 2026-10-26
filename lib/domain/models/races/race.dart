@@ -96,16 +96,16 @@ enum Race with ItemWithName {
           ],
       };
 
-  /// Ссылки на заклинания dnd.su, которые раса даёт к указанному уровню.
+  /// Ссылки на заклинания ttg.club, которые раса даёт к указанному уровню.
   Map<SpellSlot, String> spellForLevel(int level) => switch (this) {
         tiefling => {
             1: {
-              SpellSlot.conspiracy: '/spells/80-thaumaturgy/',
+              SpellSlot.conspiracy: '/spells/thaumaturgy',
             },
           },
         tieflingFaerun => {
             1: {
-              SpellSlot.conspiracy: '/spells/80-thaumaturgy/',
+              SpellSlot.conspiracy: '/spells/thaumaturgy',
             },
           },
         halfElf => <int, Map<SpellSlot, String>>{},

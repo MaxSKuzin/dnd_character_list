@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
@@ -5,16 +7,19 @@ import 'package:dnd_character_list/presentation/extensions/context_extensions.da
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-/// Выбор подкласса (коллегии бардов) из описания класса на dnd.su.
+/// Выбор подкласса (коллегии бардов, происхождения чародея) из описания класса на ttg.club.
 @RoutePage()
 class SelectSubclassScreen extends StatefulWidget {
   final String title;
+  final String? description;
   final List<Subclass> subclasses;
-  final void Function(Subclass subclass) onSelected;
+  /// Может быть асинхронным: пока он выполняется, кнопка показывает загрузку.
+  final FutureOr<void> Function(Subclass subclass) onSelected;
 
   const SelectSubclassScreen({
     super.key,
     required this.title,
+    this.description,
     required this.subclasses,
     required this.onSelected,
   });
@@ -25,6 +30,16 @@ class SelectSubclassScreen extends StatefulWidget {
 
 class _SelectSubclassScreenState extends State<SelectSubclassScreen> {
   Subclass? _selected;
+  bool _isSaving = false;
+
+  Future<void> _onContinue(Subclass subclass) async {
+    setState(() => _isSaving = true);
+    try {
+      await widget.onSelected(subclass);
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
 
   /// Описание и все умения подкласса одной страницей, как на сайте.
   static String _fullHtml(Subclass subclass) => [
@@ -48,6 +63,10 @@ class _SelectSubclassScreenState extends State<SelectSubclassScreen> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
+              if (widget.description != null) ...[
+                const Gap(8),
+                Text(widget.description!, textAlign: TextAlign.center),
+              ],
               const Gap(16),
               Expanded(
                 child: ListView.separated(
@@ -85,8 +104,10 @@ class _SelectSubclassScreenState extends State<SelectSubclassScreen> {
               ),
               const Gap(16),
               OutlinedButton(
-                onPressed: _selected != null ? () => widget.onSelected(_selected!) : null,
-                child: const Text('Далее'),
+                onPressed: _selected != null && !_isSaving ? () => _onContinue(_selected!) : null,
+                child: _isSaving
+                    ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Далее'),
               ),
             ],
           ),

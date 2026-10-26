@@ -1,7 +1,7 @@
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
-/// Навыки; имена значений совпадают с кодами dnd.su (`skill.sleightOfHand`).
+/// Навыки; имена значений совпадают с кодами ttg.club в camelCase (`SLEIGHT_OF_HAND` → `sleightOfHand`).
 enum Skill {
   athletics(StatKind.strength),
   acrobatics(StatKind.dexterity),
@@ -25,8 +25,6 @@ enum Skill {
   const Skill(this.origin);
 
   final StatKind origin;
-
-  static Skill? fromDndSu(String code) => values.where((e) => 'skill.${e.name}' == code).firstOrNull;
 
   /// Модификатор характеристики плюс бонус мастерства при владении (двойной при компетентности).
   /// Без владения добавляется половина бонуса, если у персонажа есть «Мастер на все руки».

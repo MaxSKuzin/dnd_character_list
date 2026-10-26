@@ -138,7 +138,7 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
                     _SpellDetailsView(details: spell.details!)
                   else
                     const Text(
-                      'Описание не загружено с dnd.su. Обновите список заклинаний.',
+                      'Описание не загружено с ttg.club. Обновите список заклинаний.',
                       textAlign: TextAlign.center,
                     ),
                   if (widget.canDrainMana && spell.slot != SpellSlot.conspiracy) ...[

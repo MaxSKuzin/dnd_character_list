@@ -3,35 +3,37 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:dnd_character_list/data/dnd_su/dnd_su_client.dart';
-import 'package:dnd_character_list/data/dnd_su/dnd_su_spells_parser.dart';
+import 'package:dnd_character_list/data/ttg/ttg_client.dart';
+import 'package:dnd_character_list/data/ttg/ttg_spells_mapper.dart';
+import 'package:dnd_character_list/data/ttg/ttg_text.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 
-/// Заклинания с dnd.su с кэшем на диске.
+/// Заклинания из официальных книг с ttg.club с кэшем на диске.
 ///
 /// Общий список хранится [_indexTtl] и при недоступности сайта берётся из
-/// устаревшего кэша. Страницы заклинаний не меняются, поэтому кэшируются навсегда.
+/// устаревшего кэша. Описания заклинаний не меняются, поэтому кэшируются навсегда.
 @lazySingleton
 class SpellsRepository {
   static const _indexTtl = Duration(days: 7);
   static const _detailsConcurrency = 4;
 
-  final DndSuClient _client;
-  final DndSuSpellsParser _parser;
+  final TtgClient _client;
+  final TtgSpellsMapper _mapper;
 
   List<Spell>? _spells;
   Future<List<Spell>>? _spellsLoading;
-  final _details = <int, SpellDetails>{};
-  final _detailsLoading = <int, Future<SpellDetails>>{};
+  final _details = <String, SpellDetails>{};
+  final _detailsLoading = <String, Future<SpellDetails>>{};
 
   final Future<Directory> Function() _cacheDirectory;
 
   SpellsRepository(
     this._client,
-    this._parser, {
+    this._mapper, {
     @ignoreParam Future<Directory> Function()? cacheDirectory,
   }) : _cacheDirectory = cacheDirectory ?? getApplicationSupportDirectory;
 
@@ -42,9 +44,10 @@ class SpellsRepository {
     });
   }
 
+  /// Заклинание по ссылке из описаний, например `/spells/Thunderwave`.
   Future<Spell?> findByLink(String link) async {
-    final id = Spell.idFromLink(link);
-    return (await getSpells()).firstWhereOrNull((e) => e.id == id);
+    final normalized = TtgText.normalizeLink(link);
+    return (await getSpells()).firstWhereOrNull((e) => e.link == normalized);
   }
 
   Future<Spell> withDetails(Spell spell) async {
@@ -80,18 +83,19 @@ class SpellsRepository {
     return controller.stream;
   }
 
-  /// Находит заклинания по ссылкам на dnd.su, например для расовых заклинаний.
+  /// Заклинания по ссылкам с описаниями, например заклинания происхождения чародея.
+  Future<List<Spell>> resolveLinks(List<String> links) => Future.wait(links.map(_resolve));
+
+  /// Находит заклинания по ссылкам, например для расовых заклинаний.
   Future<Map<SpellSlot, Spell>> resolve(Map<SpellSlot, String> links) async {
-    final entries = await Future.wait(
-      links.entries.map((e) async {
-        final spell = await findByLink(e.value);
-        if (spell == null) {
-          throw DndSuException('Заклинание ${e.value} не найдено');
-        }
-        return MapEntry(e.key, await withDetails(spell).catchError((_) => spell));
-      }),
-    );
+    final entries = await Future.wait(links.entries.map((e) async => MapEntry(e.key, await _resolve(e.value))));
     return Map.fromEntries(entries);
+  }
+
+  Future<Spell> _resolve(String link) async {
+    final spell = await findByLink(link);
+    if (spell == null) throw TtgException('Заклинание $link не найдено');
+    return withDetails(spell).catchError((_) => spell);
   }
 
   Future<List<Spell>> _loadSpells(bool forceRefresh) async {
@@ -110,13 +114,42 @@ class SpellsRepository {
     }
 
     try {
-      final spells = _parser.parseIndex(await _client.get(DndSuSpellsParser.indexPath));
+      final spells = await _fetchSpells();
       await file.writeAsString(jsonEncode(_CachedIndex(savedAt: DateTime.now(), spells: spells).toJson()));
       return _spells = spells;
-    } on DndSuException {
+    } on TtgException {
       if (cached != null) return _spells = cached.spells;
       rethrow;
     }
+  }
+
+  /// В общем списке нет классов, поэтому списки классов запрашиваются отдельно фильтром по классу.
+  Future<List<Spell>> _fetchSpells() async {
+    final items = (await _client.fetch(
+      '/spells',
+      (json) => (json as List).cast<Map<String, dynamic>>(),
+      body: TtgClient.allItems,
+    ))
+        .where((e) => TtgText.isOfficial(e['source']))
+        .toList();
+    final books = items.map((e) => TtgText.bookOf(e['source'])).nonNulls.toSet().toList();
+    final classKinds = ClassKind.values.where((e) => e.ttgSpellsFilterId != null).toList();
+    final classLists = await TtgClient.mapConcurrently(
+      classKinds,
+      (classKind) => _client.fetch(
+        '/spells',
+        (json) => (json as List).map((e) => TtgText.normalizeLink((e as Map)['url'])).toSet(),
+        body: TtgSpellsMapper.classSpellsRequest(classKind, books),
+      ),
+    );
+    return items.map((item) {
+      final link = TtgText.normalizeLink(item['url']);
+      final classes = [
+        for (final (index, links) in classLists.indexed)
+          if (links.contains(link)) classKinds[index],
+      ];
+      return _mapper.mapListItem(item, classes);
+    }).toList();
   }
 
   Future<SpellDetails> _getDetails(Spell spell) async {
@@ -130,7 +163,7 @@ class SpellsRepository {
   }
 
   Future<SpellDetails> _loadDetails(Spell spell) async {
-    final file = await _cacheFile('spell_details/${spell.id}.json');
+    final file = await _cacheFile('spell_details/${TtgText.slug(spell.link)}.json');
     if (await file.exists()) {
       try {
         return _details[spell.id] = SpellDetails.fromJson(jsonDecode(await file.readAsString()));
@@ -139,14 +172,14 @@ class SpellsRepository {
       }
     }
 
-    final details = await _client.getParsed(spell.link, _parser.parseDetails);
+    final details = await _client.fetch(spell.link, (json) => _mapper.mapDetails(json as Map<String, dynamic>));
     await file.writeAsString(jsonEncode(details.toJson()));
     return _details[spell.id] = details;
   }
 
   Future<File> _cacheFile(String name) async {
     final directory = await _cacheDirectory();
-    final file = File('${directory.path}/dnd_su/$name');
+    final file = File('${directory.path}/ttg/${name.replaceAll(RegExp(r"[^\w/.-]"), '_')}');
     await file.parent.create(recursive: true);
     return file;
   }

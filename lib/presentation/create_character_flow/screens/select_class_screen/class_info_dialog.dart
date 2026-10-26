@@ -3,7 +3,7 @@ import 'package:dnd_character_list/presentation/common/widgets/html_content.dart
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-/// Хиты, владения, снаряжение и умения 1 уровня класса — как в разделе «Классовые умения» на dnd.su.
+/// Хиты, владения, снаряжение и умения 1 уровня класса — как в разделе «Классовые умения» на ttg.club.
 class ClassInfoDialog extends StatelessWidget {
   final ClassInfo info;
 

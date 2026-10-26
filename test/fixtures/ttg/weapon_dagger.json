@@ -1,0 +1,57 @@
+{
+ "name": {
+  "rus": "Кинжал",
+  "eng": "Dagger"
+ },
+ "type": {
+  "name": "Простое рукопашное",
+  "order": 0
+ },
+ "damage": {
+  "dice": "1к4",
+  "type": "колющий"
+ },
+ "price": "2 зм.",
+ "source": {
+  "shortName": "PHB",
+  "name": "Книга игрока",
+  "group": {
+   "name": "Официальные источники",
+   "shortName": "Basic"
+  }
+ },
+ "id": 4,
+ "cost": 2,
+ "currency": "GM",
+ "weight": 1.0,
+ "typeRaw": "SIMPLE_MELE",
+ "damageDice": "d4",
+ "numberDice": 1,
+ "damageType": "PIERCING",
+ "minDistance": 20,
+ "maxDistance": 60,
+ "description": "<p>Кинжал холодное оружие с коротким прямым или изогнутым клинком, заточенным с двух сторон.</p>",
+ "properties": [
+  {
+   "name": "Лёгкое",
+   "url": "/screens/Light",
+   "description": "<p>Лёгкое оружие маленькое и удобное, и идеально подходит для сражения двумя оружиями.</p>"
+  },
+  {
+   "name": "Метательное",
+   "url": "/screens/Thrown",
+   "distance": "20/60",
+   "description": "<p>Если у оружия есть свойство <a href=\"#\">Метательное</a>, вы можете совершать им <em>дальнобойные атаки,</em> метая его.</p>"
+  },
+  {
+   "name": "Фехтовальное",
+   "url": "/screens/Finesse",
+   "description": "<p>При совершении атаки фехтовальным оружием вы сами выбираете, какой</p>"
+  }
+ ],
+ "propertyIds": [
+  5,
+  6,
+  11
+ ]
+}

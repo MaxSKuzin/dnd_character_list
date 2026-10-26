@@ -139,6 +139,8 @@ class _PersonalityScreenState extends State<PersonalityScreen> {
                                   ),
                                 ),
                                 Text('${e.name} (${e.level})'),
+                                if (e.choicesDescription != null)
+                                  Text(e.choicesDescription!, style: context.theme.textTheme.bodySmall),
                               ],
                             ),
                           ),

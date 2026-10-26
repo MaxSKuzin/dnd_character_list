@@ -9,27 +9,29 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i25;
-import 'package:dnd_character_list/domain/bloc/player_cubit.dart' as _i30;
-import 'package:dnd_character_list/domain/models/background.dart' as _i40;
-import 'package:dnd_character_list/domain/models/class_info.dart' as _i39;
+import 'dart:async' as _i36;
+
+import 'package:auto_route/auto_route.dart' as _i26;
+import 'package:dnd_character_list/domain/bloc/player_cubit.dart' as _i31;
+import 'package:dnd_character_list/domain/models/background.dart' as _i42;
+import 'package:dnd_character_list/domain/models/class_info.dart' as _i41;
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart'
-    as _i38;
+    as _i40;
 import 'package:dnd_character_list/domain/models/equipment_catalog.dart'
-    as _i33;
-import 'package:dnd_character_list/domain/models/feat.dart' as _i28;
-import 'package:dnd_character_list/domain/models/fighting_style.dart' as _i34;
-import 'package:dnd_character_list/domain/models/inventory.dart' as _i42;
-import 'package:dnd_character_list/domain/models/language.dart' as _i31;
-import 'package:dnd_character_list/domain/models/player.dart' as _i27;
-import 'package:dnd_character_list/domain/models/skill.dart' as _i35;
-import 'package:dnd_character_list/domain/models/spell/spell.dart' as _i36;
-import 'package:dnd_character_list/domain/models/spell/spell_slot.dart' as _i37;
+    as _i34;
+import 'package:dnd_character_list/domain/models/feat.dart' as _i29;
+import 'package:dnd_character_list/domain/models/fighting_style.dart' as _i35;
+import 'package:dnd_character_list/domain/models/inventory.dart' as _i44;
+import 'package:dnd_character_list/domain/models/language.dart' as _i32;
+import 'package:dnd_character_list/domain/models/player.dart' as _i28;
+import 'package:dnd_character_list/domain/models/skill.dart' as _i37;
+import 'package:dnd_character_list/domain/models/spell/spell.dart' as _i38;
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart' as _i39;
 import 'package:dnd_character_list/domain/models/starting_equipment.dart'
-    as _i41;
-import 'package:dnd_character_list/domain/models/stat_kind.dart' as _i29;
+    as _i43;
+import 'package:dnd_character_list/domain/models/stat_kind.dart' as _i30;
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart'
-    as _i32;
+    as _i33;
 import 'package:dnd_character_list/presentation/battle_screen/battle_screen.dart'
     as _i2;
 import 'package:dnd_character_list/presentation/create_character_flow/create_character_flow.dart'
@@ -42,16 +44,18 @@ import 'package:dnd_character_list/presentation/create_character_flow/screens/se
     as _i14;
 import 'package:dnd_character_list/presentation/create_character_flow/screens/select_class_screen/select_class_screen.dart'
     as _i16;
-import 'package:dnd_character_list/presentation/create_character_flow/screens/select_race_screen/select_race_screen.dart'
+import 'package:dnd_character_list/presentation/create_character_flow/screens/select_option_screen/select_option_screen.dart'
     as _i18;
-import 'package:dnd_character_list/presentation/create_character_flow/screens/select_skills_screen/select_skills_screen.dart'
+import 'package:dnd_character_list/presentation/create_character_flow/screens/select_race_screen/select_race_screen.dart'
     as _i19;
-import 'package:dnd_character_list/presentation/create_character_flow/screens/select_spells_screen/select_spells_screen.dart'
+import 'package:dnd_character_list/presentation/create_character_flow/screens/select_skills_screen/select_skills_screen.dart'
     as _i20;
+import 'package:dnd_character_list/presentation/create_character_flow/screens/select_spells_screen/select_spells_screen.dart'
+    as _i21;
 import 'package:dnd_character_list/presentation/create_character_flow/screens/set_personality_screen/set_personality_screen.dart'
-    as _i22;
+    as _i23;
 import 'package:dnd_character_list/presentation/create_character_flow/screens/starting_equipment_screen/starting_equipment_screen.dart'
-    as _i24;
+    as _i25;
 import 'package:dnd_character_list/presentation/Inventory_add_item_screen/Inventory_add_item_screen.dart'
     as _i5;
 import 'package:dnd_character_list/presentation/inventory_screen/inventory_screen.dart'
@@ -67,7 +71,7 @@ import 'package:dnd_character_list/presentation/level_up_flow/screens/ability_sc
 import 'package:dnd_character_list/presentation/level_up_flow/screens/select_fighting_style_screen.dart'
     as _i17;
 import 'package:dnd_character_list/presentation/level_up_flow/screens/select_subclass_screen.dart'
-    as _i21;
+    as _i22;
 import 'package:dnd_character_list/presentation/main_flow/main_flow.dart'
     as _i10;
 import 'package:dnd_character_list/presentation/main_screen/main_screen.dart'
@@ -77,19 +81,19 @@ import 'package:dnd_character_list/presentation/personality_screen/personality_s
 import 'package:dnd_character_list/presentation/select_character_screen/select_character_screen.dart'
     as _i15;
 import 'package:dnd_character_list/presentation/spells_screen/spells_screen.dart'
-    as _i23;
-import 'package:flutter/material.dart' as _i26;
+    as _i24;
+import 'package:flutter/material.dart' as _i27;
 
 /// generated route for
 /// [_i1.AbilityScoreImprovementScreen]
 class AbilityScoreImprovementRoute
-    extends _i25.PageRouteInfo<AbilityScoreImprovementRouteArgs> {
+    extends _i26.PageRouteInfo<AbilityScoreImprovementRouteArgs> {
   AbilityScoreImprovementRoute({
-    _i26.Key? key,
-    required _i27.Player player,
+    _i27.Key? key,
+    required _i28.Player player,
     required int level,
-    required void Function(_i28.AbilityScoreImprovement) onSelected,
-    List<_i25.PageRouteInfo>? children,
+    required void Function(_i29.AbilityScoreImprovement) onSelected,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          AbilityScoreImprovementRoute.name,
          args: AbilityScoreImprovementRouteArgs(
@@ -103,7 +107,7 @@ class AbilityScoreImprovementRoute
 
   static const String name = 'AbilityScoreImprovementRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AbilityScoreImprovementRouteArgs>();
@@ -125,13 +129,13 @@ class AbilityScoreImprovementRouteArgs {
     required this.onSelected,
   });
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
-  final _i27.Player player;
+  final _i28.Player player;
 
   final int level;
 
-  final void Function(_i28.AbilityScoreImprovement) onSelected;
+  final void Function(_i29.AbilityScoreImprovement) onSelected;
 
   @override
   String toString() {
@@ -141,13 +145,13 @@ class AbilityScoreImprovementRouteArgs {
 
 /// generated route for
 /// [_i2.BattleScreen]
-class BattleRoute extends _i25.PageRouteInfo<void> {
-  const BattleRoute({List<_i25.PageRouteInfo>? children})
+class BattleRoute extends _i26.PageRouteInfo<void> {
+  const BattleRoute({List<_i26.PageRouteInfo>? children})
     : super(BattleRoute.name, initialChildren: children);
 
   static const String name = 'BattleRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       return const _i2.BattleScreen();
@@ -157,13 +161,13 @@ class BattleRoute extends _i25.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.CreateCharacterFlow]
-class CreateCharacterRoute extends _i25.PageRouteInfo<void> {
-  const CreateCharacterRoute({List<_i25.PageRouteInfo>? children})
+class CreateCharacterRoute extends _i26.PageRouteInfo<void> {
+  const CreateCharacterRoute({List<_i26.PageRouteInfo>? children})
     : super(CreateCharacterRoute.name, initialChildren: children);
 
   static const String name = 'CreateCharacterRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       return const _i3.CreateCharacterFlow();
@@ -173,23 +177,25 @@ class CreateCharacterRoute extends _i25.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.FillStatsScreen]
-class FillStatsRoute extends _i25.PageRouteInfo<FillStatsRouteArgs> {
+class FillStatsRoute extends _i26.PageRouteInfo<FillStatsRouteArgs> {
   FillStatsRoute({
-    _i26.Key? key,
+    _i27.Key? key,
     String? title,
+    String? description,
     bool isInitial = true,
     bool canSpendOnOneStat = true,
     int maxPoints = 27,
-    Map<_i29.StatKind, int> initialStats = const {},
-    List<_i29.StatKind> forbiddenStats = const [],
+    Map<_i30.StatKind, int> initialStats = const {},
+    List<_i30.StatKind> forbiddenStats = const [],
     String? quickBuildHtml,
-    required void Function(Map<_i29.StatKind, int>) onStatsFilled,
-    List<_i25.PageRouteInfo>? children,
+    required void Function(Map<_i30.StatKind, int>) onStatsFilled,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          FillStatsRoute.name,
          args: FillStatsRouteArgs(
            key: key,
            title: title,
+           description: description,
            isInitial: isInitial,
            canSpendOnOneStat: canSpendOnOneStat,
            maxPoints: maxPoints,
@@ -203,13 +209,14 @@ class FillStatsRoute extends _i25.PageRouteInfo<FillStatsRouteArgs> {
 
   static const String name = 'FillStatsRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<FillStatsRouteArgs>();
       return _i4.FillStatsScreen(
         key: args.key,
         title: args.title,
+        description: args.description,
         isInitial: args.isInitial,
         canSpendOnOneStat: args.canSpendOnOneStat,
         maxPoints: args.maxPoints,
@@ -226,6 +233,7 @@ class FillStatsRouteArgs {
   const FillStatsRouteArgs({
     this.key,
     this.title,
+    this.description,
     this.isInitial = true,
     this.canSpendOnOneStat = true,
     this.maxPoints = 27,
@@ -235,9 +243,11 @@ class FillStatsRouteArgs {
     required this.onStatsFilled,
   });
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
   final String? title;
+
+  final String? description;
 
   final bool isInitial;
 
@@ -245,29 +255,29 @@ class FillStatsRouteArgs {
 
   final int maxPoints;
 
-  final Map<_i29.StatKind, int> initialStats;
+  final Map<_i30.StatKind, int> initialStats;
 
-  final List<_i29.StatKind> forbiddenStats;
+  final List<_i30.StatKind> forbiddenStats;
 
   final String? quickBuildHtml;
 
-  final void Function(Map<_i29.StatKind, int>) onStatsFilled;
+  final void Function(Map<_i30.StatKind, int>) onStatsFilled;
 
   @override
   String toString() {
-    return 'FillStatsRouteArgs{key: $key, title: $title, isInitial: $isInitial, canSpendOnOneStat: $canSpendOnOneStat, maxPoints: $maxPoints, initialStats: $initialStats, forbiddenStats: $forbiddenStats, quickBuildHtml: $quickBuildHtml, onStatsFilled: $onStatsFilled}';
+    return 'FillStatsRouteArgs{key: $key, title: $title, description: $description, isInitial: $isInitial, canSpendOnOneStat: $canSpendOnOneStat, maxPoints: $maxPoints, initialStats: $initialStats, forbiddenStats: $forbiddenStats, quickBuildHtml: $quickBuildHtml, onStatsFilled: $onStatsFilled}';
   }
 }
 
 /// generated route for
 /// [_i5.InventoryAddItemScreen]
 class InventoryAddItemRoute
-    extends _i25.PageRouteInfo<InventoryAddItemRouteArgs> {
+    extends _i26.PageRouteInfo<InventoryAddItemRouteArgs> {
   InventoryAddItemRoute({
-    _i26.Key? key,
+    _i27.Key? key,
     required Type itemType,
-    required _i30.PlayerCubit playerCubit,
-    List<_i25.PageRouteInfo>? children,
+    required _i31.PlayerCubit playerCubit,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          InventoryAddItemRoute.name,
          args: InventoryAddItemRouteArgs(
@@ -280,7 +290,7 @@ class InventoryAddItemRoute
 
   static const String name = 'InventoryAddItemRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<InventoryAddItemRouteArgs>();
@@ -300,11 +310,11 @@ class InventoryAddItemRouteArgs {
     required this.playerCubit,
   });
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
   final Type itemType;
 
-  final _i30.PlayerCubit playerCubit;
+  final _i31.PlayerCubit playerCubit;
 
   @override
   String toString() {
@@ -314,13 +324,13 @@ class InventoryAddItemRouteArgs {
 
 /// generated route for
 /// [_i6.InventoryScreen]
-class InventoryRoute extends _i25.PageRouteInfo<void> {
-  const InventoryRoute({List<_i25.PageRouteInfo>? children})
+class InventoryRoute extends _i26.PageRouteInfo<void> {
+  const InventoryRoute({List<_i26.PageRouteInfo>? children})
     : super(InventoryRoute.name, initialChildren: children);
 
   static const String name = 'InventoryRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       return const _i6.InventoryScreen();
@@ -330,11 +340,11 @@ class InventoryRoute extends _i25.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i7.ItemCatalogScreen]
-class ItemCatalogRoute extends _i25.PageRouteInfo<ItemCatalogRouteArgs> {
+class ItemCatalogRoute extends _i26.PageRouteInfo<ItemCatalogRouteArgs> {
   ItemCatalogRoute({
-    _i26.Key? key,
-    required _i30.PlayerCubit playerCubit,
-    List<_i25.PageRouteInfo>? children,
+    _i27.Key? key,
+    required _i31.PlayerCubit playerCubit,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          ItemCatalogRoute.name,
          args: ItemCatalogRouteArgs(key: key, playerCubit: playerCubit),
@@ -343,7 +353,7 @@ class ItemCatalogRoute extends _i25.PageRouteInfo<ItemCatalogRouteArgs> {
 
   static const String name = 'ItemCatalogRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ItemCatalogRouteArgs>();
@@ -358,9 +368,9 @@ class ItemCatalogRoute extends _i25.PageRouteInfo<ItemCatalogRouteArgs> {
 class ItemCatalogRouteArgs {
   const ItemCatalogRouteArgs({this.key, required this.playerCubit});
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
-  final _i30.PlayerCubit playerCubit;
+  final _i31.PlayerCubit playerCubit;
 
   @override
   String toString() {
@@ -370,13 +380,13 @@ class ItemCatalogRouteArgs {
 
 /// generated route for
 /// [_i8.LevelUpClassScreen]
-class LevelUpClassRoute extends _i25.PageRouteInfo<void> {
-  const LevelUpClassRoute({List<_i25.PageRouteInfo>? children})
+class LevelUpClassRoute extends _i26.PageRouteInfo<void> {
+  const LevelUpClassRoute({List<_i26.PageRouteInfo>? children})
     : super(LevelUpClassRoute.name, initialChildren: children);
 
   static const String name = 'LevelUpClassRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       return const _i8.LevelUpClassScreen();
@@ -386,11 +396,11 @@ class LevelUpClassRoute extends _i25.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i9.LevelUpFlow]
-class LevelUpFlowRoute extends _i25.PageRouteInfo<LevelUpFlowRouteArgs> {
+class LevelUpFlowRoute extends _i26.PageRouteInfo<LevelUpFlowRouteArgs> {
   LevelUpFlowRoute({
-    _i26.Key? key,
-    required _i27.Player player,
-    List<_i25.PageRouteInfo>? children,
+    _i27.Key? key,
+    required _i28.Player player,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          LevelUpFlowRoute.name,
          args: LevelUpFlowRouteArgs(key: key, player: player),
@@ -399,7 +409,7 @@ class LevelUpFlowRoute extends _i25.PageRouteInfo<LevelUpFlowRouteArgs> {
 
   static const String name = 'LevelUpFlowRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<LevelUpFlowRouteArgs>();
@@ -411,9 +421,9 @@ class LevelUpFlowRoute extends _i25.PageRouteInfo<LevelUpFlowRouteArgs> {
 class LevelUpFlowRouteArgs {
   const LevelUpFlowRouteArgs({this.key, required this.player});
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
-  final _i27.Player player;
+  final _i28.Player player;
 
   @override
   String toString() {
@@ -423,11 +433,11 @@ class LevelUpFlowRouteArgs {
 
 /// generated route for
 /// [_i10.MainFlow]
-class MainFlowRoute extends _i25.PageRouteInfo<MainFlowRouteArgs> {
+class MainFlowRoute extends _i26.PageRouteInfo<MainFlowRouteArgs> {
   MainFlowRoute({
-    _i26.Key? key,
-    required _i27.Player player,
-    List<_i25.PageRouteInfo>? children,
+    _i27.Key? key,
+    required _i28.Player player,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          MainFlowRoute.name,
          args: MainFlowRouteArgs(key: key, player: player),
@@ -436,7 +446,7 @@ class MainFlowRoute extends _i25.PageRouteInfo<MainFlowRouteArgs> {
 
   static const String name = 'MainFlowRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<MainFlowRouteArgs>();
@@ -448,9 +458,9 @@ class MainFlowRoute extends _i25.PageRouteInfo<MainFlowRouteArgs> {
 class MainFlowRouteArgs {
   const MainFlowRouteArgs({this.key, required this.player});
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
-  final _i27.Player player;
+  final _i28.Player player;
 
   @override
   String toString() {
@@ -460,13 +470,13 @@ class MainFlowRouteArgs {
 
 /// generated route for
 /// [_i11.MainScreen]
-class MainRoute extends _i25.PageRouteInfo<void> {
-  const MainRoute({List<_i25.PageRouteInfo>? children})
+class MainRoute extends _i26.PageRouteInfo<void> {
+  const MainRoute({List<_i26.PageRouteInfo>? children})
     : super(MainRoute.name, initialChildren: children);
 
   static const String name = 'MainRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       return const _i11.MainScreen();
@@ -476,13 +486,13 @@ class MainRoute extends _i25.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i12.PersonalityScreen]
-class PersonalityRoute extends _i25.PageRouteInfo<void> {
-  const PersonalityRoute({List<_i25.PageRouteInfo>? children})
+class PersonalityRoute extends _i26.PageRouteInfo<void> {
+  const PersonalityRoute({List<_i26.PageRouteInfo>? children})
     : super(PersonalityRoute.name, initialChildren: children);
 
   static const String name = 'PersonalityRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       return const _i12.PersonalityScreen();
@@ -492,18 +502,18 @@ class PersonalityRoute extends _i25.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i13.ProficienciesScreen]
-class ProficienciesRoute extends _i25.PageRouteInfo<ProficienciesRouteArgs> {
+class ProficienciesRoute extends _i26.PageRouteInfo<ProficienciesRouteArgs> {
   ProficienciesRoute({
-    _i26.Key? key,
+    _i27.Key? key,
     required String title,
-    required void Function(List<String>, List<_i31.Language>) onSelected,
+    required void Function(List<String>, List<_i32.Language>) onSelected,
     String? description,
-    List<_i32.ToolProficiencyOption> tools = const [],
+    List<_i33.ToolProficiencyOption> tools = const [],
     int languagesCount = 0,
-    List<_i31.Language> knownLanguages = const [],
+    List<_i32.Language> knownLanguages = const [],
     List<String> knownTools = const [],
-    _i33.EquipmentCatalog? catalog,
-    List<_i25.PageRouteInfo>? children,
+    _i34.EquipmentCatalog? catalog,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          ProficienciesRoute.name,
          args: ProficienciesRouteArgs(
@@ -522,7 +532,7 @@ class ProficienciesRoute extends _i25.PageRouteInfo<ProficienciesRouteArgs> {
 
   static const String name = 'ProficienciesRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ProficienciesRouteArgs>();
@@ -554,23 +564,23 @@ class ProficienciesRouteArgs {
     this.catalog,
   });
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
   final String title;
 
-  final void Function(List<String>, List<_i31.Language>) onSelected;
+  final void Function(List<String>, List<_i32.Language>) onSelected;
 
   final String? description;
 
-  final List<_i32.ToolProficiencyOption> tools;
+  final List<_i33.ToolProficiencyOption> tools;
 
   final int languagesCount;
 
-  final List<_i31.Language> knownLanguages;
+  final List<_i32.Language> knownLanguages;
 
   final List<String> knownTools;
 
-  final _i33.EquipmentCatalog? catalog;
+  final _i34.EquipmentCatalog? catalog;
 
   @override
   String toString() {
@@ -581,11 +591,11 @@ class ProficienciesRouteArgs {
 /// generated route for
 /// [_i14.SelectBackgroundScreen]
 class SelectBackgroundRoute
-    extends _i25.PageRouteInfo<SelectBackgroundRouteArgs> {
+    extends _i26.PageRouteInfo<SelectBackgroundRouteArgs> {
   SelectBackgroundRoute({
-    _i26.Key? key,
-    required _i26.VoidCallback onContinue,
-    List<_i25.PageRouteInfo>? children,
+    _i27.Key? key,
+    required _i27.VoidCallback onContinue,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          SelectBackgroundRoute.name,
          args: SelectBackgroundRouteArgs(key: key, onContinue: onContinue),
@@ -594,7 +604,7 @@ class SelectBackgroundRoute
 
   static const String name = 'SelectBackgroundRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SelectBackgroundRouteArgs>();
@@ -609,9 +619,9 @@ class SelectBackgroundRoute
 class SelectBackgroundRouteArgs {
   const SelectBackgroundRouteArgs({this.key, required this.onContinue});
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
-  final _i26.VoidCallback onContinue;
+  final _i27.VoidCallback onContinue;
 
   @override
   String toString() {
@@ -621,13 +631,13 @@ class SelectBackgroundRouteArgs {
 
 /// generated route for
 /// [_i15.SelectCharacterScreen]
-class SelectCharacterRoute extends _i25.PageRouteInfo<void> {
-  const SelectCharacterRoute({List<_i25.PageRouteInfo>? children})
+class SelectCharacterRoute extends _i26.PageRouteInfo<void> {
+  const SelectCharacterRoute({List<_i26.PageRouteInfo>? children})
     : super(SelectCharacterRoute.name, initialChildren: children);
 
   static const String name = 'SelectCharacterRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       return const _i15.SelectCharacterScreen();
@@ -637,13 +647,13 @@ class SelectCharacterRoute extends _i25.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i16.SelectClassScreen]
-class SelectClassRoute extends _i25.PageRouteInfo<void> {
-  const SelectClassRoute({List<_i25.PageRouteInfo>? children})
+class SelectClassRoute extends _i26.PageRouteInfo<void> {
+  const SelectClassRoute({List<_i26.PageRouteInfo>? children})
     : super(SelectClassRoute.name, initialChildren: children);
 
   static const String name = 'SelectClassRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       return const _i16.SelectClassScreen();
@@ -654,12 +664,12 @@ class SelectClassRoute extends _i25.PageRouteInfo<void> {
 /// generated route for
 /// [_i17.SelectFightingStyleScreen]
 class SelectFightingStyleRoute
-    extends _i25.PageRouteInfo<SelectFightingStyleRouteArgs> {
+    extends _i26.PageRouteInfo<SelectFightingStyleRouteArgs> {
   SelectFightingStyleRoute({
-    _i26.Key? key,
-    required void Function(_i34.FightingStyle) onStyleSelected,
-    List<_i34.FightingStyle>? styles,
-    List<_i25.PageRouteInfo>? children,
+    _i27.Key? key,
+    required void Function(_i35.FightingStyle) onStyleSelected,
+    List<_i35.FightingStyle>? styles,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          SelectFightingStyleRoute.name,
          args: SelectFightingStyleRouteArgs(
@@ -672,7 +682,7 @@ class SelectFightingStyleRoute
 
   static const String name = 'SelectFightingStyleRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SelectFightingStyleRouteArgs>();
@@ -692,11 +702,11 @@ class SelectFightingStyleRouteArgs {
     this.styles,
   });
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
-  final void Function(_i34.FightingStyle) onStyleSelected;
+  final void Function(_i35.FightingStyle) onStyleSelected;
 
-  final List<_i34.FightingStyle>? styles;
+  final List<_i35.FightingStyle>? styles;
 
   @override
   String toString() {
@@ -705,32 +715,96 @@ class SelectFightingStyleRouteArgs {
 }
 
 /// generated route for
-/// [_i18.SelectRaceScreen]
-class SelectRaceRoute extends _i25.PageRouteInfo<void> {
-  const SelectRaceRoute({List<_i25.PageRouteInfo>? children})
+/// [_i18.SelectOptionScreen]
+class SelectOptionRoute extends _i26.PageRouteInfo<SelectOptionRouteArgs> {
+  SelectOptionRoute({
+    _i27.Key? key,
+    required String title,
+    String? description,
+    required List<_i18.SelectOption> options,
+    required _i36.FutureOr<void> Function(int) onSelected,
+    List<_i26.PageRouteInfo>? children,
+  }) : super(
+         SelectOptionRoute.name,
+         args: SelectOptionRouteArgs(
+           key: key,
+           title: title,
+           description: description,
+           options: options,
+           onSelected: onSelected,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'SelectOptionRoute';
+
+  static _i26.PageInfo page = _i26.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<SelectOptionRouteArgs>();
+      return _i18.SelectOptionScreen(
+        key: args.key,
+        title: args.title,
+        description: args.description,
+        options: args.options,
+        onSelected: args.onSelected,
+      );
+    },
+  );
+}
+
+class SelectOptionRouteArgs {
+  const SelectOptionRouteArgs({
+    this.key,
+    required this.title,
+    this.description,
+    required this.options,
+    required this.onSelected,
+  });
+
+  final _i27.Key? key;
+
+  final String title;
+
+  final String? description;
+
+  final List<_i18.SelectOption> options;
+
+  final _i36.FutureOr<void> Function(int) onSelected;
+
+  @override
+  String toString() {
+    return 'SelectOptionRouteArgs{key: $key, title: $title, description: $description, options: $options, onSelected: $onSelected}';
+  }
+}
+
+/// generated route for
+/// [_i19.SelectRaceScreen]
+class SelectRaceRoute extends _i26.PageRouteInfo<void> {
+  const SelectRaceRoute({List<_i26.PageRouteInfo>? children})
     : super(SelectRaceRoute.name, initialChildren: children);
 
   static const String name = 'SelectRaceRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
-      return const _i18.SelectRaceScreen();
+      return const _i19.SelectRaceScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i19.SelectSkillsScreen]
-class SelectSkillsRoute extends _i25.PageRouteInfo<SelectSkillsRouteArgs> {
+/// [_i20.SelectSkillsScreen]
+class SelectSkillsRoute extends _i26.PageRouteInfo<SelectSkillsRouteArgs> {
   SelectSkillsRoute({
-    _i26.Key? key,
+    _i27.Key? key,
     String title = 'Навыки',
     String? description,
-    required List<_i35.Skill> availableSkills,
+    required List<_i37.Skill> availableSkills,
     required int maxSkills,
-    required void Function(List<_i35.Skill>) onSkillsSelected,
-    List<_i25.PageRouteInfo>? children,
+    required void Function(List<_i37.Skill>) onSkillsSelected,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          SelectSkillsRoute.name,
          args: SelectSkillsRouteArgs(
@@ -746,11 +820,11 @@ class SelectSkillsRoute extends _i25.PageRouteInfo<SelectSkillsRouteArgs> {
 
   static const String name = 'SelectSkillsRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SelectSkillsRouteArgs>();
-      return _i19.SelectSkillsScreen(
+      return _i20.SelectSkillsScreen(
         key: args.key,
         title: args.title,
         description: args.description,
@@ -772,17 +846,17 @@ class SelectSkillsRouteArgs {
     required this.onSkillsSelected,
   });
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
   final String title;
 
   final String? description;
 
-  final List<_i35.Skill> availableSkills;
+  final List<_i37.Skill> availableSkills;
 
   final int maxSkills;
 
-  final void Function(List<_i35.Skill>) onSkillsSelected;
+  final void Function(List<_i37.Skill>) onSkillsSelected;
 
   @override
   String toString() {
@@ -791,19 +865,21 @@ class SelectSkillsRouteArgs {
 }
 
 /// generated route for
-/// [_i20.SelectSpellsScreen]
-class SelectSpellsRoute extends _i25.PageRouteInfo<SelectSpellsRouteArgs> {
+/// [_i21.SelectSpellsScreen]
+class SelectSpellsRoute extends _i26.PageRouteInfo<SelectSpellsRouteArgs> {
   SelectSpellsRoute({
-    _i26.Key? key,
-    List<_i36.Spell> knownSpells = const [],
-    List<_i37.SpellSlot>? availableSlots,
+    _i27.Key? key,
+    List<_i38.Spell> knownSpells = const [],
+    List<_i39.SpellSlot>? availableSlots,
     String title = 'Заклинания',
+    String? description,
+    List<_i40.ClassKind>? additionalClassKinds,
     bool cantripsCountAsSpells = false,
-    required void Function(List<_i36.Spell>) onSpellsSelected,
+    required void Function(List<_i38.Spell>) onSpellsSelected,
     required int maxSpells,
     required int maxConspiracies,
-    required _i38.ClassKind? classKind,
-    List<_i25.PageRouteInfo>? children,
+    required _i40.ClassKind? classKind,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          SelectSpellsRoute.name,
          args: SelectSpellsRouteArgs(
@@ -811,6 +887,8 @@ class SelectSpellsRoute extends _i25.PageRouteInfo<SelectSpellsRouteArgs> {
            knownSpells: knownSpells,
            availableSlots: availableSlots,
            title: title,
+           description: description,
+           additionalClassKinds: additionalClassKinds,
            cantripsCountAsSpells: cantripsCountAsSpells,
            onSpellsSelected: onSpellsSelected,
            maxSpells: maxSpells,
@@ -822,15 +900,17 @@ class SelectSpellsRoute extends _i25.PageRouteInfo<SelectSpellsRouteArgs> {
 
   static const String name = 'SelectSpellsRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SelectSpellsRouteArgs>();
-      return _i20.SelectSpellsScreen(
+      return _i21.SelectSpellsScreen(
         key: args.key,
         knownSpells: args.knownSpells,
         availableSlots: args.availableSlots,
         title: args.title,
+        description: args.description,
+        additionalClassKinds: args.additionalClassKinds,
         cantripsCountAsSpells: args.cantripsCountAsSpells,
         onSpellsSelected: args.onSpellsSelected,
         maxSpells: args.maxSpells,
@@ -847,6 +927,8 @@ class SelectSpellsRouteArgs {
     this.knownSpells = const [],
     this.availableSlots,
     this.title = 'Заклинания',
+    this.description,
+    this.additionalClassKinds,
     this.cantripsCountAsSpells = false,
     required this.onSpellsSelected,
     required this.maxSpells,
@@ -854,44 +936,50 @@ class SelectSpellsRouteArgs {
     required this.classKind,
   });
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
-  final List<_i36.Spell> knownSpells;
+  final List<_i38.Spell> knownSpells;
 
-  final List<_i37.SpellSlot>? availableSlots;
+  final List<_i39.SpellSlot>? availableSlots;
 
   final String title;
 
+  final String? description;
+
+  final List<_i40.ClassKind>? additionalClassKinds;
+
   final bool cantripsCountAsSpells;
 
-  final void Function(List<_i36.Spell>) onSpellsSelected;
+  final void Function(List<_i38.Spell>) onSpellsSelected;
 
   final int maxSpells;
 
   final int maxConspiracies;
 
-  final _i38.ClassKind? classKind;
+  final _i40.ClassKind? classKind;
 
   @override
   String toString() {
-    return 'SelectSpellsRouteArgs{key: $key, knownSpells: $knownSpells, availableSlots: $availableSlots, title: $title, cantripsCountAsSpells: $cantripsCountAsSpells, onSpellsSelected: $onSpellsSelected, maxSpells: $maxSpells, maxConspiracies: $maxConspiracies, classKind: $classKind}';
+    return 'SelectSpellsRouteArgs{key: $key, knownSpells: $knownSpells, availableSlots: $availableSlots, title: $title, description: $description, additionalClassKinds: $additionalClassKinds, cantripsCountAsSpells: $cantripsCountAsSpells, onSpellsSelected: $onSpellsSelected, maxSpells: $maxSpells, maxConspiracies: $maxConspiracies, classKind: $classKind}';
   }
 }
 
 /// generated route for
-/// [_i21.SelectSubclassScreen]
-class SelectSubclassRoute extends _i25.PageRouteInfo<SelectSubclassRouteArgs> {
+/// [_i22.SelectSubclassScreen]
+class SelectSubclassRoute extends _i26.PageRouteInfo<SelectSubclassRouteArgs> {
   SelectSubclassRoute({
-    _i26.Key? key,
+    _i27.Key? key,
     required String title,
-    required List<_i39.Subclass> subclasses,
-    required void Function(_i39.Subclass) onSelected,
-    List<_i25.PageRouteInfo>? children,
+    String? description,
+    required List<_i41.Subclass> subclasses,
+    required _i36.FutureOr<void> Function(_i41.Subclass) onSelected,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          SelectSubclassRoute.name,
          args: SelectSubclassRouteArgs(
            key: key,
            title: title,
+           description: description,
            subclasses: subclasses,
            onSelected: onSelected,
          ),
@@ -900,13 +988,14 @@ class SelectSubclassRoute extends _i25.PageRouteInfo<SelectSubclassRouteArgs> {
 
   static const String name = 'SelectSubclassRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SelectSubclassRouteArgs>();
-      return _i21.SelectSubclassScreen(
+      return _i22.SelectSubclassScreen(
         key: args.key,
         title: args.title,
+        description: args.description,
         subclasses: args.subclasses,
         onSelected: args.onSelected,
       );
@@ -918,31 +1007,34 @@ class SelectSubclassRouteArgs {
   const SelectSubclassRouteArgs({
     this.key,
     required this.title,
+    this.description,
     required this.subclasses,
     required this.onSelected,
   });
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
   final String title;
 
-  final List<_i39.Subclass> subclasses;
+  final String? description;
 
-  final void Function(_i39.Subclass) onSelected;
+  final List<_i41.Subclass> subclasses;
+
+  final _i36.FutureOr<void> Function(_i41.Subclass) onSelected;
 
   @override
   String toString() {
-    return 'SelectSubclassRouteArgs{key: $key, title: $title, subclasses: $subclasses, onSelected: $onSelected}';
+    return 'SelectSubclassRouteArgs{key: $key, title: $title, description: $description, subclasses: $subclasses, onSelected: $onSelected}';
   }
 }
 
 /// generated route for
-/// [_i22.SetPersonalityScreen]
-class SetPersonalityRoute extends _i25.PageRouteInfo<SetPersonalityRouteArgs> {
+/// [_i23.SetPersonalityScreen]
+class SetPersonalityRoute extends _i26.PageRouteInfo<SetPersonalityRouteArgs> {
   SetPersonalityRoute({
-    _i26.Key? key,
-    List<_i40.PersonalityTable> tables = const [],
-    List<_i25.PageRouteInfo>? children,
+    _i27.Key? key,
+    List<_i42.PersonalityTable> tables = const [],
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          SetPersonalityRoute.name,
          args: SetPersonalityRouteArgs(key: key, tables: tables),
@@ -951,13 +1043,13 @@ class SetPersonalityRoute extends _i25.PageRouteInfo<SetPersonalityRouteArgs> {
 
   static const String name = 'SetPersonalityRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SetPersonalityRouteArgs>(
         orElse: () => const SetPersonalityRouteArgs(),
       );
-      return _i22.SetPersonalityScreen(key: args.key, tables: args.tables);
+      return _i23.SetPersonalityScreen(key: args.key, tables: args.tables);
     },
   );
 }
@@ -965,9 +1057,9 @@ class SetPersonalityRoute extends _i25.PageRouteInfo<SetPersonalityRouteArgs> {
 class SetPersonalityRouteArgs {
   const SetPersonalityRouteArgs({this.key, this.tables = const []});
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
-  final List<_i40.PersonalityTable> tables;
+  final List<_i42.PersonalityTable> tables;
 
   @override
   String toString() {
@@ -976,32 +1068,32 @@ class SetPersonalityRouteArgs {
 }
 
 /// generated route for
-/// [_i23.SpellsScreen]
-class SpellsRoute extends _i25.PageRouteInfo<void> {
-  const SpellsRoute({List<_i25.PageRouteInfo>? children})
+/// [_i24.SpellsScreen]
+class SpellsRoute extends _i26.PageRouteInfo<void> {
+  const SpellsRoute({List<_i26.PageRouteInfo>? children})
     : super(SpellsRoute.name, initialChildren: children);
 
   static const String name = 'SpellsRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
-      return const _i23.SpellsScreen();
+      return const _i24.SpellsScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i24.StartingEquipmentScreen]
+/// [_i25.StartingEquipmentScreen]
 class StartingEquipmentRoute
-    extends _i25.PageRouteInfo<StartingEquipmentRouteArgs> {
+    extends _i26.PageRouteInfo<StartingEquipmentRouteArgs> {
   StartingEquipmentRoute({
-    _i26.Key? key,
+    _i27.Key? key,
     required String title,
-    required List<_i41.StartingEquipmentChoice> choices,
-    required void Function(List<_i42.InventoryItem>) onSelected,
-    _i33.EquipmentCatalog? catalog,
-    List<_i25.PageRouteInfo>? children,
+    required List<_i43.StartingEquipmentChoice> choices,
+    required void Function(List<_i44.InventoryItem>) onSelected,
+    _i34.EquipmentCatalog? catalog,
+    List<_i26.PageRouteInfo>? children,
   }) : super(
          StartingEquipmentRoute.name,
          args: StartingEquipmentRouteArgs(
@@ -1016,11 +1108,11 @@ class StartingEquipmentRoute
 
   static const String name = 'StartingEquipmentRoute';
 
-  static _i25.PageInfo page = _i25.PageInfo(
+  static _i26.PageInfo page = _i26.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<StartingEquipmentRouteArgs>();
-      return _i24.StartingEquipmentScreen(
+      return _i25.StartingEquipmentScreen(
         key: args.key,
         title: args.title,
         choices: args.choices,
@@ -1040,15 +1132,15 @@ class StartingEquipmentRouteArgs {
     this.catalog,
   });
 
-  final _i26.Key? key;
+  final _i27.Key? key;
 
   final String title;
 
-  final List<_i41.StartingEquipmentChoice> choices;
+  final List<_i43.StartingEquipmentChoice> choices;
 
-  final void Function(List<_i42.InventoryItem>) onSelected;
+  final void Function(List<_i44.InventoryItem>) onSelected;
 
-  final _i33.EquipmentCatalog? catalog;
+  final _i34.EquipmentCatalog? catalog;
 
   @override
   String toString() {

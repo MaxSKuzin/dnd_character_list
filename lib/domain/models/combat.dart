@@ -175,7 +175,7 @@ extension PlayerCombat on Player {
     final main = weaponIn(slot == WeaponSlot.secondHand ? WeaponSlot.mainHand : WeaponSlot.mainRange);
     if (main == null) return 'Сначала возьмите оружие в основную руку';
     if (main.type == WeaponType.twoHanded) return 'Основное оружие двуручное';
-    final hasDualWielder = feats.any((e) => e.feat.slug == 'dual-wielder');
+    final hasDualWielder = feats.any((e) => e.feat.slug == 'dual_wielder');
     if (!hasDualWielder && !(weapon.isLight && main.isLight)) return 'Для двух оружий оба должны быть лёгкими';
     return null;
   }

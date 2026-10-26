@@ -53,7 +53,7 @@ class SpellWidget extends StatelessWidget {
                   const Gap(8),
                   Text('${spell.slot.localizedName}, ${spell.school.toLowerCase()}'),
                   const Gap(8),
-                  Text('Время накладывания: ${details?.castTime ?? spell.castTimeType?.localizedName ?? '—'}'),
+                  Text('Время накладывания: ${details?.castTime ?? '—'}'),
                   if (details != null) ...[
                     const Gap(8),
                     Text('Длительность: ${details.duration}'),

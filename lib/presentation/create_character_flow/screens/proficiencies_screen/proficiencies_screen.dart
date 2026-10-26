@@ -23,7 +23,7 @@ class ProficienciesScreen extends StatefulWidget {
   /// Инструменты, которыми персонаж уже владеет: их нельзя выбрать повторно.
   final List<String> knownTools;
 
-  /// Каталог предметов; по умолчанию загружается с dnd.su.
+  /// Каталог предметов; по умолчанию загружается с ttg.club.
   final EquipmentCatalog? catalog;
 
   /// Получает названия инструментов (указанных и выбранных) и выбранные языки.
@@ -102,7 +102,7 @@ class _ProficienciesScreenState extends State<ProficienciesScreen> {
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return LoadingError(
-                        message: 'Не удалось загрузить инструменты с dnd.su.',
+                        message: 'Не удалось загрузить инструменты с ttg.club.',
                         error: snapshot.error!,
                         onRetry: () => setState(() => _catalog = _loadCatalog()),
                       );

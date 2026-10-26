@@ -28,7 +28,7 @@ class LevelUpCubit extends Cubit<Player?> {
 
   List<Skill>? _newSkills;
 
-  /// Готовая специализация нового уровня (бард собирается по таблице класса с dnd.su).
+  /// Готовая специализация нового уровня (бард собирается по таблице класса с ttg.club).
   Specialization? _specialization;
 
   List<String> _newTools = [];

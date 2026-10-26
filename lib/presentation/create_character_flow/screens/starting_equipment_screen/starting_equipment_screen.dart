@@ -11,14 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 /// Стартовое снаряжение класса: в каждой строке списка выбирается один вариант,
-/// а «любое простое оружие» и подобное — конкретным предметом из каталога dnd.su.
+/// а «любое простое оружие» и подобное — конкретным предметом из каталога ttg.club.
 @RoutePage()
 class StartingEquipmentScreen extends StatefulWidget {
   final String title;
   final List<StartingEquipmentChoice> choices;
   final void Function(List<InventoryItem> items) onSelected;
 
-  /// Каталог предметов; по умолчанию загружается с dnd.su.
+  /// Каталог предметов; по умолчанию загружается с ttg.club.
   final EquipmentCatalog? catalog;
 
   const StartingEquipmentScreen({
@@ -82,7 +82,7 @@ class _StartingEquipmentScreenState extends State<StartingEquipmentScreen> {
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return LoadingError(
-                  message: 'Не удалось загрузить предметы с dnd.su.',
+                  message: 'Не удалось загрузить предметы с ttg.club.',
                   error: snapshot.error!,
                   onRetry: () => setState(() => _catalog = _loadCatalog()),
                 );

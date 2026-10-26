@@ -5,9 +5,9 @@ import 'package:dnd_character_list/domain/models/weapon_kind.dart';
 import 'package:dnd_character_list/domain/models/weapon_type.dart';
 import 'package:dnd_character_list/domain/models/weapon_weight.dart';
 
-/// Оружие из таблицы https://dnd.su/articles/inventory/96-arms/ или созданное игроком.
+/// Оружие с https://5e14.ttg.club/weapons или созданное игроком.
 class Weapon {
-  /// Якорь на dnd.su, например `weapon.rapier`. Есть не у всех видов оружия.
+  /// Ссылка на ttg.club, например `/weapons/rapier`. У оружия, созданного игроком, её нет.
   final String? id;
   final String name;
 
@@ -69,7 +69,7 @@ class Weapon {
     this.weight,
   });
 
-  /// Ключ для владения отдельным видом оружия: якорь dnd.su или название, если якоря нет.
+  /// Ключ для владения отдельным видом оружия: ссылка на ttg.club или название, если ссылки нет.
   String get proficiencyKey => id ?? name;
 
   bool get isLight => weaponWeight == WeaponWeight.light;

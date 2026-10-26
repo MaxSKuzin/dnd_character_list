@@ -21,12 +21,16 @@ class SelectSpellsScreen extends StatefulWidget {
   /// Класс, из списка которого выбираются заклинания (с расширенным списком TCE).
   /// `null` — любой класс, как для «Тайн магии».
   final ClassKind? classKind;
+
+  /// Списки других классов, из которых тоже можно выбирать, например жреца у «Божественной души».
+  final List<ClassKind>? additionalClassKinds;
   final int maxConspiracies;
   final int maxSpells;
   final List<Spell> knownSpells;
   final void Function(List<Spell> spells) onSpellsSelected;
   final List<SpellSlot> availableSlots;
   final String title;
+  final String? description;
 
   /// Заговоры входят в общий лимит [maxSpells] (как в «Тайнах магии»).
   final bool cantripsCountAsSpells;
@@ -36,6 +40,8 @@ class SelectSpellsScreen extends StatefulWidget {
     this.knownSpells = const [],
     List<SpellSlot>? availableSlots,
     this.title = 'Заклинания',
+    this.description,
+    this.additionalClassKinds,
     this.cantripsCountAsSpells = false,
     required this.onSpellsSelected,
     required this.maxSpells,
@@ -131,7 +137,9 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
       .toList();
 
   /// Расширенные списки TCE при создании и развитии персонажа включены всегда.
-  bool _isClassSpell(Spell spell) => widget.classKind == null || spell.isAvailableFor(widget.classKind!, includeTce: true);
+  bool _isClassSpell(Spell spell) =>
+      widget.classKind == null ||
+      [widget.classKind!, ...?widget.additionalClassKinds].any(spell.isAvailableFor);
 
   void _toggle(Spell spell) {
     if (spell.slot != SpellSlot.conspiracy || widget.cantripsCountAsSpells) {
@@ -183,6 +191,10 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              if (widget.description != null) ...[
+                const Gap(8),
+                Text(widget.description!, textAlign: TextAlign.center),
+              ],
               const Gap(16),
               if (widget.maxConspiracies > 0)
                 Text(
@@ -239,7 +251,7 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
               const Gap(16),
               if (_isLoadingDetails && _spells != null) ...[
                 Text(
-                  'Загрузка описаний с dnd.su: $_loadedDetailsCount/${_spells!.length}',
+                  'Загрузка описаний с ttg.club: $_loadedDetailsCount/${_spells!.length}',
                   textAlign: TextAlign.center,
                   style: context.theme.textTheme.bodySmall,
                 ),
@@ -252,7 +264,7 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                   builder: (context) {
                     if (_error != null) {
                       return LoadingError(
-                        message: 'Не удалось загрузить заклинания с dnd.su.',
+                        message: 'Не удалось загрузить заклинания с ttg.club.',
                         error: _error!,
                         onRetry: () => _load(forceRefresh: true),
                       );

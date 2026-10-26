@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/data/rules_repository.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
@@ -24,9 +25,9 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
   ClassKind? _selectedClass;
   bool _isLoading = false;
 
-  /// Загружает описание класса с dnd.su, если оно есть. Ошибка показывается пользователю.
+  /// Загружает описание класса с ttg.club, если оно есть. Ошибка показывается пользователю.
   Future<ClassInfo?> _loadInfo(ClassKind classKind) async {
-    final link = classKind.dndSuLink;
+    final link = classKind.ttgLink;
     if (link == null) return null;
     setState(() => _isLoading = true);
     try {
@@ -34,7 +35,7 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Не удалось загрузить описание класса с dnd.su: $e')),
+          SnackBar(content: Text('Не удалось загрузить описание класса с ttg.club: $e')),
         );
       }
       rethrow;
@@ -91,21 +92,29 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
                   ),
+                  // Доступные классы — первыми.
                   children: ClassKind.values
+                      .sortedBy<num>((e) => e.canCreate ? 0 : 1)
                       .map(
                         (e) => GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (_selectedClass == e) {
-                                _selectedClass = null;
-                              } else {
-                                _selectedClass = e;
-                              }
-                            });
-                          },
+                          onTap: !e.canCreate
+                              ? null
+                              : () {
+                                  setState(() {
+                                    if (_selectedClass == e) {
+                                      _selectedClass = null;
+                                    } else {
+                                      _selectedClass = e;
+                                    }
+                                  });
+                                },
                           child: ImageFiltered(
                             imageFilter: ColorFilter.mode(
-                              _selectedClass == e ? Colors.transparent : Colors.black45,
+                              _selectedClass == e
+                                  ? Colors.transparent
+                                  : e.canCreate
+                                      ? Colors.black45
+                                      : Colors.black87,
                               BlendMode.srcATop,
                             ),
                             child: Stack(
@@ -113,7 +122,7 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
                                 Positioned.fill(
                                   child: ClassImage(classType: e),
                                 ),
-                                if (e.dndSuLink != null)
+                                if (e.ttgLink != null)
                                   Positioned(
                                     right: 0,
                                     top: 0,
@@ -138,14 +147,21 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          e.localizedName,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              e.localizedName,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            if (!e.canCreate)
+                                              const Text('Пока недоступен', style: TextStyle(color: Colors.white70)),
+                                          ],
                                         ),
                                       ),
                                     ),

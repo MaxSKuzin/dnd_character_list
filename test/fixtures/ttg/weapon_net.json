@@ -1,0 +1,49 @@
+{
+ "name": {
+  "rus": "Сеть",
+  "eng": "Net"
+ },
+ "type": {
+  "name": "Воинское дальнобойное",
+  "order": 3
+ },
+ "damage": {
+  "type": "без урона"
+ },
+ "price": "1 зм.",
+ "source": {
+  "shortName": "PHB",
+  "name": "Книга игрока",
+  "group": {
+   "name": "Официальные источники",
+   "shortName": "Basic"
+  }
+ },
+ "id": 52,
+ "cost": 1,
+ "currency": "GM",
+ "weight": 3.0,
+ "typeRaw": "WAR_RANGED",
+ "damageType": "NO_DAMAGE",
+ "minDistance": 5,
+ "maxDistance": 15,
+ "special": "<p>Существа Большого и меньшего размеров, по которым попала атака сетью, становятся <detail-tooltip type=\"screen\"><a href=\"/screens/Restrained\">опутанными</a></detail-tooltip>, пока не высвободятся.</p>",
+ "properties": [
+  {
+   "name": "Метательное",
+   "url": "/screens/Thrown",
+   "distance": "5/15",
+   "description": "<p>Если у оружия есть свойство <a href=\"#\">Метательное</a>, вы можете совершать им <em>дальнобойные атаки,</em> метая его.</p>"
+  },
+  {
+   "name": "Особое",
+   "url": "/screens/Special",
+   "description": "<p>Оружие со свойством <a href=\"#\">Особое</a> используется по специальным правилам, указанным в описании этого оружия.</p>"
+  }
+ ],
+ "propertyIds": [
+  6,
+  7
+ ],
+ "description": ""
+}

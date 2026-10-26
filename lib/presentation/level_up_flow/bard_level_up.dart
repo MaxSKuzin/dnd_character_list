@@ -17,7 +17,7 @@ import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Повышение уровня барда по таблице класса с dnd.su: какие выборы нужны, определяется
+/// Повышение уровня барда по таблице класса с ttg.club: какие выборы нужны, определяется
 /// умениями из строки таблицы для нового уровня.
 class BardLevelUp {
   final BuildContext context;
@@ -84,7 +84,7 @@ class BardLevelUp {
     var collegeName = bard?.collegeName;
     var fightingStyle = bard?.fightingStyle;
     var collegeSkills = bard?.collegeSkills ?? const <Skill>[];
-    if (row.hasFeature(Bard.bardCollege) && collegeId == null) {
+    if (level == info.subclassLevel && collegeId == null) {
       final college = await _ask<Subclass>(
         (done) => SelectSubclassRoute(title: 'Коллегия бардов', subclasses: info.subclasses, onSelected: done),
       );

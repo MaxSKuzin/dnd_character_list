@@ -1,0 +1,57 @@
+{
+ "name": {
+  "rus": "Длинный лук",
+  "eng": "Longbow"
+ },
+ "type": {
+  "name": "Воинское дальнобойное",
+  "order": 3
+ },
+ "damage": {
+  "dice": "1к8",
+  "type": "колющий"
+ },
+ "price": "50 зм.",
+ "source": {
+  "shortName": "PHB",
+  "name": "Книга игрока",
+  "group": {
+   "name": "Официальные источники",
+   "shortName": "Basic"
+  }
+ },
+ "id": 35,
+ "cost": 50,
+ "currency": "GM",
+ "weight": 2.0,
+ "typeRaw": "WAR_RANGED",
+ "damageDice": "d8",
+ "numberDice": 1,
+ "damageType": "PIERCING",
+ "minDistance": 150,
+ "maxDistance": 600,
+ "description": "<p>Длинные луки используют натяжение тетивы рукой, чтобы посылать стрелу к цели. Длинные луки на пару футов выше, но их не так легко носить с собой.</p>",
+ "properties": [
+  {
+   "name": "Боеприпас",
+   "url": "/screens/Ammunition",
+   "distance": "150/600",
+   "description": "<p>Вы можете использовать оружие со свойством <a href=\"#\">Боеприпас</a>&nbsp;для совершения <em>дальнобойной атаки</em> только если у вас есть боеприпасы для стрельбы.</p>"
+  },
+  {
+   "name": "Двуручное",
+   "url": "/screens/Two-handed",
+   "description": "<p>Это оружие нужно держать двумя руками, когда вы атакуете им.</p>"
+  },
+  {
+   "name": "Тяжёлое",
+   "url": "/screens/Heavy",
+   "description": "<p>Существа <span><em>Маленького</em> или <em>Крошечного</em> размера<a</p>"
+  }
+ ],
+ "propertyIds": [
+  1,
+  2,
+  9
+ ]
+}

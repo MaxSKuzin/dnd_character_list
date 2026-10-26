@@ -1,0 +1,29 @@
+{
+ "name": {
+  "rus": "Набор путешественника",
+  "eng": "Explorer's Pack"
+ },
+ "price": "10.0 зм",
+ "source": {
+  "shortName": "PHB",
+  "name": "Книга игрока",
+  "group": {
+   "name": "Официальные источники",
+   "shortName": "Basic"
+  }
+ },
+ "id": 100,
+ "weight": 59.0,
+ "description": "<p>Набор путешественника включает в себя:</p><p><detail-tooltip type=\"item\"><a href=\"/items/Backpack\">рюкзак [backpack]</a></detail-tooltip>, <detail-tooltip type=\"item\"><a href=\"/items/Bedroll\">спальник [bedroll]</a></detail-tooltip>, <detail-tooltip type=\"item\"><a href=\"/items/Mess_Kit\">столовый набор [mess kit]</a></detail-tooltip>, <detail-tooltip type=\"item\"><a href=\"/items/Tinderbox\">трутницу [tinderbox]</a></detail-tooltip>, 10 <detail-tooltip type=\"item\"><a href=\"/items/Torch\">факелов [torch]</a></detail-tooltip>, <detail-tooltip type=\"item\"><a href=\"/items/Rations_(1_day)\">рационы [rations]</a></detail-tooltip> на 10 дней и <detail-tooltip type=\"item\"><a href=\"/items/Waterskin\">бурдюк [waterskin]</a></detail-tooltip>.</p><p>В набор также входит 50-футовая <detail-tooltip type=\"item\"><a href=\"/items/Hempen_Rope\">пеньковая верёвка [hempen rope]</a></detail-tooltip>, закреплённая сбоку.</p>",
+ "categories": [
+  "Снаряжение",
+  "Наборы"
+ ],
+ "altName": "Yf,jh gentitcndtyybrf",
+ "cost": 1000,
+ "currency": "GM",
+ "categoriesRaw": [
+  "ADVENTURING_GEAR",
+  "SET"
+ ]
+}

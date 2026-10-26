@@ -9,21 +9,17 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:dnd_character_list/data/dnd_su/dnd_su_backgrounds_parser.dart'
-    as _i674;
-import 'package:dnd_character_list/data/dnd_su/dnd_su_cache.dart' as _i263;
-import 'package:dnd_character_list/data/dnd_su/dnd_su_class_parser.dart'
-    as _i364;
-import 'package:dnd_character_list/data/dnd_su/dnd_su_client.dart' as _i914;
-import 'package:dnd_character_list/data/dnd_su/dnd_su_equipment_parser.dart'
-    as _i107;
-import 'package:dnd_character_list/data/dnd_su/dnd_su_feats_parser.dart'
-    as _i487;
-import 'package:dnd_character_list/data/dnd_su/dnd_su_spells_parser.dart'
-    as _i987;
 import 'package:dnd_character_list/data/rules_repository.dart' as _i890;
 import 'package:dnd_character_list/data/sp_source.dart' as _i895;
 import 'package:dnd_character_list/data/spells_repository.dart' as _i809;
+import 'package:dnd_character_list/data/ttg/ttg_backgrounds_mapper.dart'
+    as _i942;
+import 'package:dnd_character_list/data/ttg/ttg_cache.dart' as _i841;
+import 'package:dnd_character_list/data/ttg/ttg_class_mapper.dart' as _i153;
+import 'package:dnd_character_list/data/ttg/ttg_client.dart' as _i595;
+import 'package:dnd_character_list/data/ttg/ttg_equipment_mapper.dart' as _i116;
+import 'package:dnd_character_list/data/ttg/ttg_feats_mapper.dart' as _i315;
+import 'package:dnd_character_list/data/ttg/ttg_spells_mapper.dart' as _i594;
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart'
     as _i475;
 import 'package:dnd_character_list/domain/bloc/created_characters_cubit.dart'
@@ -49,18 +45,18 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i895.SpSource.init(),
       preResolve: true,
     );
-    gh.lazySingleton<_i914.DndSuClient>(
-      () => _i914.DndSuClient(),
+    gh.lazySingleton<_i153.TtgClassMapper>(() => _i153.TtgClassMapper());
+    gh.lazySingleton<_i594.TtgSpellsMapper>(() => _i594.TtgSpellsMapper());
+    gh.lazySingleton<_i841.TtgCache>(() => _i841.TtgCache());
+    gh.lazySingleton<_i942.TtgBackgroundsMapper>(
+        () => _i942.TtgBackgroundsMapper());
+    gh.lazySingleton<_i116.TtgEquipmentMapper>(
+        () => _i116.TtgEquipmentMapper());
+    gh.lazySingleton<_i315.TtgFeatsMapper>(() => _i315.TtgFeatsMapper());
+    gh.lazySingleton<_i595.TtgClient>(
+      () => _i595.TtgClient(),
       dispose: (i) => i.dispose(),
     );
-    gh.lazySingleton<_i987.DndSuSpellsParser>(() => _i987.DndSuSpellsParser());
-    gh.lazySingleton<_i364.DndSuClassParser>(() => _i364.DndSuClassParser());
-    gh.lazySingleton<_i674.DndSuBackgroundsParser>(
-        () => _i674.DndSuBackgroundsParser());
-    gh.lazySingleton<_i487.DndSuFeatsParser>(() => _i487.DndSuFeatsParser());
-    gh.lazySingleton<_i263.DndSuCache>(() => _i263.DndSuCache());
-    gh.lazySingleton<_i107.DndSuEquipmentParser>(
-        () => _i107.DndSuEquipmentParser());
     gh.factoryParam<_i571.PlayerCubit, _i747.Player, dynamic>((
       player,
       _,
@@ -69,20 +65,20 @@ extension GetItInjectableX on _i174.GetIt {
           player,
           gh<_i895.SpSource>(),
         ));
-    gh.lazySingleton<_i890.RulesRepository>(() => _i890.RulesRepository(
-          gh<_i914.DndSuClient>(),
-          gh<_i263.DndSuCache>(),
-          gh<_i364.DndSuClassParser>(),
-          gh<_i674.DndSuBackgroundsParser>(),
-          gh<_i487.DndSuFeatsParser>(),
-          gh<_i107.DndSuEquipmentParser>(),
-        ));
     gh.lazySingleton<_i809.SpellsRepository>(() => _i809.SpellsRepository(
-          gh<_i914.DndSuClient>(),
-          gh<_i987.DndSuSpellsParser>(),
+          gh<_i595.TtgClient>(),
+          gh<_i594.TtgSpellsMapper>(),
         ));
     gh.factory<_i716.CreatedCharactersCubit>(
         () => _i716.CreatedCharactersCubit(gh<_i895.SpSource>()));
+    gh.lazySingleton<_i890.RulesRepository>(() => _i890.RulesRepository(
+          gh<_i595.TtgClient>(),
+          gh<_i841.TtgCache>(),
+          gh<_i153.TtgClassMapper>(),
+          gh<_i942.TtgBackgroundsMapper>(),
+          gh<_i315.TtgFeatsMapper>(),
+          gh<_i116.TtgEquipmentMapper>(),
+        ));
     gh.factoryParam<_i876.LevelUpCubit, _i747.Player, dynamic>((
       player,
       _,

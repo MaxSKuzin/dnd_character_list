@@ -1,0 +1,50 @@
+{
+ "name": {
+  "rus": "Духовая трубка",
+  "eng": "Blowgun"
+ },
+ "type": {
+  "name": "Воинское дальнобойное",
+  "order": 3
+ },
+ "damage": {
+  "dice": "1",
+  "type": "колющий"
+ },
+ "price": "10 зм.",
+ "source": {
+  "shortName": "PHB",
+  "name": "Книга игрока",
+  "group": {
+   "name": "Официальные источники",
+   "shortName": "Basic"
+  }
+ },
+ "id": 36,
+ "cost": 10,
+ "currency": "GM",
+ "weight": 1.0,
+ "typeRaw": "WAR_RANGED",
+ "numberDice": 1,
+ "damageType": "PIERCING",
+ "minDistance": 25,
+ "maxDistance": 100,
+ "description": "<p>Может стрелять <detail-tooltip type=\"screen\"><a href=\"/items/blowgun_needles\">иглами для трубки</a></detail-tooltip>.</p>",
+ "properties": [
+  {
+   "name": "Боеприпас",
+   "url": "/screens/Ammunition",
+   "distance": "25/100",
+   "description": "<p>Вы можете использовать оружие со свойством <a href=\"#\">Боеприпас</a>&nbsp;для совершения <em>дальнобойной атаки</em> только если у вас есть боеприпасы для стрельбы.</p>"
+  },
+  {
+   "name": "Перезарядка",
+   "url": "/screens/Loading",
+   "description": "<p>Из-за долгой перезарядки этого оружия вы можете выстрелить из него только один боеприпас одним <em>действием</em>, <em>бонусным действием</em> или <em>реакцией</em>, вне зависимости от количества положенных атак в раунд.</p>"
+  }
+ ],
+ "propertyIds": [
+  1,
+  8
+ ]
+}

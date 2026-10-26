@@ -1,8 +1,9 @@
 import 'package:dnd_character_list/domain/models/armor_kind.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 
-/// Доспех из таблицы https://dnd.su/articles/inventory/95-armor_and_shields/ или созданный игроком.
+/// Доспех с https://5e14.ttg.club/armors или созданный игроком.
 class Armor {
+  /// Ссылка на ttg.club, например `/armors/chain_mail`.
   final String? id;
   final String name;
 

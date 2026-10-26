@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/data/rules_repository.dart';
+import 'package:dnd_character_list/data/spells_repository.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
@@ -13,7 +17,10 @@ class CreateCharacterFlow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<CreateCharacterCubit>(),
+      create: (context) {
+        _prefetch();
+        return getIt<CreateCharacterCubit>();
+      },
       child: BlocListener<CreateCharacterCubit, Player?>(
         listener: (context, state) {
           if (state != null) {
@@ -26,5 +33,14 @@ class CreateCharacterFlow extends StatelessWidget {
         child: const AutoRouter(),
       ),
     );
+  }
+
+  /// Предыстории, снаряжение и заклинания понадобятся на следующих шагах: их загрузка с сайта
+  /// занимает несколько секунд, поэтому начинается сразу. Ошибки покажут сами экраны.
+  static void _prefetch() {
+    final rules = getIt<RulesRepository>();
+    for (final future in [rules.getBackgrounds(), rules.getEquipment(), getIt<SpellsRepository>().getSpells()]) {
+      unawaited(future.then<void>((_) {}, onError: (_) {}));
+    }
   }
 }

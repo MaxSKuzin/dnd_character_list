@@ -40,7 +40,7 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
     final cubit = context.read<LevelUpCubit>();
     cubit.setClass(classKind, selectedClass?.isMain ?? false);
 
-    final link = classKind.dndSuLink;
+    final link = classKind.ttgLink;
     final bool passed;
     if (classKind == ClassKind.bard && link != null) {
       final ClassInfo info;
@@ -50,7 +50,7 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Не удалось загрузить описание класса с dnd.su: $e')),
+            SnackBar(content: Text('Не удалось загрузить описание класса с ttg.club: $e')),
           );
         }
         return;
@@ -67,7 +67,7 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
     if (passed) cubit.levelUp();
   }
 
-  /// Классы, повышение уровня которых ещё не переведено на описание с dnd.su.
+  /// Классы, повышение уровня которых ещё не переведено на описание с ttg.club.
   Future<bool> _levelUpLegacy(Player player, ClassKind classKind, Specialization? selectedClass) async {
     final classes = player.classes;
     final stats = player.stats;
@@ -212,18 +212,24 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
                     (e) {
                       final selectedClass = classes.firstWhereOrNull((el) => e == el.classKind);
                       return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (_selectedClassKind == e) {
-                              _selectedClassKind = null;
-                            } else {
-                              _selectedClassKind = e;
-                            }
-                          });
-                        },
+                        onTap: !e.canLevelUp
+                            ? null
+                            : () {
+                                setState(() {
+                                  if (_selectedClassKind == e) {
+                                    _selectedClassKind = null;
+                                  } else {
+                                    _selectedClassKind = e;
+                                  }
+                                });
+                              },
                         child: ImageFiltered(
                           imageFilter: ColorFilter.mode(
-                            _selectedClassKind == e ? Colors.transparent : Colors.black45,
+                            _selectedClassKind == e
+                                ? Colors.transparent
+                                : e.canLevelUp
+                                    ? Colors.black45
+                                    : Colors.black87,
                             BlendMode.srcATop,
                           ),
                           child: Stack(
@@ -268,6 +274,8 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
+                                          if (!e.canLevelUp)
+                                            const Text('Пока недоступен', style: TextStyle(color: Colors.white70)),
                                         ],
                                       ),
                                     ),

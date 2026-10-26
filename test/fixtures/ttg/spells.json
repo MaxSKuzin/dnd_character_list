@@ -1,0 +1,156 @@
+[
+ {
+  "name": {
+   "rus": "Благословение",
+   "eng": "Bless"
+  },
+  "level": 1,
+  "school": "очарование",
+  "components": {
+   "v": true,
+   "s": true,
+   "m": true
+  },
+  "concentration": true,
+  "url": "/spells/bless",
+  "source": {
+   "shortName": "PHB",
+   "name": "Книга игрока",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Волшебные уста",
+   "eng": "Magic Mouth"
+  },
+  "level": 2,
+  "school": "иллюзия",
+  "components": {
+   "v": true,
+   "s": true,
+   "m": true
+  },
+  "ritual": true,
+  "url": "/spells/magic_mouth",
+  "source": {
+   "shortName": "PHB",
+   "name": "Книга игрока",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Огненный снаряд",
+   "eng": "Fire Bolt"
+  },
+  "level": 0,
+  "school": "воплощение",
+  "components": {
+   "v": true,
+   "s": true
+  },
+  "url": "/spells/fire_bolt",
+  "source": {
+   "shortName": "PHB",
+   "name": "Книга игрока",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Скольжение",
+   "eng": "Grease"
+  },
+  "level": 1,
+  "school": "вызов",
+  "components": {
+   "v": true,
+   "s": true,
+   "m": true
+  },
+  "url": "/spells/grease",
+  "source": {
+   "shortName": "PHB",
+   "name": "Книга игрока",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Чудотворство",
+   "eng": "Thaumaturgy"
+  },
+  "level": 0,
+  "school": "преобразование",
+  "components": {
+   "v": true
+  },
+  "url": "/spells/thaumaturgy",
+  "source": {
+   "shortName": "PHB",
+   "name": "Книга игрока",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Раскат грома",
+   "eng": "Thunderclap"
+  },
+  "level": 0,
+  "school": "воплощение",
+  "additionalType": "Рунная магия",
+  "components": {
+   "s": true
+  },
+  "url": "/spells/thunderclap",
+  "source": {
+   "shortName": "XGE",
+   "name": "Руководство Занатара обо всем",
+   "group": {
+    "name": "Официальные источники",
+    "shortName": "Basic"
+   }
+  }
+ },
+ {
+  "name": {
+   "rus": "Абсолютный приказ",
+   "eng": "Absolute Command"
+  },
+  "level": 4,
+  "school": "преобразование",
+  "additionalType": "Механомагия",
+  "components": {
+   "v": true,
+   "s": true,
+   "m": true
+  },
+  "concentration": true,
+  "url": "/spells/absolute_command",
+  "source": {
+   "shortName": "MHH",
+   "name": "Мидгард Справочник героя",
+   "group": {
+    "name": "Контент от третьих лиц",
+    "shortName": "3rd"
+   }
+  }
+ }
+]

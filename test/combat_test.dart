@@ -81,7 +81,7 @@ void main() {
       final feat = ChosenFeat(
         feat: const Feat(
           id: 122,
-          link: '/feats/122-weapon-master/',
+          link: '/feats/weapon_master',
           name: 'Мастер оружия',
           nameEn: 'Weapon master',
           requirementText: null,
@@ -90,7 +90,7 @@ void main() {
           statIncreaseOptions: [StatKind.strength, StatKind.dexterity],
         ),
         increasedStat: StatKind.strength,
-        // У двуручного меча нет якоря на dnd.su — владение хранится по названию.
+        // У двуручного меча в фикстуре нет ссылки на ttg.club — владение хранится по названию.
         weapons: [greatswordFixture.proficiencyKey],
       );
       final bard = Bard(

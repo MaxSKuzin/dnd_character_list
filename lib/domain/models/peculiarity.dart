@@ -11,7 +11,7 @@ class Peculiarity {
   final int? dicePerLevel;
   final int? maxDiceCount;
 
-  /// Описание в html с dnd.su; иначе — текст с разметкой <b>/<i>.
+  /// Описание в html с ttg.club; иначе — текст с разметкой <b>/<i>.
   final bool isHtml;
 
   const Peculiarity({

@@ -1,0 +1,27 @@
+{
+ "name": {
+  "rus": "Устойчивый",
+  "eng": "Resilient"
+ },
+ "requirements": "Нет",
+ "source": {
+  "shortName": "PHB",
+  "name": "Книга игрока",
+  "group": {
+   "name": "Официальные источники",
+   "shortName": "Basic"
+  }
+ },
+ "id": 40,
+ "description": "<p>Выберите одну характеристику. Вы получаете следующие преимущества:</p><ul><li>Увеличьте значение выбранной характеристики на 1, при максимуме 20.</li><li>Вы получаете владение спасбросками этой характеристики.</li></ul>",
+ "abilities": [
+  "STRENGTH",
+  "DEXTERITY",
+  "INTELLIGENCE",
+  "CONSTITUTION",
+  "WISDOM",
+  "CHARISMA"
+ ],
+ "skills": [],
+ "altName": "Ecnjqxbdsq"
+}

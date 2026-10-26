@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-/// Предыстории из «Книги игрока» с https://dnd.su/backgrounds/.
+/// Предыстории из «Книги игрока» с https://5e14.ttg.club/backgrounds.
 @RoutePage()
 class SelectBackgroundScreen extends StatefulWidget {
   final VoidCallback onContinue;
@@ -51,7 +51,7 @@ class _SelectBackgroundScreenState extends State<SelectBackgroundScreen> {
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return LoadingError(
-                        message: 'Не удалось загрузить предыстории с dnd.su.',
+                        message: 'Не удалось загрузить предыстории с ttg.club.',
                         error: snapshot.error!,
                         onRetry: () => setState(() => _backgrounds = _repository.getBackgrounds()),
                       );

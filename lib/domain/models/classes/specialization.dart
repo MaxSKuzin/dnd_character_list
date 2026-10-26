@@ -8,10 +8,12 @@ import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
+import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/thief.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
+import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
@@ -92,6 +94,9 @@ abstract class Specialization {
   /// Навыки, которыми класс наделяет помимо выбранных при создании (например, у коллегии знаний).
   List<Skill> get grantedSkills => [];
 
+  /// Языки, которые дают умения класса (например, драконий у «Наследия драконьей крови»).
+  List<Language> get grantedLanguages => [];
+
   /// «Мастер на все руки»: половина бонуса мастерства к проверкам без владения.
   bool get hasJackOfAllTrades => false;
 
@@ -127,6 +132,7 @@ abstract class Specialization {
         'Barbarian' => Barbarian.fromJson(json),
         'Paladin' => Paladin.fromJson(json),
         'Thief' => Thief.fromJson(json),
+        'Sorcerer' => Sorcerer.fromJson(json),
         _ => throw 'No such class',
       };
 }

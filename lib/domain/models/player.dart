@@ -478,6 +478,7 @@ class Player {
   List<Language> get knownLanguages => {
         ...race.knownLanguages,
         ..._additionalLanguages,
+        ...classes.expand((e) => e.grantedLanguages),
         ...feats.expand((e) => e.languages),
       }.toList();
 

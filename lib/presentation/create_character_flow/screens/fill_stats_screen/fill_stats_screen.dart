@@ -14,14 +14,16 @@ class FillStatsScreen extends StatefulWidget {
   final void Function(Map<StatKind, int> stats) onStatsFilled;
   final bool canSpendOnOneStat;
   final String? title;
+  final String? description;
   final List<StatKind> forbiddenStats;
 
-  /// Рекомендации класса из раздела «Быстрое создание» на dnd.su.
+  /// Рекомендации класса из раздела «Быстрое создание» на ttg.club.
   final String? quickBuildHtml;
 
   const FillStatsScreen({
     super.key,
     this.title,
+    this.description,
     this.isInitial = true,
     this.canSpendOnOneStat = true,
     this.maxPoints = 27,
@@ -65,22 +67,29 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Gap(8),
+                if (widget.description != null) ...[
+                  const Gap(8),
+                  Text(widget.description!, textAlign: TextAlign.center),
+                ],
+                const Gap(16),
               ],
               Text(
-                'Очки: $points/${widget.maxPoints}',
+                'Осталось очков: $points/${widget.maxPoints}',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 16),
               ),
               if (widget.quickBuildHtml != null) ...[
                 const Gap(8),
                 ExpansionTile(
                   title: const Text('Быстрое создание'),
                   childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  children: [HtmlContent(widget.quickBuildHtml!)],
+                  children: [
+                    // Сетка характеристик должна оставаться на экране, поэтому текст прокручивается.
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.3),
+                      child: SingleChildScrollView(child: HtmlContent(widget.quickBuildHtml!)),
+                    ),
+                  ],
                 ),
               ],
               const Gap(16),

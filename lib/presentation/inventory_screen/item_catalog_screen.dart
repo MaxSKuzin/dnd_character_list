@@ -16,7 +16,7 @@ import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-/// Предметы «Книги игрока» с dnd.su для добавления в инвентарь.
+/// Предметы «Книги игрока» с ttg.club для добавления в инвентарь.
 @RoutePage()
 class ItemCatalogScreen extends StatefulWidget {
   final PlayerCubit playerCubit;
@@ -114,7 +114,7 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return LoadingError(
-                        message: 'Не удалось загрузить предметы с dnd.su.',
+                        message: 'Не удалось загрузить предметы с ttg.club.',
                         error: snapshot.error!,
                         onRetry: () => setState(() => _catalog = _repository.getEquipment()),
                       );

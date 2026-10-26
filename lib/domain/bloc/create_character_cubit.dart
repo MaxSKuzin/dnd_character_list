@@ -10,6 +10,7 @@ import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
+import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/thief.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
@@ -32,8 +33,16 @@ class CreateCharacterCubit extends Cubit<Player?> {
   Race? race;
   ClassKind? classKind;
 
-  /// Описание класса с dnd.su; пока есть только для барда.
+  /// Описание класса с ttg.club.
   ClassInfo? classInfo;
+
+  /// Подкласс, который выбирается на 1 уровне (происхождение чародея).
+  Subclass? subclass;
+  DragonAncestor? dragonAncestor;
+  DivineAffinity? divineAffinity;
+
+  /// Заклинания подкласса: известны всегда и не учитываются в числе известных заклинаний.
+  List<Spell> subclassSpells = [];
   Map<StatKind, int>? stats;
   Background? background;
   List<Skill> skills = [];
@@ -51,6 +60,34 @@ class CreateCharacterCubit extends Cubit<Player?> {
   void setClass(ClassKind value, ClassInfo? info) {
     classKind = value;
     classInfo = info;
+    subclass = null;
+    dragonAncestor = null;
+    divineAffinity = null;
+    subclassSpells = [];
+  }
+
+  /// Выбирает подкласс и загружает его заклинания, чтобы показать их на шаге выбора заклинаний.
+  Future<void> setSubclass(Subclass value) async {
+    subclass = value;
+    dragonAncestor = null;
+    divineAffinity = null;
+    await _loadSubclassSpells();
+  }
+
+  void setDragonAncestor(DragonAncestor value) => dragonAncestor = value;
+
+  Future<void> setDivineAffinity(DivineAffinity value) async {
+    divineAffinity = value;
+    await _loadSubclassSpells();
+  }
+
+  Future<void> _loadSubclassSpells() async {
+    final info = classInfo;
+    subclassSpells = info == null || classKind != ClassKind.sorcerer
+        ? []
+        : await _spellsRepository.resolveLinks(
+            Sorcerer.originSpellLinks(info, 1, originId: subclass?.id, divineAffinity: divineAffinity),
+          );
   }
 
   void setStats(Map<StatKind, int> value) => stats = {...value};
@@ -71,6 +108,12 @@ class CreateCharacterCubit extends Cubit<Player?> {
   void setSpells(List<Spell> value) => _spells = [...value];
 
   void setPersonality(Personality value) => _personality = value;
+
+  /// Языки, которые персонаж уже знает от расы и класса.
+  List<Language> get knownLanguages => {
+        ...?race?.knownLanguages,
+        if (classKind == ClassKind.sorcerer) ...Sorcerer.languagesFor(subclass?.id),
+      }.toList();
 
   /// Навыки, которыми персонаж уже владеет: от предыстории и выбранные ранее.
   List<Skill> get knownSkills => {...?background?.skills, ...skills}.toList();
@@ -101,6 +144,17 @@ class CreateCharacterCubit extends Cubit<Player?> {
         ),
       ClassKind.thief => Thief.level1(
           isMain: true,
+        ),
+      ClassKind.sorcerer => Sorcerer(
+          level: 1,
+          isMain: true,
+          chosenSpells: _spells,
+          originSpells: subclassSpells,
+          features: Sorcerer.featuresAt(classInfo!, 1, originId: subclass?.id),
+          originId: subclass?.id,
+          originName: subclass?.name,
+          dragonAncestor: dragonAncestor,
+          divineAffinity: divineAffinity,
         ),
       _ => throw UnimplementedError(),
     };

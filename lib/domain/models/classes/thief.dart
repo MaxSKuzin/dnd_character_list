@@ -19,7 +19,7 @@ final class Thief extends Specialization {
   @override
   WeaponProficiency get weaponProficiency => const WeaponProficiency(
         simple: true,
-        weapons: {'weapon.crossbow-hand', 'weapon.longsword', 'weapon.rapier', 'weapon.shortsword'},
+        weapons: {'/weapons/crossbow,_hand', '/weapons/longsword', '/weapons/rapier', '/weapons/shortsword'},
       );
 
   @override

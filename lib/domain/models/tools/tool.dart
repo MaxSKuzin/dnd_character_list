@@ -1,12 +1,12 @@
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 
-/// Инструмент со страницы https://dnd.su/articles/inventory/100-tools/.
+/// Инструмент с https://5e14.ttg.club/items.
 class Tool {
   final ToolCategory category;
   final String name;
 
-  /// Описание категории инструментов в html, как на сайте.
+  /// Описание инструмента в html, как на сайте.
   final String description;
   final Balance price;
 

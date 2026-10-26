@@ -10,7 +10,7 @@ import 'package:gap/gap.dart';
 
 @RoutePage()
 class SetPersonalityScreen extends StatefulWidget {
-  /// Таблицы персонализации предыстории с dnd.su.
+  /// Таблицы персонализации предыстории с ttg.club.
   final List<PersonalityTable> tables;
 
   const SetPersonalityScreen({
@@ -59,6 +59,18 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Text(
+                'Личность',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const Gap(8),
+              const Text(
+                'Опишите персонажа и выберите по строке в таблицах предыстории: черта характера, идеал, '
+                'привязанность и слабость обязательны.',
+                textAlign: TextAlign.center,
+              ),
+              const Gap(16),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(

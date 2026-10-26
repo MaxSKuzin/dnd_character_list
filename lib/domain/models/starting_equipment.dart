@@ -32,7 +32,7 @@ class StartingEquipmentOption {
 
 /// Ссылка на предмет из описания класса.
 class EquipmentRef {
-  /// Якорь или подсказка со ссылки на сайте, например `weapon.rapier` или `item.pack.diplomat`.
+  /// Ссылка на предмет в нижнем регистре, например `/weapons/rapier` или `/items/diplomat's_pack`.
   final String? id;
 
   /// Текст как на сайте: «два ручных топора», «любое простое оружие».

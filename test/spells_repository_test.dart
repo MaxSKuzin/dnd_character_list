@@ -1,52 +1,60 @@
 import 'dart:io';
 
-import 'package:dnd_character_list/data/dnd_su/dnd_su_client.dart';
-import 'package:dnd_character_list/data/dnd_su/dnd_su_spells_parser.dart';
 import 'package:dnd_character_list/data/spells_repository.dart';
+import 'package:dnd_character_list/data/ttg/ttg_client.dart';
+import 'package:dnd_character_list/data/ttg/ttg_spells_mapper.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/ttg_fixtures.dart';
+
 Spell _spell(int id) => Spell(
-      id: id,
-      link: '/spells/$id-spell/',
+      link: '/spells/spell_$id',
       name: 'Заклинание $id',
       nameEn: 'Spell $id',
       slot: SpellSlot.level1,
-      school: 'Воплощение',
+      school: 'воплощение',
       isConcentration: false,
       isRitual: false,
       components: const [SpellComponent.verbal],
-      castTimeType: null,
       allowedSpecializations: const [],
-      tceSpecializations: const [],
     );
 
-String _page(int id) => '''
-<div class="cards-wrapper"><div class="card__body" itemprop="articleBody"><ul class="params">
-<li class="size-type-alignment">1 уровень, воплощение</li>
-<li><strong>Время накладывания:</strong> 1 действие</li>
-<li class="subsection desc"><div itemprop="description"><p>Описание $id</p></div></li>
-</ul></div></div>
-<section class="comments-block">комментарии</section>''';
+Map<String, Object?> _details(String path) => {
+      ...ttgFixture('spell_bless'),
+      'url': path,
+      'description': '<p>Описание $path</p>',
+    };
 
-/// Так сайт иногда отвечает: страница есть, а карточки заклинания в ней нет.
-const _pageWithoutCard = '<div class="cards-wrapper"></div><section class="comments-block">комментарии</section>';
+/// Классы, у которых в фикстуре есть заклинания: остальные фильтры возвращают пустой список.
+const _classSpells = {
+  ClassKind.sorcerer: ['/spells/fire_bolt', '/spells/grease'],
+  ClassKind.wizard: ['/spells/fire_bolt', '/spells/grease', '/spells/magic_mouth'],
+  ClassKind.cliric: ['/spells/bless', '/spells/thaumaturgy'],
+};
 
-class _FakeClient extends DndSuClient {
+class _FakeClient extends TtgClient {
   final requests = <String, int>{};
 
-  /// Сколько первых запросов к странице вернут страницу без карточки.
-  final Map<String, int> brokenResponses;
+  /// Сколько первых запросов к пути завершатся ошибкой сервера.
+  final Map<String, int> failures;
 
-  _FakeClient({this.brokenResponses = const {}});
+  _FakeClient({this.failures = const {}});
 
   @override
-  Future<String> get(String path) async {
+  Future<Object?> post(String path, [Map<String, Object?> body = const {}]) async {
     final count = requests[path] = (requests[path] ?? 0) + 1;
-    if (count <= (brokenResponses[path] ?? 0)) return _pageWithoutCard;
-    return _page(Spell.idFromLink(path));
+    if (count <= (failures[path] ?? 0)) throw const TtgException('HTTP 500');
+    if (path != '/spells') return _details(path);
+    final filter = body['filter'] as Map?;
+    if (filter == null) return ttgJson('spells');
+    final classKind = ClassKind.values.firstWhere((e) => '${e.ttgSpellsFilterId}' == (filter['class'] as List).single);
+    return [
+      for (final link in _classSpells[classKind] ?? const <String>[]) {'url': link},
+    ];
   }
 }
 
@@ -56,19 +64,47 @@ void main() {
   setUp(() async => cacheDirectory = await Directory.systemTemp.createTemp('spells_repository_test'));
   tearDown(() => cacheDirectory.delete(recursive: true));
 
-  SpellsRepository repository(DndSuClient client) => SpellsRepository(
+  SpellsRepository repository(TtgClient client) => SpellsRepository(
         client,
-        DndSuSpellsParser(),
+        TtgSpellsMapper(),
         cacheDirectory: () async => cacheDirectory,
       );
 
-  test('retries when site returns page without spell card', () async {
-    final client = _FakeClient(brokenResponses: {'/spells/1-spell/': 2});
+  test('loads official spells with class lists', () async {
+    final client = _FakeClient();
+    final spells = await repository(client).getSpells();
+
+    // Заклинание из стороннего источника (MHH) не попадает в список.
+    expect(spells.map((e) => e.link), isNot(contains('/spells/absolute_command')));
+    final grease = spells.firstWhere((e) => e.link == '/spells/grease');
+    expect(grease.allowedSpecializations, [ClassKind.wizard, ClassKind.sorcerer]);
+    expect(grease.components, SpellComponent.values);
+    expect(spells.firstWhere((e) => e.link == '/spells/magic_mouth').isRitual, isTrue);
+    expect(spells.firstWhere((e) => e.link == '/spells/fire_bolt').slot, SpellSlot.conspiracy);
+  });
+
+  test('finds spell by link from descriptions in any case', () async {
+    final spell = await repository(_FakeClient()).findByLink('/spells/Grease');
+    expect(spell?.name, 'Скольжение');
+  });
+
+  test('maps details', () {
+    final details = TtgSpellsMapper().mapDetails(ttgFixture('spell_bless'));
+    expect(details.levelAndSchool, '1 уровень, очарование');
+    expect(details.components, 'В, С, М (капля святой воды)');
+    expect(details.castTime, '1 действие');
+    // Шаман на сайте — homebrew.
+    expect(details.classes, 'Жрец, Паладин');
+    expect(details.descriptionHtml, contains('На больших уровнях'));
+  });
+
+  test('retries when server fails', () async {
+    final client = _FakeClient(failures: {'/spells/spell_1': 2});
 
     final spell = await repository(client).withDetails(_spell(1));
 
-    expect(spell.details?.descriptionHtml, '<p>Описание 1</p>');
-    expect(client.requests['/spells/1-spell/'], 3);
+    expect(spell.details?.descriptionHtml, contains('Описание /spells/spell_1'));
+    expect(client.requests['/spells/spell_1'], 3);
   });
 
   test('loads all spells with details and caches them on disk', () async {
@@ -87,12 +123,12 @@ void main() {
     expect(offlineClient.requests, isEmpty);
   });
 
-  test('keeps spell without details when page stays broken', () async {
-    final client = _FakeClient(brokenResponses: {'/spells/2-spell/': 100});
+  test('keeps spell without details when server keeps failing', () async {
+    final client = _FakeClient(failures: {'/spells/spell_2': 100});
 
     final loaded = await repository(client).loadDetails([_spell(1), _spell(2)]).toList();
 
-    expect(loaded.firstWhere((e) => e.id == 1).details, isNotNull);
-    expect(loaded.firstWhere((e) => e.id == 2).details, isNull);
+    expect(loaded.firstWhere((e) => e.link == '/spells/spell_1').details, isNotNull);
+    expect(loaded.firstWhere((e) => e.link == '/spells/spell_2').details, isNull);
   });
 }

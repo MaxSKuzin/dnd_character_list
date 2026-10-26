@@ -1,0 +1,44 @@
+{
+ "name": {
+  "rus": "Боевой посох",
+  "eng": "Quarterstaff"
+ },
+ "type": {
+  "name": "Простое рукопашное",
+  "order": 0
+ },
+ "damage": {
+  "dice": "1к6",
+  "type": "дробящий"
+ },
+ "price": "2 см.",
+ "source": {
+  "shortName": "PHB",
+  "name": "Книга игрока",
+  "group": {
+   "name": "Официальные источники",
+   "shortName": "Basic"
+  }
+ },
+ "id": 1,
+ "cost": 2,
+ "currency": "SM",
+ "weight": 4.0,
+ "typeRaw": "SIMPLE_MELE",
+ "damageDice": "d6",
+ "twoHandDamageDice": "d8",
+ "numberDice": 1,
+ "damageType": "BLUDGEONING",
+ "description": "<p>Боевой посох &ndash; это двуручное оружие ближнего боя в форме шеста разной длины, выполненное, как правило, из легких сплавов металла, стали или дерева.</p>",
+ "properties": [
+  {
+   "name": "Универсальное",
+   "url": "/screens/Versatile",
+   "twoHandDice": "1к8",
+   "description": "<p>Это оружие можно использовать как одной, так и двумя руками. Урон, указанный в скобках после этого свойства, означает урон при совершении рукопашной атаки двумя руками.</p>"
+  }
+ ],
+ "propertyIds": [
+  10
+ ]
+}

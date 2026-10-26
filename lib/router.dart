@@ -62,6 +62,12 @@ class AppRouter extends RootStackRouter {
             AdaptiveRoute(
               page: ProficienciesRoute.page,
             ),
+            AdaptiveRoute(
+              page: SelectSubclassRoute.page,
+            ),
+            AdaptiveRoute(
+              page: SelectOptionRoute.page,
+            ),
           ],
         ),
         AdaptiveRoute(

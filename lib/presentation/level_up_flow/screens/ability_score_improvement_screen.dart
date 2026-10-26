@@ -203,7 +203,7 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return LoadingError(
-              message: 'Не удалось загрузить черты с dnd.su.',
+              message: 'Не удалось загрузить черты с ttg.club.',
               error: snapshot.error!,
               onRetry: () => setState(() => _feats = _repository.getFeats()),
             );
@@ -287,7 +287,7 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return LoadingError(
-                    message: 'Не удалось загрузить оружие с dnd.su.',
+                    message: 'Не удалось загрузить оружие с ttg.club.',
                     error: snapshot.error!,
                     onRetry: () => setState(() => _equipment = _repository.getEquipment()),
                   );

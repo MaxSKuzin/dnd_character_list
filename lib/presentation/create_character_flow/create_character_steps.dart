@@ -1,5 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
+import 'package:dnd_character_list/presentation/create_character_flow/screens/select_option_screen/select_option_screen.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
@@ -9,11 +12,13 @@ import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Шаги создания персонажа в порядке «Книги игрока»: раса, класс, характеристики,
-/// предыстория, затем выборы, которые от них зависят.
+/// Шаги создания персонажа в порядке «Книги игрока»: раса, класс (с подклассом, если его выбирают
+/// на 1 уровне), характеристики, предыстория, затем выборы, которые от них зависят.
 enum CreateCharacterStep {
   race,
   classKind,
+  subclass,
+  subclassOptions,
   stats,
   raceStats,
   background,
@@ -53,8 +58,24 @@ abstract final class CreateCharacterSteps {
       case CreateCharacterStep.race:
       case CreateCharacterStep.classKind:
         return null;
+      case CreateCharacterStep.subclass:
+        if (classInfo == null || classInfo.subclassLevel != 1 || classInfo.subclasses.isEmpty) return null;
+        return SelectSubclassRoute(
+          title: classInfo.subclassTitle ?? 'Подкласс',
+          description: 'Класс «${classInfo.name}» выбирает его на 1 уровне: умения появляются сразу '
+              'и на следующих уровнях. Подробности — по кнопке «i».',
+          subclasses: classInfo.subclasses,
+          onSelected: (subclass) async {
+            await cubit.setSubclass(subclass);
+            next();
+          },
+        );
+      case CreateCharacterStep.subclassOptions:
+        return _subclassOptionsRoute(cubit, next);
       case CreateCharacterStep.stats:
         return FillStatsRoute(
+          title: 'Характеристики',
+          description: 'Распределите очки: значения от 8 до 15, повышение до 14 и 15 стоит 2 очка.',
           quickBuildHtml: classInfo?.quickBuildHtml,
           onStatsFilled: (stats) {
             cubit.setStats(stats);
@@ -69,7 +90,13 @@ abstract final class CreateCharacterSteps {
           initialStats: cubit.stats!,
           isInitial: false,
           canSpendOnOneStat: false,
-          title: 'Внесите дополнительные очки от расы',
+          title: 'Бонус расы',
+          description: [
+            'Раса «${race.name}»: +1 к ${race.additionalStatsCount} разным характеристикам на ваш выбор.',
+            if (race.statBonuses.isNotEmpty)
+              '${race.statBonuses.entries.map((e) => '${e.key.localizedName} +${e.value}').join(', ')} '
+                  'добавится автоматически.',
+          ].join('\n'),
           onStatsFilled: (bonuses) {
             cubit.setStats(cubit.stats!.map((key, value) => MapEntry(key, value + (bonuses[key] ?? 0))));
             next();
@@ -89,7 +116,7 @@ abstract final class CreateCharacterSteps {
           description: 'Предыстория «${background.name}»',
           tools: background.tools,
           languagesCount: languages,
-          knownLanguages: race.knownLanguages,
+          knownLanguages: cubit.knownLanguages,
           onSelected: (tools, languages) {
             cubit.setBackgroundProficiencies(tools: tools, languages: languages);
             next();
@@ -170,8 +197,20 @@ abstract final class CreateCharacterSteps {
           cubit.setSpells([]);
           return null;
         }
+        final granted = cubit.subclassSpells;
         return SelectSpellsRoute(
           classKind: classKind,
+          additionalClassKinds:
+              classKind == ClassKind.sorcerer ? Sorcerer.spellListsFor(cubit.subclass?.id).skip(1).toList() : null,
+          description: [
+            'Класс «${classInfo?.name ?? classKind.localizedName}»: '
+                '${[if (cantrips > 0) _count(cantrips, 'заговор', 'заговора', 'заговоров'), if (spells > 0) '${_count(spells, 'заклинание', 'заклинания', 'заклинаний')} 1 уровня'].join(' и ')}.',
+            if (classKind == ClassKind.sorcerer && cubit.subclass?.id == Sorcerer.divineSoul)
+              '«Божественная магия»: можно выбирать и из списка жреца.',
+            if (granted.isNotEmpty)
+              '${cubit.subclass!.name} уже даёт: ${granted.map((e) => e.name).join(', ')} — они не входят в лимит.',
+          ].join('\n'),
+          knownSpells: granted,
           maxConspiracies: cantrips,
           maxSpells: spells,
           availableSlots: [
@@ -187,6 +226,47 @@ abstract final class CreateCharacterSteps {
         return SetPersonalityRoute(tables: cubit.background!.tables);
     }
   }
+
+  /// Выбор внутри подкласса: драконий предок, склонность «Божественной души».
+  static PageRouteInfo? _subclassOptionsRoute(CreateCharacterCubit cubit, VoidCallback next) {
+    switch (cubit.subclass?.id) {
+      case Sorcerer.draconicBloodline:
+        const ancestors = DragonAncestor.values;
+        return SelectOptionRoute(
+          title: 'Драконий предок',
+          description: 'Вид урона предка используется в умениях происхождения. '
+              'Вы также говорите, читаете и пишете на Драконьем.',
+          options: [
+            for (final e in ancestors) SelectOption(title: e.localizedName, subtitle: e.damageType.localizedName),
+          ],
+          onSelected: (index) {
+            cubit.setDragonAncestor(ancestors[index]);
+            next();
+          },
+        );
+      case Sorcerer.divineSoul:
+        const affinities = DivineAffinity.values;
+        return SelectOptionRoute(
+          title: 'Склонность',
+          description: '«Божественная магия»: склонность к источнику божественной силы даёт дополнительное '
+              'заклинание, которое не учитывается в числе известных.',
+          options: [for (final e in affinities) SelectOption(title: e.localizedName, subtitle: e.spellName)],
+          onSelected: (index) async {
+            await cubit.setDivineAffinity(affinities[index]);
+            next();
+          },
+        );
+      default:
+        return null;
+    }
+  }
+
+  /// «1 заговор», «2 заговора», «5 заговоров».
+  static String _count(int count, String one, String few, String many) => switch (count % 10) {
+        1 when count % 100 != 11 => '$count $one',
+        2 || 3 || 4 when count % 100 < 12 || count % 100 > 14 => '$count $few',
+        _ => '$count $many',
+      };
 
   static PageRouteInfo _skillsRoute(
     CreateCharacterCubit cubit,
@@ -216,11 +296,7 @@ abstract final class CreateCharacterSteps {
   }
 
   /// «1 навык», «3 навыка», «5 навыков».
-  static String _skills(int count) => switch (count % 10) {
-        1 when count % 100 != 11 => '$count навык',
-        2 || 3 || 4 when count % 100 < 12 || count % 100 > 14 => '$count навыка',
-        _ => '$count навыков',
-      };
+  static String _skills(int count) => _count(count, 'навык', 'навыка', 'навыков');
 
   static List<String> _fixedTools(List<ToolProficiencyOption> tools) =>
       tools.where((e) => !e.isChoice).map((e) => e.title).toList();

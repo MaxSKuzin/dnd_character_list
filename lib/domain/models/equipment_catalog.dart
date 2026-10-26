@@ -9,7 +9,7 @@ import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 
-/// Предметы «Книги игрока» с dnd.su: оружие, доспехи, щиты, снаряжение, наборы и инструменты.
+/// Предметы «Книги игрока» с ttg.club: оружие, доспехи, щиты, снаряжение, наборы и инструменты.
 class EquipmentCatalog {
   final List<Weapon> weapons;
   final List<Armor> armors;
@@ -49,22 +49,28 @@ class EquipmentCatalog {
         _ => null,
       };
 
+  /// Группы снаряжения, из которых выбирают «магическую фокусировку» и подобное.
+  static const focusGroups = {
+    'магическая фокусировка': 'Магическая фокусировка',
+    'фокусировка друидов': 'Фокусировка друидов',
+    'священный символ': 'Священный символ',
+  };
+
   /// Предметы, из которых выбирают по ссылке вида «любое простое рукопашное оружие».
   List<Object> choicesFor(EquipmentRef ref) {
     final text = ref.text.toLowerCase();
-    final id = ref.id ?? '';
-    if (id.startsWith('weapon.') || text.contains('оружи')) {
+    final group = focusGroups.entries.firstWhereOrNull((e) => text.contains(e.key))?.value;
+    if (group != null) return gear.where((e) => e.group == group).toList();
+    if (text.contains('оружи')) {
       return weapons.where((weapon) {
-        if ((id.contains('simple') || text.contains('прост')) && !weapon.kind.isSimple) return false;
-        if ((id.contains('martial') || text.contains('воинск')) && weapon.kind.isSimple) return false;
+        if (text.contains('прост') && !weapon.kind.isSimple) return false;
+        if (text.contains('воинск') && weapon.kind.isSimple) return false;
         if (text.contains('рукопашн') && !weapon.kind.isMelee) return false;
         if (text.contains('дальнобойн') && !weapon.kind.isRanged) return false;
         return true;
       }).toList();
     }
-    final category = switch (id) {
-      'tools.music' => ToolCategory.musicalInstrument,
-      'tools.gaming' => ToolCategory.playSet,
+    final category = switch (text) {
       _ when text.contains('музык') => ToolCategory.musicalInstrument,
       _ when text.contains('игров') => ToolCategory.playSet,
       _ when text.contains('ремесл') => ToolCategory.craftsmenTool,
@@ -73,8 +79,8 @@ class EquipmentCatalog {
     return category == null ? [] : toolsOf(category);
   }
 
-  /// Находит предмет по ссылке из описания класса. Ссылки на сайте не всегда точны
-  /// (у паладина «Кольчуга» ведёт на чешуйчатый доспех), поэтому сначала сравниваются названия.
+  /// Находит предмет по ссылке из описания класса. Ссылки на сайте не всегда точны,
+  /// поэтому сначала сравниваются названия, затем ссылки.
   Object? find(EquipmentRef ref) {
     final candidates = _candidatesFor(ref.id);
     final text = _normalize(ref.text);
@@ -86,15 +92,13 @@ class EquipmentCatalog {
 
   List<Object> _candidatesFor(String? id) => switch (id) {
         null => all,
-        _ when id.startsWith('weapon.') => weapons,
-        _ when id.startsWith('armor.') => [...armors, ...shields],
-        _ when id.startsWith('item.pack') => packs,
-        _ when id.startsWith('tool') => tools,
-        _ when id.startsWith('equipment.') => gear,
+        _ when id.startsWith('/weapons/') => weapons,
+        _ when id.startsWith('/armors/') => [...armors, ...shields],
+        _ when id.startsWith('/items/') => [...packs, ...tools, ...gear],
         _ => all,
       };
 
-  /// Опечатки в якорях: `weapon.javeline` вместо `weapon.javelin`.
+  /// Опечатки в ссылках: `/weapons/javeline` вместо `/weapons/javelin`.
   Object? _findBySimilarId(List<Object> candidates, String? id) {
     if (id == null) return null;
     return candidates
