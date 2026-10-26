@@ -6,6 +6,7 @@ import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/presentation/common/widgets/character_avatar.dart';
 import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
 import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/extensions/feature_choices.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
@@ -52,58 +53,6 @@ class PersonalityScreen extends StatelessWidget {
   }
 }
 
-/// Карточка раздела: значок, заголовок и содержимое, в стиле остальных экранов (белая рамка, цвет карточек).
-class _Section extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final Widget child;
-  final Widget? trailing;
-  final EdgeInsets padding;
-
-  const _Section({
-    required this.icon,
-    required this.title,
-    required this.child,
-    this.trailing,
-    this.padding = const EdgeInsets.fromLTRB(16, 0, 16, 16),
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: ShapeDecoration(
-        color: context.customColors?.cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Colors.white),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(16, 12, trailing == null ? 16 : 4, 8),
-            child: Row(
-              children: [
-                Icon(icon, size: 18, color: Colors.white70),
-                const Gap(8),
-                Expanded(
-                  child: Text(
-                    title.toUpperCase(),
-                    style: context.theme.textTheme.labelLarge?.copyWith(letterSpacing: 1.2, color: Colors.white70),
-                  ),
-                ),
-                if (trailing != null) trailing!,
-              ],
-            ),
-          ),
-          Padding(padding: padding, child: child),
-        ],
-      ),
-    );
-  }
-}
-
 class _Header extends StatelessWidget {
   final Player player;
 
@@ -113,95 +62,63 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final personality = player.personality;
     final textTheme = context.theme.textTheme;
-    return DecoratedBox(
-      decoration: ShapeDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [context.customColors?.cardColor ?? Colors.black, context.theme.colorScheme.primaryContainer],
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Colors.white),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                // Аватар меняется нажатием; хранится только на этом устройстве.
-                GestureDetector(
-                  onTap: () => changeAvatar(context),
-                  child: Stack(
-                    children: [
-                      CharacterAvatar(
-                          avatar: personality.avatar, frame: personality.avatarFrame, name: personality.name),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: context.theme.colorScheme.primary,
-                            border: Border.all(color: Colors.white),
-                          ),
-                          child: Icon(Icons.photo_camera, size: 14, color: context.theme.colorScheme.onPrimary),
+    return SheetHeader(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              // Аватар меняется нажатием; хранится только на этом устройстве.
+              GestureDetector(
+                onTap: () => changeAvatar(context),
+                child: Stack(
+                  children: [
+                    CharacterAvatar(avatar: personality.avatar, frame: personality.avatarFrame, name: personality.name),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: context.theme.colorScheme.primary,
+                          border: Border.all(color: Colors.white),
                         ),
+                        child: Icon(Icons.photo_camera, size: 14, color: context.theme.colorScheme.onPrimary),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const Gap(16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(personality.name, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                      const Gap(2),
-                      Text('${player.race.name} · ${player.level} уровень', style: textTheme.bodyMedium),
-                      Text(player.background.name, style: textTheme.bodySmall?.copyWith(color: Colors.white70)),
-                      const Gap(8),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: [
-                          for (final spec in player.classes) _Badge('${spec.classKind.localizedName} ${spec.level}')
-                        ],
-                      ),
-                    ],
-                  ),
+              ),
+              const Gap(16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(personality.name, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    const Gap(2),
+                    Text('${player.race.name} · ${player.level} уровень', style: textTheme.bodyMedium),
+                    Text(player.background.name, style: textTheme.bodySmall?.copyWith(color: Colors.white70)),
+                    const Gap(8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        for (final spec in player.classes) SheetBadge('${spec.classKind.localizedName} ${spec.level}')
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const Gap(16),
-            FilledButton.icon(
-              onPressed: () => context.pushRoute(LevelUpFlowRoute(player: PlayerModel.getPlayer(context))),
-              icon: const Icon(Icons.arrow_upward),
-              label: const Text('Новый уровень'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Badge extends StatelessWidget {
-  final String text;
-
-  const _Badge(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(border: Border.all(color: Colors.white54), borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        child: Text(text, style: context.theme.textTheme.labelMedium),
+              ),
+            ],
+          ),
+          const Gap(16),
+          FilledButton.icon(
+            onPressed: () => context.pushRoute(LevelUpFlowRoute(player: PlayerModel.getPlayer(context))),
+            icon: const Icon(Icons.arrow_upward),
+            label: const Text('Новый уровень'),
+          ),
+        ],
       ),
     );
   }
@@ -223,56 +140,14 @@ class _Appearance extends StatelessWidget {
       ('Кожа', personality.skinColor),
       ('Волосы', personality.hairColor),
     ];
-    return _Section(
+    return SheetSection(
       icon: Icons.face_outlined,
       title: 'Внешность',
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          const spacing = 8.0;
-          final width = (constraints.maxWidth - spacing * 2) / 3;
-          return Wrap(
-            spacing: spacing,
-            runSpacing: spacing,
-            children: [
-              for (final (label, value) in values)
-                SizedBox(width: width, child: _InfoTile(label: label, value: value.trim().isEmpty ? '—' : value)),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _InfoTile extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _InfoTile({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.theme.scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white24),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        child: Column(
-          children: [
-            Text(label, style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white60)),
-            const Gap(2),
-            Text(
-              value,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
+      child: TileGrid(
+        columns: 3,
+        children: [
+          for (final (label, value) in values) InfoTile(label: label, value: value.trim().isEmpty ? '—' : value)
+        ],
       ),
     );
   }
@@ -285,7 +160,7 @@ class _Classes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Section(
+    return SheetSection(
       icon: Icons.shield_moon_outlined,
       title: classes.length > 1 ? 'Классы' : 'Класс',
       child: Column(
@@ -351,7 +226,7 @@ class _Features extends StatelessWidget {
       ),
     ].where((e) => e.$2.isNotEmpty).toList();
     if (groups.isEmpty) return const SizedBox.shrink();
-    return _Section(
+    return SheetSection(
       icon: Icons.auto_awesome_outlined,
       title: 'Особенности',
       padding: const EdgeInsets.only(bottom: 8),
@@ -386,7 +261,7 @@ class _LanguagesAndProficiencies extends StatelessWidget {
         'Доспехи': player.armorProficiencies.map((e) => e.localizedName).join(', '),
       if (player.toolProficiencies.isNotEmpty) 'Инструменты': player.toolProficiencies.join(', '),
     };
-    return _Section(
+    return SheetSection(
       icon: Icons.translate,
       title: 'Языки и владения',
       child: Column(
@@ -395,7 +270,7 @@ class _LanguagesAndProficiencies extends StatelessWidget {
           Wrap(
             spacing: 6,
             runSpacing: 6,
-            children: [for (final language in player.knownLanguages) _Badge(language.localizedName)],
+            children: [for (final language in player.knownLanguages) SheetBadge(language.localizedName)],
           ),
           for (final MapEntry(key: title, value: value) in proficiencies.entries) ...[
             const Gap(12),
@@ -415,7 +290,7 @@ class _Traits extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Section(
+    return SheetSection(
       icon: Icons.psychology_outlined,
       title: 'Характер',
       child: Column(
@@ -442,7 +317,7 @@ class _Background extends StatelessWidget {
   Widget build(BuildContext context) {
     final background = player.background;
     final story = player.personality.story.trim();
-    return _Section(
+    return SheetSection(
       icon: Icons.menu_book_outlined,
       title: 'Предыстория: ${background.name}',
       trailing: IconButton(

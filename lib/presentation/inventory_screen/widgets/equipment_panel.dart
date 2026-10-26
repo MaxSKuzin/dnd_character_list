@@ -4,7 +4,7 @@ import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
-import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/extensions/item_texts.dart';
 import 'package:flutter/material.dart';
@@ -23,94 +23,92 @@ class EquipmentPanel extends StatelessWidget {
         final warnings = [
           if (!player.isArmorProficient)
             'Нет владения доспехом: помеха на проверки, спасброски и атаки по Силе и Ловкости, нельзя накладывать заклинания.',
-          if (!player.isShieldProficient) 'Нет владения щитом: помеха на проверки, спасброски и атаки по Силе и Ловкости.',
+          if (!player.isShieldProficient)
+            'Нет владения щитом: помеха на проверки, спасброски и атаки по Силе и Ловкости.',
           if (player.isArmorTooHeavy) 'Сила ниже ${player.armor!.strengthRequirement}: скорость уменьшена на 10 футов.',
           if (player.armor?.stealthDisadvantage ?? false) 'Доспех даёт помеху на проверки Ловкости (Скрытность).',
         ];
-        return LabeledBorder(
-          backgroundColor: context.customColors?.cardColor,
-          text: 'ЭКИПИРОВКА',
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 64,
-                      height: 64,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('${armorClass.value}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                          const Text('КД', style: TextStyle(fontSize: 12)),
-                        ],
-                      ),
+        return SheetSection(
+          icon: Icons.checkroom_outlined,
+          title: 'Экипировка',
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const Gap(12),
-                    Expanded(
-                      child: Text(
-                        armorClass.parts
-                            .map((e) => '${e.$1} ${e.$2 >= 0 && e != armorClass.parts.first ? '+' : ''}${e.$2}')
-                            .join(' · '),
-                      ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('${armorClass.value}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                        const Text('КД', style: TextStyle(fontSize: 12)),
+                      ],
                     ),
-                  ],
-                ),
-                for (final warning in warnings)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(warning, style: const TextStyle(color: Colors.orangeAccent, fontSize: 12)),
                   ),
-                const Gap(8),
-                _SlotTile(
-                  icon: Icons.shield_outlined,
+                  const Gap(12),
+                  Expanded(
+                    child: Text(
+                      armorClass.parts
+                          .map((e) => '${e.$1} ${e.$2 >= 0 && e != armorClass.parts.first ? '+' : ''}${e.$2}')
+                          .join(' · '),
+                    ),
+                  ),
+                ],
+              ),
+              for (final warning in warnings)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(warning, style: const TextStyle(color: Colors.orangeAccent, fontSize: 12)),
+                ),
+              const Gap(8),
+              _SlotTile(
+                icon: Icons.shield_outlined,
+                title: 'Доспех',
+                value: player.armor?.name,
+                details: player.armor == null ? null : 'КД ${player.armor!.protectionText}',
+                onTap: () => _pick<Armor>(
+                  context,
                   title: 'Доспех',
-                  value: player.armor?.name,
-                  details: player.armor == null ? null : 'КД ${player.armor!.protectionText}',
-                  onTap: () => _pick<Armor>(
-                    context,
-                    title: 'Доспех',
-                    current: player.armor,
-                    candidates: player.inventory.items.map((e) => e.item).whereType<Armor>().toList(),
-                    onSelect: (armor) => context.read<PlayerCubit>().equipArmor(armor),
-                    onRemove: () => context.read<PlayerCubit>().unequipArmor(),
-                  ),
+                  current: player.armor,
+                  candidates: player.inventory.items.map((e) => e.item).whereType<Armor>().toList(),
+                  onSelect: (armor) => context.read<PlayerCubit>().equipArmor(armor),
+                  onRemove: () => context.read<PlayerCubit>().unequipArmor(),
                 ),
-                _SlotTile(
-                  icon: Icons.security,
+              ),
+              _SlotTile(
+                icon: Icons.security,
+                title: 'Щит',
+                value: player.shield?.name,
+                details: player.shield == null ? null : 'КД +${player.shield!.defense}',
+                onTap: () => _pick<Shield>(
+                  context,
                   title: 'Щит',
-                  value: player.shield?.name,
-                  details: player.shield == null ? null : 'КД +${player.shield!.defense}',
-                  onTap: () => _pick<Shield>(
-                    context,
-                    title: 'Щит',
-                    current: player.shield,
-                    candidates: player.inventory.items.map((e) => e.item).whereType<Shield>().toList(),
-                    reason: (_) => player.canUseShield ? null : 'Основное оружие двуручное',
-                    onSelect: (shield) => context.read<PlayerCubit>().equipShield(shield),
-                    onRemove: () => context.read<PlayerCubit>().unequipShield(),
-                  ),
+                  current: player.shield,
+                  candidates: player.inventory.items.map((e) => e.item).whereType<Shield>().toList(),
+                  reason: (_) => player.canUseShield ? null : 'Основное оружие двуручное',
+                  onSelect: (shield) => context.read<PlayerCubit>().equipShield(shield),
+                  onRemove: () => context.read<PlayerCubit>().unequipShield(),
                 ),
-                for (final slot in WeaponSlot.values)
-                  if (slot.isMain || player.weaponIn(slot) != null || _hasCandidates(player, slot))
-                    _weaponSlot(context, player, slot),
-              ],
-            ),
+              ),
+              for (final slot in WeaponSlot.values)
+                if (slot.isMain || player.weaponIn(slot) != null || _hasCandidates(player, slot))
+                  _weaponSlot(context, player, slot),
+            ],
           ),
         );
       },
     );
   }
 
-  static List<Weapon> _weapons(Player player) =>
-      player.inventory.items.map((e) => e.item).whereType<Weapon>().toList();
+  static List<Weapon> _weapons(Player player) => player.inventory.items.map((e) => e.item).whereType<Weapon>().toList();
 
   static bool _hasCandidates(Player player, WeaponSlot slot) =>
       _weapons(player).any((e) => player.cannotEquip(e, slot) == null);
@@ -134,7 +132,8 @@ class EquipmentPanel extends StatelessWidget {
         context,
         title: slot.localizedName,
         current: weapon,
-        candidates: _weapons(player).where((e) => !(player.cannotEquip(e, slot)?.startsWith('Только') ?? false)).toList(),
+        candidates:
+            _weapons(player).where((e) => !(player.cannotEquip(e, slot)?.startsWith('Только') ?? false)).toList(),
         reason: (e) => player.cannotEquip(e, slot),
         onSelect: (weapon) => context.read<PlayerCubit>().equipWeapon(weapon, slot),
         onRemove: () => context.read<PlayerCubit>().unequipWeapon(slot),

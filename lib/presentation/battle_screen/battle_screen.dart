@@ -13,6 +13,7 @@ import 'package:dnd_character_list/presentation/battle_screen/widgets/spell_slot
 import 'package:dnd_character_list/presentation/battle_screen/widgets/spells_stats_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/weapons_section.dart';
 import 'package:dnd_character_list/domain/models/classes/monk.dart';
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/session/battle_queue_bar.dart';
 import 'package:dnd_character_list/presentation/session/session_button.dart';
@@ -55,21 +56,27 @@ class BattleScreen extends StatelessWidget {
                     children: [BattleQueueBar(), StatusesBar(), KnockoutBanner()],
                   ),
                 ),
-                const _Summary(),
-                const Gap(16),
+                const SheetHeader(padding: EdgeInsets.symmetric(vertical: 16), child: _Summary()),
+                const Gap(20),
+                const _Heading(icon: Icons.favorite_outline, title: 'Состояние'),
                 const _Counters(),
-                const Gap(24),
-                // Без ячеек секция пустая и не занимает места.
-                const SpellSlotsSection(),
-                const _SectionTitle('ОРУЖИЕ'),
+                const Gap(20),
+                const _Heading(icon: Icons.sports_martial_arts, title: 'Оружие'),
                 const WeaponsSection(),
+                const Gap(20),
+                // Ячейки — рядом с магией. Без ячеек секция пустая и не занимает места.
+                const SpellSlotsSection(),
                 Builder(
                   builder: (context) {
                     final spellStats = PlayerModel.spellStats(context);
                     if (spellStats.isEmpty) return const SizedBox();
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [const Gap(16), const _SectionTitle('МАГИЯ'), SpellsStatsSection(spellStats)],
+                      children: [
+                        const Gap(20),
+                        const _Heading(icon: Icons.auto_awesome_outlined, title: 'Магия'),
+                        SpellsStatsSection(spellStats),
+                      ],
                     );
                   },
                 ),
@@ -138,16 +145,18 @@ class _Counters extends StatelessWidget {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  final String text;
+/// Заголовок раздела экрана боя. Плитки разделов со своими рамками, поэтому без общей карточки.
+class _Heading extends StatelessWidget {
+  final IconData icon;
+  final String title;
 
-  const _SectionTitle(this.text);
+  const _Heading({required this.icon, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(text, textAlign: TextAlign.center),
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
+      child: SheetSectionTitle(icon: icon, title: title),
     );
   }
 }

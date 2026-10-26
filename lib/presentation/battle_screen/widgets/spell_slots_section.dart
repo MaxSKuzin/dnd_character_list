@@ -2,10 +2,10 @@ import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
 /// Ячейки заклинаний: по плитке на уровень с остатком и максимумом, как счётчики здоровья и ресурсов классов.
 /// Восстанавливаются продолжительным отдыхом (`RestButton`).
@@ -24,8 +24,10 @@ class SpellSlotsSection extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('ЯЧЕЙКИ ЗАКЛИНАНИЙ', textAlign: TextAlign.center),
-            const Gap(12),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(4, 0, 4, 12),
+              child: SheetSectionTitle(icon: Icons.local_fire_department_outlined, title: 'Ячейки заклинаний'),
+            ),
             LayoutBuilder(
               builder: (context, constraints) {
                 final width = (constraints.maxWidth - _spacing * (_columns - 1)) / _columns;
@@ -46,7 +48,6 @@ class SpellSlotsSection extends StatelessWidget {
                 );
               },
             ),
-            const Gap(16),
           ],
         );
       },

@@ -4,8 +4,8 @@ import 'package:dnd_character_list/data/sp_source.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
-import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/injection.dart';
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_info_dialog.dart';
@@ -76,85 +76,49 @@ class _SpellsScreenState extends State<SpellsScreen> {
     return SafeArea(
       child: Column(
         children: [
+          // Поиск, вид и фильтры — в шапке экрана; списки фильтров прокручиваются вбок.
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
-            child: Row(
-              children: [
-                Expanded(child: SpellSearchField(onChanged: (value) => setState(() => query = value))),
-                IconButton(
-                  tooltip: _isGrid ? 'Показать списком' : 'Показать сеткой',
-                  onPressed: _toggleView,
-                  icon: Icon(_isGrid ? Icons.view_agenda_outlined : Icons.grid_view),
-                ),
-              ],
-            ),
-          ),
-          if (spells.keys.length > 1)
-            SizedBox(
-              height: 48,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                children: spells.keys
-                    .map(
-                      (e) => GestureDetector(
-                        onTap: () => setState(() {
-                          if (e.classKind != selectedClass) {
-                            selectedClass = e.classKind;
-                          } else {
-                            selectedClass = null;
-                          }
-                        }),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Chip(
-                            label: Text(
-                              e.name,
-                              style: TextStyle(
-                                color: selectedClass == e.classKind ? context.theme.scaffoldBackgroundColor : null,
-                              ),
-                            ),
-                            color: WidgetStatePropertyAll(
-                              selectedClass == e.classKind ? Colors.white : null,
-                            ),
-                          ),
-                        ),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: SheetHeader(
+              padding: const EdgeInsets.fromLTRB(12, 12, 4, 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: SpellSearchField(onChanged: (value) => setState(() => query = value))),
+                      IconButton(
+                        tooltip: _isGrid ? 'Показать списком' : 'Показать сеткой',
+                        onPressed: _toggleView,
+                        icon: Icon(_isGrid ? Icons.view_agenda_outlined : Icons.grid_view),
                       ),
-                    )
-                    .toList(),
-              ),
-            ),
-          SizedBox(
-            height: 48,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: SpellSlot.values
-                  .map(
-                    (e) => GestureDetector(
-                      onTap: () => setState(() {
-                        if (e != selectedSlot) {
-                          selectedSlot = e;
-                        } else {
-                          selectedSlot = null;
-                        }
-                      }),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Chip(
-                          label: Text(
-                            e.localizedName,
-                            style: TextStyle(
-                              color: selectedSlot == e ? context.theme.scaffoldBackgroundColor : null,
+                    ],
+                  ),
+                  if (spells.keys.length > 1)
+                    _Filters(
+                      children: [
+                        for (final spec in spells.keys)
+                          ChoiceChip(
+                            label: Text(spec.name),
+                            selected: selectedClass == spec.classKind,
+                            onSelected: (_) => setState(
+                              () => selectedClass = selectedClass == spec.classKind ? null : spec.classKind,
                             ),
                           ),
-                          color: WidgetStatePropertyAll(
-                            selectedSlot == e ? Colors.white : null,
-                          ),
-                        ),
-                      ),
+                      ],
                     ),
-                  )
-                  .toList(),
+                  _Filters(
+                    children: [
+                      for (final slot in SpellSlot.values)
+                        ChoiceChip(
+                          label: Text(slot.localizedName),
+                          selected: selectedSlot == slot,
+                          onSelected: (_) => setState(() => selectedSlot = selectedSlot == slot ? null : slot),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           const Gap(8),
@@ -165,7 +129,7 @@ class _SpellsScreenState extends State<SpellsScreen> {
   }
 
   Widget _list(List<_ShownSpell> shown) => ListView.separated(
-        padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         itemCount: shown.length,
         separatorBuilder: (context, index) => const Gap(16),
         itemBuilder: (context, index) {
@@ -197,15 +161,15 @@ class _SpellsScreenState extends State<SpellsScreen> {
         for (final slot in slots) ...[
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-              child: Text(
-                (slot == SpellSlot.conspiracy ? 'Заговоры' : slot.localizedName).toUpperCase(),
-                style: context.theme.textTheme.labelLarge,
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+              child: SheetSectionTitle(
+                icon: slot == SpellSlot.conspiracy ? Icons.flare_outlined : Icons.local_fire_department_outlined,
+                title: slot == SpellSlot.conspiracy ? 'Заговоры' : slot.localizedName,
               ),
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverGrid.builder(
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 220,
@@ -223,6 +187,26 @@ class _SpellsScreenState extends State<SpellsScreen> {
         ],
         const SliverToBoxAdapter(child: Gap(16)),
       ],
+    );
+  }
+}
+
+/// Ряд фильтров-переключателей с прокруткой вбок.
+class _Filters extends StatelessWidget {
+  final List<Widget> children;
+
+  const _Filters({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 48,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: children.length,
+        separatorBuilder: (_, __) => const Gap(8),
+        itemBuilder: (_, index) => Center(child: children[index]),
+      ),
     );
   }
 }

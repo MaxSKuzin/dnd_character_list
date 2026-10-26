@@ -8,6 +8,7 @@ import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/extensions/item_texts.dart';
 import 'package:dnd_character_list/presentation/inventory_screen/widgets/balance_widget.dart';
@@ -44,7 +45,7 @@ class InventoryScreen extends StatelessWidget {
         final grouped = groupBy(inventory.items, (InventoryItem e) => _group(e.item));
         return SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
               BalanceWidget(balance: inventory.balance),
               const Gap(16),
@@ -58,10 +59,19 @@ class InventoryScreen extends StatelessWidget {
               for (final (index, (title, icon)) in _groups.indexed)
                 if (grouped[index] case final items?) ...[
                   const Gap(16),
-                  Text(title.toUpperCase(), style: context.theme.textTheme.labelLarge),
-                  const Gap(4),
-                  for (final item in items.sortedBy((e) => ItemTexts.name(e.item)))
-                    _InventoryItemTile(item: item, icon: icon, equippedIn: _equippedIn(player, item.item)),
+                  SheetSection(
+                    icon: icon,
+                    title: title,
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Column(
+                      children: [
+                        for (final (index, item) in items.sortedBy((e) => ItemTexts.name(e.item)).indexed) ...[
+                          if (index > 0) const Divider(height: 1, indent: 16, endIndent: 16, color: Colors.white12),
+                          _InventoryItemTile(item: item, equippedIn: _equippedIn(player, item.item)),
+                        ],
+                      ],
+                    ),
+                  ),
                 ],
             ],
           ),
@@ -81,39 +91,42 @@ class InventoryScreen extends StatelessWidget {
 
 class _InventoryItemTile extends StatelessWidget {
   final InventoryItem item;
-  final IconData icon;
   final List<String> equippedIn;
 
-  const _InventoryItemTile({required this.item, required this.icon, required this.equippedIn});
+  const _InventoryItemTile({required this.item, required this.equippedIn});
 
   @override
   Widget build(BuildContext context) {
     final subtitle = ItemTexts.subtitle(item.item);
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: equippedIn.isEmpty ? Colors.white24 : Colors.white),
+    final isEquipped = equippedIn.isNotEmpty;
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      // Надетое отмечено значком и подписью.
+      leading: Icon(
+        isEquipped ? Icons.check_circle : Icons.circle_outlined,
+        size: 20,
+        color: isEquipped ? context.theme.colorScheme.primary : Colors.white24,
       ),
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(ItemTexts.name(item.item)),
-        subtitle: subtitle == null && equippedIn.isEmpty
-            ? null
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (subtitle != null) Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis),
-                  if (equippedIn.isNotEmpty)
-                    Text(
-                      'Экипировано: ${equippedIn.join(', ')}',
-                      style: TextStyle(color: context.theme.colorScheme.primary, fontSize: 12),
-                    ),
-                ],
-              ),
-        trailing: item.quantity > 1 ? Text('×${item.quantity}', style: const TextStyle(fontSize: 16)) : null,
-        onTap: () => ItemDetailsSheet.show(context, item.item),
-      ),
+      minLeadingWidth: 20,
+      title: Text(ItemTexts.name(item.item)),
+      subtitle: subtitle == null && !isEquipped
+          ? null
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (subtitle != null)
+                  Text(subtitle,
+                      maxLines: 2, overflow: TextOverflow.ellipsis, style: context.theme.textTheme.bodySmall),
+                if (isEquipped)
+                  Text(
+                    'Экипировано: ${equippedIn.join(', ')}',
+                    style: TextStyle(color: context.theme.colorScheme.primary, fontSize: 12),
+                  ),
+              ],
+            ),
+      trailing:
+          item.quantity > 1 ? SheetBadge('×${item.quantity}') : const Icon(Icons.chevron_right, color: Colors.white38),
+      onTap: () => ItemDetailsSheet.show(context, item.item),
     );
   }
 }
