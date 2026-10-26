@@ -26,6 +26,7 @@ enum ClassKind {
         ClassKind.thief => '/classes/rogue',
         ClassKind.sorcerer => '/classes/sorcerer',
         ClassKind.monk => '/classes/monk',
+        ClassKind.warrior => '/classes/fighter',
         _ => null,
       };
 
@@ -39,7 +40,8 @@ enum ClassKind {
         ClassKind.paladin ||
         ClassKind.thief ||
         ClassKind.sorcerer ||
-        ClassKind.monk =>
+        ClassKind.monk ||
+        ClassKind.warrior =>
           true,
         _ => false,
       };
@@ -66,6 +68,7 @@ enum ClassKind {
         ClassKind.thief => 4,
         ClassKind.sorcerer => 2,
         ClassKind.monk => 2,
+        ClassKind.warrior => 2,
         _ => throw UnimplementedError(),
       };
 
@@ -124,6 +127,16 @@ enum ClassKind {
             Skill.religion,
             Skill.stealth,
           ],
+        ClassKind.warrior => [
+            Skill.acrobatics,
+            Skill.athletics,
+            Skill.perception,
+            Skill.survival,
+            Skill.intimidation,
+            Skill.history,
+            Skill.insight,
+            Skill.animalHandling,
+          ],
         _ => throw UnimplementedError(),
       };
 
@@ -134,7 +147,7 @@ enum ClassKind {
         ClassKind.paladin => level > 1 ? max(1, level ~/ 2 + statBonus(StatKind.charisma)) : 0,
         ClassKind.thief => 0,
         ClassKind.sorcerer => level < 11 ? level + 1 : min(15, 11 + (level - 9) ~/ 2),
-        ClassKind.monk => 0,
+        ClassKind.monk || ClassKind.warrior => 0,
         _ => throw UnimplementedError(),
       };
 
@@ -157,7 +170,7 @@ enum ClassKind {
             4: 5,
             10: 6,
           }._getValue(level),
-        ClassKind.monk => 0,
+        ClassKind.monk || ClassKind.warrior => 0,
         _ => throw UnimplementedError(),
       };
 
@@ -168,7 +181,7 @@ enum ClassKind {
         ClassKind.paladin => 0.5,
         ClassKind.thief => 0,
         ClassKind.sorcerer => 1,
-        ClassKind.monk => 0,
+        ClassKind.monk || ClassKind.warrior => 0,
         _ => throw UnimplementedError(),
       };
 

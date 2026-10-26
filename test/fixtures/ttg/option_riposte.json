@@ -1,0 +1,29 @@
+{
+  "name": {
+    "rus": "Ответный удар",
+    "eng": "Riposte"
+  },
+  "source": {
+    "shortName": "PHB",
+    "name": "Книга игрока",
+    "group": {
+      "name": "Официальные источники",
+      "shortName": "Basic"
+    }
+  },
+  "id": 16,
+  "requirements": "Нет",
+  "description": "<p>Если существо промахивается по вам рукопашной атакой, вы можете <em>Реакцией</em> потратить одну <a href=\"https://dev.dnd5.club/classes/Fighter/Battle_Master#a116\">Кость превосходства</a>, чтобы совершить <em>рукопашную атаку оружием</em> по этому существу. Если вы попадаете, вы добавляете кость превосходства к броску урона этой атаки.</p>",
+  "classes": [
+    {
+      "name": "Маневры: Воин Мастер боевых искуств",
+      "url": "/classes/Fighter/Battle_Master",
+      "icon": "class/fighter"
+    }
+  ],
+  "altName": "Jndtnysq elfh",
+  "prerequisite": "Нет",
+  "optionTypes": [
+    "MANEUVER"
+  ]
+}

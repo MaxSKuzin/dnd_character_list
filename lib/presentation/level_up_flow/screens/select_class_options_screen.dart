@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/data/rules_repository.dart';
-import 'package:dnd_character_list/domain/models/metamagic.dart';
+import 'package:dnd_character_list/domain/models/class_option.dart';
 import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
 import 'package:dnd_character_list/presentation/common/widgets/loading_error.dart';
@@ -8,23 +8,28 @@ import 'package:dnd_character_list/presentation/extensions/context_extensions.da
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-/// Выбор вариантов метамагии чародея из официальных книг ttg.club.
+/// Выбор особенностей класса из официальных книг ttg.club: вариантов метамагии чародея или приёмов мастера
+/// боевых искусств.
 @RoutePage()
-class SelectMetamagicScreen extends StatefulWidget {
-  final String title;
+class SelectClassOptionsScreen extends StatefulWidget {
+  final ClassOptionKind kind;
+
+  /// Заголовок; по умолчанию — название вида особенностей.
+  final String? title;
   final String? description;
 
   /// Сколько вариантов нужно выбрать.
   final int count;
 
   /// Уже известные варианты: их нельзя выбрать снова.
-  final List<Metamagic> known;
+  final List<ClassOption> known;
 
-  final void Function(List<Metamagic> options) onSelected;
+  final void Function(List<ClassOption> options) onSelected;
 
-  const SelectMetamagicScreen({
+  const SelectClassOptionsScreen({
     super.key,
-    this.title = 'Метамагия',
+    required this.kind,
+    this.title,
     this.description,
     required this.count,
     this.known = const [],
@@ -32,15 +37,15 @@ class SelectMetamagicScreen extends StatefulWidget {
   });
 
   @override
-  State<SelectMetamagicScreen> createState() => _SelectMetamagicScreenState();
+  State<SelectClassOptionsScreen> createState() => _SelectClassOptionsScreenState();
 }
 
-class _SelectMetamagicScreenState extends State<SelectMetamagicScreen> {
+class _SelectClassOptionsScreenState extends State<SelectClassOptionsScreen> {
   final _repository = getIt<RulesRepository>();
-  late Future<List<Metamagic>> _options = _repository.getMetamagic();
-  final _selected = <Metamagic>[];
+  late Future<List<ClassOption>> _options = _repository.getOptions(widget.kind);
+  final _selected = <ClassOption>[];
 
-  void _toggle(Metamagic option) => setState(() {
+  void _toggle(ClassOption option) => setState(() {
         if (_selected.contains(option)) {
           _selected.remove(option);
         } else if (_selected.length < widget.count) {
@@ -58,7 +63,7 @@ class _SelectMetamagicScreenState extends State<SelectMetamagicScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                widget.title,
+                widget.title ?? widget.kind.title,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
@@ -77,9 +82,9 @@ class _SelectMetamagicScreenState extends State<SelectMetamagicScreen> {
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return LoadingError(
-                        message: 'Не удалось загрузить метамагию с ttg.club.',
+                        message: 'Не удалось загрузить «${widget.kind.title}» с ttg.club.',
                         error: snapshot.error!,
-                        onRetry: () => setState(() => _options = _repository.getMetamagic()),
+                        onRetry: () => setState(() => _options = _repository.getOptions(widget.kind)),
                       );
                     }
                     if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());

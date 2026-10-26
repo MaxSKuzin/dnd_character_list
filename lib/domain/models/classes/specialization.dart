@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/fighter.dart';
 import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
@@ -31,6 +32,15 @@ abstract class Specialization {
   });
 
   FightingStyle? get fightingStyle => null;
+
+  /// Все боевые стили класса: у чемпиона на 10 уровне их два.
+  List<FightingStyle> get fightingStyles => [if (fightingStyle != null) fightingStyle!];
+
+  /// Сколько атак даёт действие «Атака» («Дополнительная атака» воина и монаха).
+  int get attacksPerAction => 1;
+
+  /// Бонус к проверкам характеристики без владения навыком, например «Выдающийся атлет» чемпиона.
+  int unskilledCheckBonus(StatKind stat, int proficiencyBonus) => hasJackOfAllTrades ? proficiencyBonus ~/ 2 : 0;
 
   String get name;
 
@@ -144,6 +154,7 @@ abstract class Specialization {
         'Thief' => Thief.fromJson(json),
         'Sorcerer' => Sorcerer.fromJson(json),
         'Monk' => Monk.fromJson(json),
+        'Fighter' => Fighter.fromJson(json),
         _ => throw 'No such class',
       };
 }

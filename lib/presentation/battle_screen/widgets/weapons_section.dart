@@ -17,10 +17,13 @@ class WeaponsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final attacks = PlayerModel.watch(context).attacks;
+    final player = PlayerModel.watch(context);
+    final attacks = player.attacks;
+    final perAction = player.attacksPerAction;
     return LabeledBorder(
       backgroundColor: context.customColors?.cardColor,
-      text: 'АТАКИ',
+      // «Дополнительная атака»: сколько атак даёт действие «Атака».
+      text: perAction > 1 ? 'АТАКИ · $perAction ЗА ДЕЙСТВИЕ' : 'АТАКИ',
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: attacks.isEmpty

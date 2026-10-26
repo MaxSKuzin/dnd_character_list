@@ -4,7 +4,11 @@ enum ClassExtras {
   godFeeling,
   layingOfHands,
   ci,
-  sorceryPoints;
+  sorceryPoints,
+  secondWind,
+  actionSurge,
+  indomitable,
+  superiorityDice;
 
   String get name => switch (this) {
         ClassExtras.rage => 'Ярость',
@@ -13,5 +17,9 @@ enum ClassExtras {
         ClassExtras.godFeeling => 'Божественное чувство',
         ClassExtras.layingOfHands => 'Наложение рук',
         ClassExtras.sorceryPoints => 'Единицы чародейства',
+        ClassExtras.secondWind => 'Второе дыхание',
+        ClassExtras.actionSurge => 'Всплеск действий',
+        ClassExtras.indomitable => 'Упорный',
+        ClassExtras.superiorityDice => 'Кости превосходства',
       };
 }

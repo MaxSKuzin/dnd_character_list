@@ -164,9 +164,9 @@ class TtgClassMapper {
     final href = fragment.querySelector('a[href]')?.attributes['href'];
     final lower = text.toLowerCase();
     // Ссылки на разделы правил (`/screens/musical_instruments`) и предметы без ссылки
-    // вроде «магической фокусировки» означают выбор из категории.
+    // вроде «магической фокусировки» или «воинского оружия» означают выбор из категории.
     final isCategory = (href != null && href.startsWith('/screens/')) ||
-        (href == null && EquipmentCatalog.focusGroups.keys.any(lower.contains));
+        (href == null && (EquipmentCatalog.focusGroups.keys.any(lower.contains) || lower.contains('оружи')));
     return EquipmentRef(
       id: href == null || isCategory ? null : TtgText.normalizeLink(href),
       text: text,

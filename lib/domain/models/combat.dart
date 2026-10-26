@@ -116,14 +116,24 @@ extension PlayerCombat on Player {
         WeaponSlot.secondRange => secondRangeWeapon,
       };
 
-  /// Атаки экипированным оружием; у монаха в конце — безоружный удар.
+  /// Атаки экипированным оружием; у монаха и со стилем «Сражение голыми руками» в конце — безоружный удар.
   List<WeaponAttack> get attacks => [
         ...WeaponSlot.values
             .map((slot) => (slot, weaponIn(slot)))
             .where((e) => e.$2 != null)
             .map((e) => attackWith(e.$2!, e.$1)),
-        if (classes.any((e) => e is Monk)) attackWith(unarmedStrike, WeaponSlot.mainHand),
+        if (classes.any((e) => e is Monk) || fightingStyles.contains(FightingStyle.unarmedFighting))
+          attackWith(unarmedStrike, WeaponSlot.mainHand),
       ];
+
+  /// Сколько атак даёт действие «Атака»: лучшая «Дополнительная атака» классов.
+  int get attacksPerAction => classes.map((e) => e.attacksPerAction).fold(1, max);
+
+  /// «Сражение голыми руками»: к6, без оружия и щита в руках — к8.
+  Dice? get _unarmedFightingDice {
+    if (!fightingStyles.contains(FightingStyle.unarmedFighting)) return null;
+    return mainWeapon == null && secondWeapon == null && shield == null ? Dice.k8 : Dice.k6;
+  }
 
   /// Кость боевых искусств, если они применяются к оружию: безоружный удар или монашеское оружие
   /// без доспеха и щита.
@@ -163,11 +173,18 @@ extension PlayerCombat on Player {
         fightingStyles.contains(FightingStyle.dueling)) {
       damageBonus += 2;
     }
+    // «Сражение метательным оружием»: +2 к урону дальнобойной атаки метательным оружием.
+    final isRangedSlot = slot == WeaponSlot.mainRange || slot == WeaponSlot.secondRange;
+    if (isRangedSlot && weapon.isThrown && fightingStyles.contains(FightingStyle.thrownWeaponFighting)) {
+      damageBonus += 2;
+    }
 
     var dice = isTwoHanded && weapon.twoHandedDamage != null ? weapon.twoHandedDamage : weapon.damage;
     // Боевые искусства заменяют кость урона, если она больше.
     final martialArts = martialArtsDiceFor(weapon);
     if (martialArts != null && (dice == null || martialArts.value > dice.value)) dice = martialArts;
+    final unarmedFighting = weapon == unarmedStrike ? _unarmedFightingDice : null;
+    if (unarmedFighting != null && (dice == null || unarmedFighting.value > dice.value)) dice = unarmedFighting;
     final elemental = weapon.elementalDamage.map((e) => ' + ${e.count}${e.damage.name}').join();
     final String damage;
     if (dice == null && weapon == unarmedStrike) {
@@ -186,7 +203,10 @@ extension PlayerCombat on Player {
       slot: slot,
       ability: ability,
       isProficient: isProficient,
-      attackBonus: modifier + (isProficient ? proficiencyBonus : 0),
+      // «Стрельба»: +2 к броску атаки дальнобойным оружием.
+      attackBonus: modifier +
+          (isProficient ? proficiencyBonus : 0) +
+          (weapon.kind.isRanged && fightingStyles.contains(FightingStyle.archery) ? 2 : 0),
       damage: damage,
       isTwoHanded: isTwoHanded,
       hasDisadvantage: race.isSmall && weapon.isHeavy,

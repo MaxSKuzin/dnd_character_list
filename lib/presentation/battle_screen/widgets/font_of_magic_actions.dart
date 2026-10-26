@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
-import 'package:dnd_character_list/domain/models/metamagic.dart';
+import 'package:dnd_character_list/domain/models/class_option.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';

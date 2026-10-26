@@ -6,13 +6,16 @@ import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
+import 'package:dnd_character_list/domain/models/class_option.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/fighter.dart';
 import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/thief.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
@@ -42,6 +45,10 @@ class CreateCharacterCubit extends Cubit<Player?> {
   DragonAncestor? dragonAncestor;
   DivineAffinity? divineAffinity;
 
+  /// Боевой стиль воина 1 уровня и приём «Превосходной техники».
+  FightingStyle? fightingStyle;
+  List<Maneuver> maneuvers = [];
+
   /// Заклинания подкласса: известны всегда и не учитываются в числе известных заклинаний.
   List<Spell> subclassSpells = [];
   Map<StatKind, int>? stats;
@@ -64,6 +71,8 @@ class CreateCharacterCubit extends Cubit<Player?> {
     subclass = null;
     dragonAncestor = null;
     divineAffinity = null;
+    fightingStyle = null;
+    maneuvers = [];
     subclassSpells = [];
   }
 
@@ -76,6 +85,13 @@ class CreateCharacterCubit extends Cubit<Player?> {
   }
 
   void setDragonAncestor(DragonAncestor value) => dragonAncestor = value;
+
+  void setFightingStyle(FightingStyle value) {
+    fightingStyle = value;
+    maneuvers = [];
+  }
+
+  void setManeuvers(List<Maneuver> value) => maneuvers = [...value];
 
   Future<void> setDivineAffinity(DivineAffinity value) async {
     divineAffinity = value;
@@ -156,6 +172,13 @@ class CreateCharacterCubit extends Cubit<Player?> {
           originName: subclass?.name,
           dragonAncestor: dragonAncestor,
           divineAffinity: divineAffinity,
+        ),
+      ClassKind.warrior => Fighter(
+          level: 1,
+          isMain: true,
+          features: Fighter.featuresAt(classInfo!, 1),
+          fightingStyles: [fightingStyle!],
+          maneuvers: maneuvers,
         ),
       ClassKind.monk => Monk(
           level: 1,

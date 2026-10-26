@@ -293,12 +293,16 @@ class Player {
     }.toList();
   }
 
-  /// Бонус к проверкам характеристик без владения: половина бонуса мастерства у «Мастера на все руки».
-  int get unskilledCheckBonus => classes.any((e) => e.hasJackOfAllTrades) ? proficiencyBonus ~/ 2 : 0;
+  /// Бонус к проверкам характеристики без владения: половина бонуса мастерства у «Мастера на все руки»,
+  /// округлённая вверх у «Выдающегося атлета» для Силы, Ловкости и Телосложения. Берётся лучший.
+  int unskilledCheckBonus(StatKind stat) =>
+      classes.map((e) => e.unskilledCheckBonus(stat, proficiencyBonus)).fold(0, max);
 
   /// Инициатива — проверка Ловкости, поэтому к ней применяется и «Мастер на все руки».
   int get initiative =>
-      dexterity.bonus + unskilledCheckBonus + feats.fold(0, (previous, e) => previous + e.feat.initiativeBonus);
+      dexterity.bonus +
+      unskilledCheckBonus(StatKind.dexterity) +
+      feats.fold(0, (previous, e) => previous + e.feat.initiativeBonus);
 
   /// Скорость расы; черты и умения классов (движение без доспехов монаха) увеличивают её, без нужной Силы тяжёлый
   /// доспех уменьшает её на 10 футов.
@@ -716,13 +720,7 @@ class Player {
     );
   }
 
-  List<FightingStyle> get fightingStyles => classes.fold(
-        <FightingStyle>[],
-        (prev, e) => [
-          ...prev,
-          if (e.fightingStyle != null) e.fightingStyle!,
-        ],
-      );
+  List<FightingStyle> get fightingStyles => classes.expand((e) => e.fightingStyles).toSet().toList();
 
   @override
   bool operator ==(Object other) {

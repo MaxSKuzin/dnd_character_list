@@ -18,6 +18,10 @@ class RestButton extends StatelessWidget {
         ClassExtras.inspiration => 'вдохновение барда',
         ClassExtras.sorceryPoints => 'единицы чародейства',
         ClassExtras.ci => 'очки ци',
+        ClassExtras.secondWind => 'второе дыхание',
+        ClassExtras.actionSurge => 'всплеск действий',
+        ClassExtras.indomitable => 'упорство',
+        ClassExtras.superiorityDice => 'кости превосходства',
         _ => null,
       };
 

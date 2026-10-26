@@ -128,6 +128,10 @@ final class Monk extends Specialization {
   @override
   int speedBonus(Player player) => isUnarmored(player) ? unarmoredMovement : 0;
 
+  /// «Дополнительная атака» с 5 уровня.
+  @override
+  int get attacksPerAction => level >= 5 ? 2 : 1;
+
   @override
   WeaponProficiency get weaponProficiency => const WeaponProficiency(simple: true, weapons: {_shortsword});
 

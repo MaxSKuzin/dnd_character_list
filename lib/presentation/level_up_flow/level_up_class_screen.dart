@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/bloc/level_up_cubit.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
@@ -16,12 +17,14 @@ import 'package:dnd_character_list/presentation/extensions/localization_extensio
 import 'package:dnd_character_list/data/rules_repository.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
+import 'package:dnd_character_list/domain/models/classes/fighter.dart';
 import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/bard_level_up.dart';
+import 'package:dnd_character_list/presentation/level_up_flow/fighter_level_up.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/monk_level_up.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/sorcerer_level_up.dart';
 
@@ -46,7 +49,7 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
 
     final link = classKind.ttgLink;
     final bool passed;
-    const ttgClasses = [ClassKind.bard, ClassKind.sorcerer, ClassKind.monk];
+    const ttgClasses = [ClassKind.bard, ClassKind.sorcerer, ClassKind.monk, ClassKind.warrior];
     if (ttgClasses.contains(classKind) && link != null) {
       final ClassInfo info;
       setState(() => _isLoading = true);
@@ -66,6 +69,8 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
       passed = await switch (classKind) {
         ClassKind.bard => BardLevelUp(context: context, player: player, info: info, bard: selectedClass as Bard?).run(),
         ClassKind.monk => MonkLevelUp(context: context, player: player, info: info, monk: selectedClass as Monk?).run(),
+        ClassKind.warrior =>
+          FighterLevelUp(context: context, player: player, info: info, fighter: selectedClass as Fighter?).run(),
         _ => SorcererLevelUp(context: context, player: player, info: info, sorcerer: selectedClass as Sorcerer?).run(),
       };
     } else {
@@ -321,6 +326,7 @@ extension on ClassKind {
         switch (level) {
           case 2:
             return SelectFightingStyleRoute(
+              styles: FightingStyle.paladinStyles,
               onStyleSelected: (style) {
                 context.read<LevelUpCubit>().setFightingStyle(style);
                 context.maybePop(true);

@@ -15,15 +15,15 @@ import 'package:auto_route/auto_route.dart' as _i28;
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart' as _i33;
 import 'package:dnd_character_list/domain/models/background.dart' as _i46;
 import 'package:dnd_character_list/domain/models/class_info.dart' as _i45;
+import 'package:dnd_character_list/domain/models/class_option.dart' as _i41;
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart'
     as _i38;
 import 'package:dnd_character_list/domain/models/equipment_catalog.dart'
     as _i36;
 import 'package:dnd_character_list/domain/models/feat.dart' as _i31;
-import 'package:dnd_character_list/domain/models/fighting_style.dart' as _i41;
+import 'package:dnd_character_list/domain/models/fighting_style.dart' as _i42;
 import 'package:dnd_character_list/domain/models/inventory.dart' as _i48;
 import 'package:dnd_character_list/domain/models/language.dart' as _i34;
-import 'package:dnd_character_list/domain/models/metamagic.dart' as _i42;
 import 'package:dnd_character_list/domain/models/player.dart' as _i30;
 import 'package:dnd_character_list/domain/models/skill.dart' as _i44;
 import 'package:dnd_character_list/domain/models/spell/spell.dart' as _i37;
@@ -46,7 +46,7 @@ import 'package:dnd_character_list/presentation/create_character_flow/screens/pr
 import 'package:dnd_character_list/presentation/create_character_flow/screens/select_background_screen/select_background_screen.dart'
     as _i15;
 import 'package:dnd_character_list/presentation/create_character_flow/screens/select_class_screen/select_class_screen.dart'
-    as _i17;
+    as _i18;
 import 'package:dnd_character_list/presentation/create_character_flow/screens/select_option_screen/select_option_screen.dart'
     as _i20;
 import 'package:dnd_character_list/presentation/create_character_flow/screens/select_race_screen/select_race_screen.dart'
@@ -73,9 +73,9 @@ import 'package:dnd_character_list/presentation/level_up_flow/screens/ability_sc
     as _i1;
 import 'package:dnd_character_list/presentation/level_up_flow/screens/replace_spell_screen.dart'
     as _i14;
+import 'package:dnd_character_list/presentation/level_up_flow/screens/select_class_options_screen.dart'
+    as _i17;
 import 'package:dnd_character_list/presentation/level_up_flow/screens/select_fighting_style_screen.dart'
-    as _i18;
-import 'package:dnd_character_list/presentation/level_up_flow/screens/select_metamagic_screen.dart'
     as _i19;
 import 'package:dnd_character_list/presentation/level_up_flow/screens/select_subclass_screen.dart'
     as _i24;
@@ -741,7 +741,84 @@ class SelectCharacterRoute extends _i28.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i17.SelectClassScreen]
+/// [_i17.SelectClassOptionsScreen]
+class SelectClassOptionsRoute
+    extends _i28.PageRouteInfo<SelectClassOptionsRouteArgs> {
+  SelectClassOptionsRoute({
+    _i29.Key? key,
+    required _i41.ClassOptionKind kind,
+    String? title,
+    String? description,
+    required int count,
+    List<_i41.ClassOption> known = const [],
+    required void Function(List<_i41.ClassOption>) onSelected,
+    List<_i28.PageRouteInfo>? children,
+  }) : super(
+         SelectClassOptionsRoute.name,
+         args: SelectClassOptionsRouteArgs(
+           key: key,
+           kind: kind,
+           title: title,
+           description: description,
+           count: count,
+           known: known,
+           onSelected: onSelected,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'SelectClassOptionsRoute';
+
+  static _i28.PageInfo page = _i28.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<SelectClassOptionsRouteArgs>();
+      return _i17.SelectClassOptionsScreen(
+        key: args.key,
+        kind: args.kind,
+        title: args.title,
+        description: args.description,
+        count: args.count,
+        known: args.known,
+        onSelected: args.onSelected,
+      );
+    },
+  );
+}
+
+class SelectClassOptionsRouteArgs {
+  const SelectClassOptionsRouteArgs({
+    this.key,
+    required this.kind,
+    this.title,
+    this.description,
+    required this.count,
+    this.known = const [],
+    required this.onSelected,
+  });
+
+  final _i29.Key? key;
+
+  final _i41.ClassOptionKind kind;
+
+  final String? title;
+
+  final String? description;
+
+  final int count;
+
+  final List<_i41.ClassOption> known;
+
+  final void Function(List<_i41.ClassOption>) onSelected;
+
+  @override
+  String toString() {
+    return 'SelectClassOptionsRouteArgs{key: $key, kind: $kind, title: $title, description: $description, count: $count, known: $known, onSelected: $onSelected}';
+  }
+}
+
+/// generated route for
+/// [_i18.SelectClassScreen]
 class SelectClassRoute extends _i28.PageRouteInfo<void> {
   const SelectClassRoute({List<_i28.PageRouteInfo>? children})
     : super(SelectClassRoute.name, initialChildren: children);
@@ -751,19 +828,19 @@ class SelectClassRoute extends _i28.PageRouteInfo<void> {
   static _i28.PageInfo page = _i28.PageInfo(
     name,
     builder: (data) {
-      return const _i17.SelectClassScreen();
+      return const _i18.SelectClassScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i18.SelectFightingStyleScreen]
+/// [_i19.SelectFightingStyleScreen]
 class SelectFightingStyleRoute
     extends _i28.PageRouteInfo<SelectFightingStyleRouteArgs> {
   SelectFightingStyleRoute({
     _i29.Key? key,
-    required void Function(_i41.FightingStyle) onStyleSelected,
-    List<_i41.FightingStyle>? styles,
+    required void Function(_i42.FightingStyle) onStyleSelected,
+    List<_i42.FightingStyle>? styles,
     List<_i28.PageRouteInfo>? children,
   }) : super(
          SelectFightingStyleRoute.name,
@@ -781,7 +858,7 @@ class SelectFightingStyleRoute
     name,
     builder: (data) {
       final args = data.argsAs<SelectFightingStyleRouteArgs>();
-      return _i18.SelectFightingStyleScreen(
+      return _i19.SelectFightingStyleScreen(
         key: args.key,
         onStyleSelected: args.onStyleSelected,
         styles: args.styles,
@@ -799,84 +876,13 @@ class SelectFightingStyleRouteArgs {
 
   final _i29.Key? key;
 
-  final void Function(_i41.FightingStyle) onStyleSelected;
+  final void Function(_i42.FightingStyle) onStyleSelected;
 
-  final List<_i41.FightingStyle>? styles;
+  final List<_i42.FightingStyle>? styles;
 
   @override
   String toString() {
     return 'SelectFightingStyleRouteArgs{key: $key, onStyleSelected: $onStyleSelected, styles: $styles}';
-  }
-}
-
-/// generated route for
-/// [_i19.SelectMetamagicScreen]
-class SelectMetamagicRoute
-    extends _i28.PageRouteInfo<SelectMetamagicRouteArgs> {
-  SelectMetamagicRoute({
-    _i29.Key? key,
-    String title = 'Метамагия',
-    String? description,
-    required int count,
-    List<_i42.Metamagic> known = const [],
-    required void Function(List<_i42.Metamagic>) onSelected,
-    List<_i28.PageRouteInfo>? children,
-  }) : super(
-         SelectMetamagicRoute.name,
-         args: SelectMetamagicRouteArgs(
-           key: key,
-           title: title,
-           description: description,
-           count: count,
-           known: known,
-           onSelected: onSelected,
-         ),
-         initialChildren: children,
-       );
-
-  static const String name = 'SelectMetamagicRoute';
-
-  static _i28.PageInfo page = _i28.PageInfo(
-    name,
-    builder: (data) {
-      final args = data.argsAs<SelectMetamagicRouteArgs>();
-      return _i19.SelectMetamagicScreen(
-        key: args.key,
-        title: args.title,
-        description: args.description,
-        count: args.count,
-        known: args.known,
-        onSelected: args.onSelected,
-      );
-    },
-  );
-}
-
-class SelectMetamagicRouteArgs {
-  const SelectMetamagicRouteArgs({
-    this.key,
-    this.title = 'Метамагия',
-    this.description,
-    required this.count,
-    this.known = const [],
-    required this.onSelected,
-  });
-
-  final _i29.Key? key;
-
-  final String title;
-
-  final String? description;
-
-  final int count;
-
-  final List<_i42.Metamagic> known;
-
-  final void Function(List<_i42.Metamagic>) onSelected;
-
-  @override
-  String toString() {
-    return 'SelectMetamagicRouteArgs{key: $key, title: $title, description: $description, count: $count, known: $known, onSelected: $onSelected}';
   }
 }
 

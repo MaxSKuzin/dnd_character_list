@@ -27,7 +27,7 @@ enum Skill {
   final StatKind origin;
 
   /// Модификатор характеристики плюс бонус мастерства при владении (двойной при компетентности).
-  /// Без владения добавляется половина бонуса, если у персонажа есть «Мастер на все руки».
+  /// Без владения добавляется половина бонуса, если у персонажа есть «Мастер на все руки» или «Выдающийся атлет».
   int getBonus(Player player) {
     final statBonus = player.stats[origin]!.bonus;
     if (player.expertiseSkills.contains(this)) {
@@ -36,6 +36,6 @@ enum Skill {
     if (player.chosenSkills.contains(this)) {
       return statBonus + player.proficiencyBonus;
     }
-    return statBonus + player.unskilledCheckBonus;
+    return statBonus + player.unskilledCheckBonus(origin);
   }
 }

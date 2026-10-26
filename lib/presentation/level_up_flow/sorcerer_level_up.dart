@@ -6,7 +6,7 @@ import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
-import 'package:dnd_character_list/domain/models/metamagic.dart';
+import 'package:dnd_character_list/domain/models/class_option.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
@@ -124,7 +124,8 @@ class SorcererLevelUp {
     final newMetamagic = Sorcerer.metamagicCountAt(info, level) - metamagic.length;
     if (newMetamagic > 0) {
       final options = await context.ask<List<Metamagic>>(
-        (done) => SelectMetamagicRoute(
+        (done) => SelectClassOptionsRoute(
+          kind: ClassOptionKind.metamagic,
           description: 'Чародей $level уровня выбирает новые варианты метамагии. '
               'При сотворении заклинания можно использовать только один вариант, если не указано обратное.',
           count: newMetamagic,
@@ -238,7 +239,8 @@ class SorcererLevelUp {
           );
           if (replacedIndex == null) return false;
           final options = await context.ask<List<Metamagic>>(
-            (done) => SelectMetamagicRoute(
+            (done) => SelectClassOptionsRoute(
+              kind: ClassOptionKind.metamagic,
               title: 'Новый вариант метамагии',
               description: 'Вместо варианта «${metamagic[replacedIndex].name}».',
               count: 1,

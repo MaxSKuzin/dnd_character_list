@@ -12,7 +12,7 @@ import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/equipment_catalog.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/gear.dart';
-import 'package:dnd_character_list/domain/models/metamagic.dart';
+import 'package:dnd_character_list/domain/models/class_option.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 import 'package:injectable/injectable.dart';
@@ -52,7 +52,7 @@ class RulesRepository {
   Future<List<Background>>? _backgrounds;
   Future<List<Feat>>? _feats;
   Future<EquipmentCatalog>? _equipment;
-  Future<List<Metamagic>>? _metamagic;
+  final _options = <ClassOptionKind, Future<List<ClassOption>>>{};
 
   RulesRepository(
     this._client,
@@ -64,10 +64,15 @@ class RulesRepository {
     this._optionsMapper,
   );
 
+  /// Версия разбора классов в ключе кэша. Поднимите, если `TtgClassMapper` разбирает те же ответы иначе,
+  /// а формат JSON не изменился: иначе до 30 дней используется старый разбор.
+  /// 2 — оружие без ссылки («воинское оружие») стало выбором из категории.
+  static const _classCacheVersion = 2;
+
   /// Описание класса по ссылке, например `/classes/bard`, вместе с официальными подклассами.
   Future<ClassInfo> getClass(String link) => _classes[link] ??= _cache
       .load(
-        key: 'class_${TtgText.slug(link)}',
+        key: 'class_v${_classCacheVersion}_${TtgText.slug(link)}',
         ttl: _ttl,
         fetch: () => _loadClass(link),
         toJson: (value) => value.toJson(),
@@ -89,9 +94,8 @@ class RulesRepository {
         key: 'backgrounds',
         ttl: _ttl,
         // «Собственная предыстория» — правило создания своей предыстории, без навыков и снаряжения.
-        fetch: () async => (await _loadAll('/backgrounds', _backgroundsMapper.map))
-            .where((e) => e.skills.isNotEmpty)
-            .toList(),
+        fetch: () async =>
+            (await _loadAll('/backgrounds', _backgroundsMapper.map)).where((e) => e.skills.isNotEmpty).toList(),
         toJson: (value) => value.map((e) => e.toJson()).toList(),
         fromJson: (json) => (json as List).map((e) => Background.fromJson(e)).toList(),
       )
@@ -107,24 +111,25 @@ class RulesRepository {
       )
       .catchError((Object e) => throw _forget(() => _feats = null, e));
 
-  /// Варианты метамагии чародея из всех официальных книг (PHB и TCE).
-  Future<List<Metamagic>> getMetamagic() => _metamagic ??= _cache
+  /// Особенности класса одного вида из всех официальных книг (PHB и TCE): метамагия чародея, приёмы мастера
+  /// боевых искусств.
+  Future<List<ClassOption>> getOptions(ClassOptionKind kind) => _options[kind] ??= _cache
       .load(
-        key: 'metamagic',
+        key: 'options_${kind.name}',
         ttl: _ttl,
-        fetch: _loadMetamagic,
+        fetch: () => _loadOptions(kind),
         toJson: (value) => value.map((e) => e.toJson()).toList(),
-        fromJson: (json) => (json as List).map((e) => Metamagic.fromJson(e)).toList(),
+        fromJson: (json) => (json as List).map((e) => ClassOption.fromJson(e)).toList(),
       )
-      .catchError((Object e) => throw _forget(() => _metamagic = null, e));
+      .catchError((Object e) => throw _forget(() => _options.remove(kind), e));
 
-  Future<List<Metamagic>> _loadMetamagic() async {
+  Future<List<ClassOption>> _loadOptions(ClassOptionKind kind) async {
     final items = await _list('/options', filter: {
-      'classOption': ['METAMAGIC'],
+      'classOption': [kind.ttgFilter],
     });
     return TtgClient.mapConcurrently(
       items.where((e) => TtgText.isOfficial(e['source'])).map((e) => e['url'] as String).toList(),
-      (link) => _client.fetch(link, (json) => _optionsMapper.metamagic(link, json as Map<String, dynamic>)),
+      (link) => _client.fetch(link, (json) => _optionsMapper.option(link, json as Map<String, dynamic>)),
     );
   }
 

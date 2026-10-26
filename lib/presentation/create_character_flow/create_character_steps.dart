@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
+import 'package:dnd_character_list/domain/models/class_option.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/presentation/create_character_flow/screens/select_option_screen/select_option_screen.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
@@ -19,6 +21,8 @@ enum CreateCharacterStep {
   classKind,
   subclass,
   subclassOptions,
+  fightingStyle,
+  maneuvers,
   stats,
   raceStats,
   background,
@@ -72,6 +76,26 @@ abstract final class CreateCharacterSteps {
         );
       case CreateCharacterStep.subclassOptions:
         return _subclassOptionsRoute(cubit, next);
+      case CreateCharacterStep.fightingStyle:
+        if (classKind != ClassKind.warrior) return null;
+        return SelectFightingStyleRoute(
+          onStyleSelected: (style) {
+            cubit.setFightingStyle(style);
+            next();
+          },
+        );
+      case CreateCharacterStep.maneuvers:
+        if (cubit.fightingStyle != FightingStyle.superiorTechnique) return null;
+        return SelectClassOptionsRoute(
+          kind: ClassOptionKind.maneuver,
+          title: 'Превосходная техника',
+          description: 'Выберите один приём мастера боевых искусств. Он тратит кость превосходства к6.',
+          count: 1,
+          onSelected: (maneuvers) {
+            cubit.setManeuvers(maneuvers);
+            next();
+          },
+        );
       case CreateCharacterStep.stats:
         return FillStatsRoute(
           title: 'Характеристики',
