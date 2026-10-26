@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:dnd_session/src/models/battle_snapshot.dart';
 import 'package:dnd_session/src/models/combatant.dart';
+import 'package:dnd_session/src/models/condition.dart';
 
 /// Версия протокола. Без обратной совместимости: при несовпадении мастер отклоняет подключение.
-const sessionProtocolVersion = 1;
+const sessionProtocolVersion = 4;
 
 /// Сообщение между мастером и игроком. Передаётся по WebSocket текстом JSON: `{"type": ..., ...}`.
 sealed class SessionMessage {
@@ -24,9 +26,18 @@ sealed class SessionMessage {
         JoinMessage.typeName => JoinMessage.fromJson(json),
         ProfileMessage.typeName => ProfileMessage(CombatantProfile.fromJson(json['profile'])),
         StateMessage.typeName => StateMessage(CombatantState.fromJson(json['state'])),
+        InitiativeMessage.typeName => InitiativeMessage(json['value']),
         WelcomeMessage.typeName => WelcomeMessage(sessionName: json['sessionName']),
         RejectMessage.typeName => RejectMessage(json['reason']),
         SessionClosedMessage.typeName => const SessionClosedMessage(),
+        BattleMessage.typeName => BattleMessage(
+          json['battle'] == null ? null : BattleSnapshot.fromJson(json['battle']),
+        ),
+        InitiativeRequestMessage.typeName => const InitiativeRequestMessage(),
+        HitsChangeMessage.typeName => HitsChangeMessage(json['delta']),
+        ReviveMessage.typeName => ReviveMessage(json['target']),
+        RevivedMessage.typeName => RevivedMessage(json['by']),
+        StatusesMessage.typeName => StatusesMessage(StatusEffect.listFromJson(json['statuses'])),
         _ => null,
       };
     } catch (_) {
@@ -103,7 +114,81 @@ class StateMessage extends SessionMessage {
   Map<String, dynamic> _body() => {'state': state.toJson()};
 }
 
+/// Игрок бросил инициативу (к20 + бонус) и вводит результат.
+class InitiativeMessage extends SessionMessage {
+  static const typeName = 'initiative';
+
+  final int value;
+
+  const InitiativeMessage(this.value);
+
+  @override
+  String get type => typeName;
+
+  @override
+  Map<String, dynamic> _body() => {'value': value};
+}
+
+/// Игрок приводит в чувство союзника в нокауте ([targetId] — его `playerId`).
+class ReviveMessage extends SessionMessage {
+  static const typeName = 'revive';
+
+  final String targetId;
+
+  const ReviveMessage(this.targetId);
+
+  @override
+  String get type => typeName;
+
+  @override
+  Map<String, dynamic> _body() => {'target': targetId};
+}
+
 // Мастер → игрок.
+
+/// Персонажа привели в чувство: союзник через мастера или сам мастер. [by] — кто, для уведомления.
+class RevivedMessage extends SessionMessage {
+  static const typeName = 'revived';
+
+  final String by;
+
+  const RevivedMessage(this.by);
+
+  @override
+  String get type => typeName;
+
+  @override
+  Map<String, dynamic> _body() => {'by': by};
+}
+
+/// Идущий бой. `null` — боя нет (не начат или закончен). Отправляется всем при каждом изменении очереди
+/// и новому игроку сразу после [WelcomeMessage].
+class BattleMessage extends SessionMessage {
+  static const typeName = 'battle';
+
+  final BattleSnapshot? battle;
+
+  const BattleMessage(this.battle);
+
+  @override
+  String get type => typeName;
+
+  @override
+  Map<String, dynamic> _body() => {'battle': battle?.toJson()};
+}
+
+/// Мастер просит бросить инициативу: игрок видит окно ввода.
+class InitiativeRequestMessage extends SessionMessage {
+  static const typeName = 'initiativeRequest';
+
+  const InitiativeRequestMessage();
+
+  @override
+  String get type => typeName;
+
+  @override
+  Map<String, dynamic> _body() => {};
+}
 
 /// Подключение принято.
 class WelcomeMessage extends SessionMessage {
@@ -146,4 +231,36 @@ class SessionClosedMessage extends SessionMessage {
 
   @override
   Map<String, dynamic> _body() => {};
+}
+
+/// Мастер нанёс урон (отрицательное [delta]) или вылечил (положительное). Игрок применяет его к персонажу,
+/// новые хиты возвращаются мастеру обычным [StateMessage].
+class HitsChangeMessage extends SessionMessage {
+  static const typeName = 'hits';
+
+  final int delta;
+
+  const HitsChangeMessage(this.delta);
+
+  @override
+  String get type => typeName;
+
+  @override
+  Map<String, dynamic> _body() => {'delta': delta};
+}
+
+/// Эффекты на персонаже от мастера: состояния и свои («Удивлён», 2 хода). Приходят целиком при каждом
+/// изменении и при подключении.
+class StatusesMessage extends SessionMessage {
+  static const typeName = 'statuses';
+
+  final List<StatusEffect> statuses;
+
+  const StatusesMessage(this.statuses);
+
+  @override
+  String get type => typeName;
+
+  @override
+  Map<String, dynamic> _body() => {'statuses': statuses.map((e) => e.toJson()).toList()};
 }

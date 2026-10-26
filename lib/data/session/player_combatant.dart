@@ -23,6 +23,7 @@ extension PlayerCombatant on Player {
       deathSuccesses: deathThrows.life,
       deathFailures: deathThrows.death,
       isDead: isDead,
+      isKnockedOut: isKnockedOut,
       spellSlots: {
         for (final slot in spellSlotLevels.where((e) => e != SpellSlot.conspiracy))
           slot.level: CombatCounter(current: currentSpellSlots[slot] ?? 0, max: spellCells[slot] ?? 0),

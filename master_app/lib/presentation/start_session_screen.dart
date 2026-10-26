@@ -1,4 +1,5 @@
 import 'package:dnd_master/data/master_session_source.dart';
+import 'package:dnd_master/presentation/encounters/encounters_screen.dart';
 import 'package:dnd_master/presentation/session_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -60,6 +61,13 @@ class _StartSessionScreenState extends State<StartSessionScreen> {
                 ),
                 const SizedBox(height: 16),
                 FilledButton(onPressed: _starting ? null : _start, child: const Text('Создать сессию')),
+                const SizedBox(height: 32),
+                OutlinedButton.icon(
+                  onPressed: () =>
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const EncountersScreen())),
+                  icon: const Icon(Icons.map_outlined),
+                  label: const Text('Боевые ситуации'),
+                ),
               ],
             ),
           ),

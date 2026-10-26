@@ -62,6 +62,10 @@ class Player {
   final List<String> toolProficiencies;
   bool isDead;
 
+  /// Нокаут: три успешных спасброска от смерти — 1 хит, но персонаж без сознания, пока его не приведут в чувство
+  /// союзник, мастер или лечение. Как и текущие хиты, не сохраняется.
+  final bool isKnockedOut;
+
   final List<Skill> _rawchosenSkills;
   final int _rawStrength;
   final int _rawDexterity;
@@ -97,6 +101,7 @@ class Player {
     int? hits,
     Map<SpellSlot, int>? spellSlots,
     this.isDead = false,
+    this.isKnockedOut = false,
   })  : assert(classes.isNotEmpty),
         _additionalLanguages = knownLanguages,
         _rawStrength = strength,
@@ -202,20 +207,24 @@ class Player {
       classes.fold(0, (previous, spec) => previous + spec.hitPoints(this)) +
       feats.fold(0, (previous, e) => previous + e.feat.hitPointsPerLevel * level);
 
+  /// Урон по персонажу в нокауте снова опускает его к смерти: нокаут снимается, спасброски начинаются заново.
   Player takeDamage(int value) {
     bool isDead = currentHits - value <= -maxHits;
     return copyWith(
       currentHits: () => max(0, currentHits - value),
       deathThrows: () => isDead ? const DeathThrows(death: 3, life: 0) : null,
       isDead: isDead,
+      isKnockedOut: false,
     );
   }
 
+  /// Лечение приводит в чувство и из нокаута.
   Player heal(int health) {
     return copyWith(
       currentHits: () => min(maxHits, currentHits + health),
       deathThrows: () => null,
       isDead: false,
+      isKnockedOut: false,
     );
   }
 
@@ -224,8 +233,12 @@ class Player {
       currentHits: () => maxHits,
       deathThrows: () => null,
       isDead: false,
+      isKnockedOut: false,
     );
   }
+
+  /// Союзник или мастер привели персонажа в чувство: нокаут снимается, хиты остаются.
+  Player wakeUp() => isKnockedOut ? copyWith(isKnockedOut: false) : this;
 
   String get hitDices => classes.map((e) => '${e.level}${e.hitDice.name}').join(', ');
 
@@ -409,6 +422,7 @@ class Player {
         currentHits: () => maxHits,
         deathThrows: () => null,
         isDead: false,
+        isKnockedOut: false,
         currentSpellSlots: () => null,
         classExtras: () => null,
       );
@@ -476,6 +490,10 @@ class Player {
           life: max(0, deathThrows.life - 1),
         ),
       );
+    }
+    // Третий успех: персонаж стабилизировался — 1 хит и нокаут (домашнее правило вместо 1к4 часов без сознания).
+    if (life == 3) {
+      return copyWith(currentHits: () => 1, deathThrows: () => null, isKnockedOut: true);
     }
     return copyWith(
       deathThrows: () => DeathThrows(
@@ -687,6 +705,7 @@ class Player {
     isEqual &= chosenSkills.equals(other.chosenSkills);
     isEqual &= currentHits == other.currentHits;
     isEqual &= isDead == other.isDead;
+    isEqual &= isKnockedOut == other.isKnockedOut;
     isEqual &= armor == other.armor;
     isEqual &= shield == other.shield;
     isEqual &= mainWeapon == other.mainWeapon;
@@ -718,6 +737,7 @@ class Player {
         chosenSkills,
         currentHits,
         isDead,
+        isKnockedOut,
         armor,
         shield,
         mainWeapon,
@@ -742,6 +762,7 @@ class Player {
     List<Skill>? chosenSkills,
     int? Function()? currentHits,
     bool? isDead,
+    bool? isKnockedOut,
     Armor? Function()? armor,
     Shield? Function()? shield,
     Map<SpellSlot, int>? Function()? currentSpellSlots,
@@ -768,6 +789,7 @@ class Player {
         chosenSkills: chosenSkills ?? _rawchosenSkills,
         hits: currentHits != null ? currentHits() : this.currentHits,
         isDead: isDead ?? this.isDead,
+        isKnockedOut: isKnockedOut ?? this.isKnockedOut,
         armor: armor != null ? armor() : this.armor,
         shield: shield != null ? shield() : this.shield,
         spellSlots: currentSpellSlots != null ? currentSpellSlots() : this.currentSpellSlots,

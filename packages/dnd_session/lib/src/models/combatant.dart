@@ -101,6 +101,9 @@ class CombatantState {
   final int deathFailures;
   final bool isDead;
 
+  /// Нокаут после трёх успешных спасбросков от смерти: 1 хит, без сознания, пока не приведут в чувство.
+  final bool isKnockedOut;
+
   /// Ячейки заклинаний по уровню (1–9). Текущее значение может превышать максимум (ячейки из единиц чародейства).
   final Map<int, CombatCounter> spellSlots;
 
@@ -112,6 +115,7 @@ class CombatantState {
     this.deathSuccesses = 0,
     this.deathFailures = 0,
     this.isDead = false,
+    this.isKnockedOut = false,
     this.spellSlots = const {},
     this.counters = const {},
   });
@@ -121,6 +125,7 @@ class CombatantState {
     if (deathSuccesses > 0) 'deathOk': deathSuccesses,
     if (deathFailures > 0) 'deathFail': deathFailures,
     if (isDead) 'dead': true,
+    if (isKnockedOut) 'ko': true,
     if (spellSlots.isNotEmpty) 'slots': spellSlots.map((key, value) => MapEntry('$key', value.toJson())),
     if (counters.isNotEmpty) 'counters': counters.map((key, value) => MapEntry(key, value.toJson())),
   };
@@ -130,6 +135,7 @@ class CombatantState {
     deathSuccesses: json['deathOk'] ?? 0,
     deathFailures: json['deathFail'] ?? 0,
     isDead: json['dead'] ?? false,
+    isKnockedOut: json['ko'] ?? false,
     spellSlots: {
       for (final e in ((json['slots'] ?? {}) as Map).entries) int.parse(e.key): CombatCounter.fromJson(e.value),
     },

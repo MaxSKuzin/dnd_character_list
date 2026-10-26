@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dnd_session/src/discovery/session_discovery.dart';
+import 'package:dnd_session/src/models/battle_snapshot.dart';
 import 'package:dnd_session/src/models/combatant.dart';
+import 'package:dnd_session/src/models/condition.dart';
 import 'package:dnd_session/src/protocol/session_message.dart';
 
 /// Состояние подключения игрока к сессии мастера.
@@ -51,6 +53,13 @@ class SessionClient {
 
   final _statusController = StreamController<SessionStatus>.broadcast();
   SessionStatus _status = const SessionDisconnected();
+  final _battleController = StreamController<BattleSnapshot?>.broadcast();
+  BattleSnapshot? _battle;
+  final _initiativeRequestsController = StreamController<void>.broadcast();
+  final _hitsChangesController = StreamController<int>.broadcast();
+  final _revivalsController = StreamController<String>.broadcast();
+  final _statusesController = StreamController<List<StatusEffect>>.broadcast();
+  List<StatusEffect> _statuses = const [];
 
   WebSocket? _socket;
   SessionInfo? _session;
@@ -68,6 +77,42 @@ class SessionClient {
   SessionStatus get status => _status;
 
   Stream<SessionStatus> get statusStream => _statusController.stream;
+
+  /// Идущий бой у мастера; `null` — боя нет или нет подключения.
+  BattleSnapshot? get battle => _battle;
+
+  Stream<BattleSnapshot?> get battleStream => _battleController.stream;
+
+  /// Мастер просит бросить инициативу.
+  Stream<void> get initiativeRequests => _initiativeRequestsController.stream;
+
+  /// Урон (отрицательное значение) или лечение от мастера. Применить к персонажу и отправить новое состояние —
+  /// забота приложения игрока.
+  Stream<int> get hitsChanges => _hitsChangesController.stream;
+
+  /// Персонажа привели в чувство из нокаута: имя союзника или «Мастер».
+  Stream<String> get revivals => _revivalsController.stream;
+
+  /// Привести в чувство союзника в нокауте. `false` — нет подключения.
+  bool revive(String targetId) {
+    final socket = _socket;
+    if (socket == null || _status is! SessionConnected) return false;
+    socket.add(ReviveMessage(targetId).encode());
+    return true;
+  }
+
+  /// Эффекты на персонаже от мастера. Без подключения — пусто.
+  List<StatusEffect> get statuses => _statuses;
+
+  Stream<List<StatusEffect>> get statusesStream => _statusesController.stream;
+
+  /// Отправляет мастеру результат броска инициативы. `false` — нет подключения.
+  bool sendInitiative(int value) {
+    final socket = _socket;
+    if (socket == null || _status is! SessionConnected) return false;
+    socket.add(InitiativeMessage(value).encode());
+    return true;
+  }
 
   /// Подключается к сессии. При разрыве связи переподключается сам, пока не вызван [disconnect].
   /// Ошибка подключения не выбрасывается, а приходит как [SessionDisconnected] с причиной.
@@ -111,6 +156,11 @@ class SessionClient {
   Future<void> dispose() async {
     await disconnect();
     await _statusController.close();
+    await _battleController.close();
+    await _initiativeRequestsController.close();
+    await _hitsChangesController.close();
+    await _revivalsController.close();
+    await _statusesController.close();
   }
 
   /// Одна попытка подключения. [error] — причина неудачи или `null`, если мастер принял игрока;
@@ -140,7 +190,22 @@ class SessionClient {
           if (message is WelcomeMessage || message is RejectMessage) answer.complete(message);
           return;
         }
-        if (message is SessionClosedMessage) _onSessionClosed(attempt);
+        if (attempt != _attempt) return;
+        switch (message) {
+          case SessionClosedMessage():
+            _onSessionClosed(attempt);
+          case BattleMessage(:final battle):
+            _setBattle(battle);
+          case InitiativeRequestMessage():
+            _initiativeRequestsController.add(null);
+          case HitsChangeMessage(:final delta):
+            _hitsChangesController.add(delta);
+          case RevivedMessage(:final by):
+            _revivalsController.add(by);
+          case StatusesMessage(:final statuses):
+            _setStatuses(statuses);
+          default:
+        }
       },
       onDone: () {
         if (!answer.isCompleted) answer.complete(null);
@@ -218,7 +283,20 @@ class SessionClient {
     await socket?.close(WebSocketStatus.normalClosure);
   }
 
+  void _setBattle(BattleSnapshot? battle) {
+    _battle = battle;
+    if (!_battleController.isClosed) _battleController.add(battle);
+  }
+
+  void _setStatuses(List<StatusEffect> statuses) {
+    _statuses = statuses;
+    if (!_statusesController.isClosed) _statusesController.add(statuses);
+  }
+
   void _setStatus(SessionStatus status) {
+    // Без связи бой и эффекты не показываются: при переподключении мастер пришлёт их заново.
+    if (status is! SessionConnected && _battle != null) _setBattle(null);
+    if (status is! SessionConnected && _statuses.isNotEmpty) _setStatuses(const []);
     _status = status;
     if (!_statusController.isClosed) _statusController.add(status);
   }

@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 class PlayerCard extends StatelessWidget {
   final SessionPlayer player;
 
-  /// Убрать игрока из сессии. Показывается, только когда игрок не на связи.
-  final VoidCallback onRemove;
+  /// Убрать игрока из сессии. Кнопка показывается, только когда игрок не на связи; `null` — без кнопки.
+  final VoidCallback? onRemove;
 
-  const PlayerCard({super.key, required this.player, required this.onRemove});
+  const PlayerCard({super.key, required this.player, this.onRemove});
 
   static String _signed(int value) => value >= 0 ? '+$value' : '$value';
 
@@ -32,7 +32,7 @@ class PlayerCard extends StatelessWidget {
                   Icon(player.isConnected ? Icons.wifi : Icons.wifi_off, size: 18),
                   const SizedBox(width: 8),
                   Expanded(child: Text(profile.name, style: theme.textTheme.titleMedium)),
-                  if (!player.isConnected)
+                  if (!player.isConnected && onRemove != null)
                     IconButton(tooltip: 'Убрать из сессии', onPressed: onRemove, icon: const Icon(Icons.close)),
                 ],
               ),
@@ -54,6 +54,8 @@ class PlayerCard extends StatelessWidget {
               ),
               if (state.isDead)
                 Text('Мёртв', style: TextStyle(color: theme.colorScheme.error))
+              else if (state.isKnockedOut)
+                const Text('Нокаут: 1 хит, без сознания')
               else if (state.currentHits <= 0)
                 Text('Спасброски от смерти: ✓${state.deathSuccesses} ✗${state.deathFailures}'),
               const SizedBox(height: 8),

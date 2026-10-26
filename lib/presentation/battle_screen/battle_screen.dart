@@ -4,6 +4,7 @@ import 'package:dnd_character_list/presentation/battle_screen/widgets/death_thro
 import 'package:dnd_character_list/presentation/battle_screen/widgets/health_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/hit_dices.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/initiative_widget.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/knockout_banner.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/long_rest_button.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/protection_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/speed_widget.dart';
@@ -11,7 +12,9 @@ import 'package:dnd_character_list/presentation/battle_screen/widgets/spell_slot
 import 'package:dnd_character_list/presentation/battle_screen/widgets/spells_stats_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/weapons_section.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
+import 'package:dnd_character_list/presentation/session/battle_queue_bar.dart';
 import 'package:dnd_character_list/presentation/session/session_button.dart';
+import 'package:dnd_character_list/presentation/session/statuses_bar.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -68,6 +71,9 @@ class _BattleScreenState extends State<BattleScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SessionButton(),
+            const BattleQueueBar(),
+            const StatusesBar(),
+            const KnockoutBanner(),
             const LongRestButton(),
             LayoutBuilder(
               builder: (context, constraints) {

@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// source.sessions                      // найденные сессии, поиск идёт, пока есть подписка
 /// source.join(session, player)         // подключиться
 /// source.updatePlayer(player)          // при каждом изменении персонажа: уходит только изменившееся
+/// source.battleStream                  // очередь боя у мастера, `null` — боя нет
+/// source.sendInitiative(15)            // результат броска инициативы
 /// source.leave()                       // отключиться
 /// ```
 @preResolve
@@ -46,6 +48,34 @@ class SessionSource {
   SessionStatus get status => _client.status;
 
   Stream<SessionStatus> get statusStream => _client.statusStream;
+
+  /// Идущий бой у мастера; `null` — боя нет или нет подключения.
+  BattleSnapshot? get battle => _client.battle;
+
+  Stream<BattleSnapshot?> get battleStream => _client.battleStream;
+
+  /// Мастер просит бросить инициативу.
+  Stream<void> get initiativeRequests => _client.initiativeRequests;
+
+  /// Урон (отрицательное значение) или лечение от мастера — применяется к персонажу в `MainFlow`.
+  Stream<int> get hitsChanges => _client.hitsChanges;
+
+  /// Персонажа привели в чувство из нокаута: имя союзника или «Мастер».
+  Stream<String> get revivals => _client.revivals;
+
+  /// Привести в чувство союзника в нокауте. `false` — нет подключения.
+  bool revive(String targetId) => _client.revive(targetId);
+
+  /// Эффекты на персонаже от мастера: состояния и свои, с длительностью в ходах.
+  List<StatusEffect> get statuses => _client.statuses;
+
+  Stream<List<StatusEffect>> get statusesStream => _client.statusesStream;
+
+  /// Результат броска инициативы (к20 + бонус). `false` — нет подключения.
+  bool sendInitiative(int value) => _client.sendInitiative(value);
+
+  /// Этот участник боя — подключённый персонаж.
+  bool isMe(String combatantId) => combatantId == _playerId;
 
   /// Подключён ли к сессии именно этот персонаж.
   bool isJoined(Player player) => _playerId == _idOf(player) && _client.status is! SessionDisconnected;

@@ -65,7 +65,8 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     if (dependencies.contains(PlayerAspect.health)) {
       update |= oldWidget.player.currentHits != player.currentHits ||
           oldWidget.player.maxHits != player.maxHits ||
-          oldWidget.player.isDead != player.isDead;
+          oldWidget.player.isDead != player.isDead ||
+          oldWidget.player.isKnockedOut != player.isKnockedOut;
     }
     if (dependencies.contains(PlayerAspect.skills)) {
       update |= !oldWidget.player.skills.equals(player.skills);
@@ -156,6 +157,10 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
   static CurMax<int> health(BuildContext context) {
     final player = InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.health)!.player;
     return CurMax(current: player.currentHits, max: player.maxHits);
+  }
+
+  static bool isKnockedOut(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.health)!.player.isKnockedOut;
   }
 
   static bool isDead(BuildContext context) {
