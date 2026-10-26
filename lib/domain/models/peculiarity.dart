@@ -53,7 +53,7 @@ class Peculiarity {
   Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,
-        'spellSlot': manaRequired?.index,
+        'spellSlot': manaRequired?.name,
         'valueDice': valueDice?.toJson(),
         'startDiceCount': startDiceCount,
         'dicePerLevel': dicePerLevel,
@@ -64,7 +64,7 @@ class Peculiarity {
   factory Peculiarity.fromJson(Map<String, dynamic> json) => Peculiarity(
         name: json['name'],
         description: json['description'],
-        manaRequired: json['spellSlot'] != null ? SpellSlot.values[json['spellSlot']] : null,
+        manaRequired: json['spellSlot'] != null ? SpellSlot.values.byName(json['spellSlot']) : null,
         valueDice: json['valueDice'] != null ? Dice.fromJson(json['valueDice']) : null,
         startDiceCount: json['startDiceCount'],
         dicePerLevel: json['dicePerLevel'],

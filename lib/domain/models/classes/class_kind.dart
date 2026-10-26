@@ -163,22 +163,6 @@ enum ClassKind {
         _ => throw UnimplementedError(),
       };
 
-  String get name => switch (this) {
-        ClassKind.bard => 'Бард',
-        ClassKind.barbarian => 'Варвар',
-        ClassKind.warrior => 'Воин',
-        ClassKind.wizard => 'Волшебник',
-        ClassKind.driud => 'Друид',
-        ClassKind.cliric => 'Жрец',
-        ClassKind.inventor => 'Изобретатель',
-        ClassKind.witch => 'Колдун',
-        ClassKind.monk => 'Монах',
-        ClassKind.paladin => 'Паладин',
-        ClassKind.thief => 'Плут',
-        ClassKind.ranger => 'Следопыт',
-        ClassKind.sorcerer => 'Чародей',
-      };
-
   int get startSkillCount => switch (this) {
         ClassKind.bard => 3,
         ClassKind.barbarian => 2,

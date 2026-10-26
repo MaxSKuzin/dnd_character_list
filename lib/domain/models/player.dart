@@ -696,7 +696,7 @@ class Player {
         'knownLanguages': _additionalLanguages.map((e) => e.index).toList(),
         'raceSpells': raceSpells.map(
           (key, value) => MapEntry(
-            key.index.toString(),
+            key.name,
             value.toJson(),
           ),
         ),
@@ -724,7 +724,7 @@ class Player {
         knownLanguages: (json['knownLanguages'] as List).map((e) => Language.values[e]).toList(),
         raceSpells: json['raceSpells'] != null
             ? (json['raceSpells'] as Map).map(
-                (key, value) => MapEntry(SpellSlot.values[int.parse(key)], Spell.fromJson(value)),
+                (key, value) => MapEntry(SpellSlot.values.byName(key), Spell.fromJson(value)),
               )
             : {},
       );

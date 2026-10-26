@@ -8,6 +8,7 @@ import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 @RoutePage()
 class SelectClassScreen extends StatefulWidget {
@@ -89,7 +90,7 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Text(
-                                          e.name,
+                                          e.localizedName,
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 24,

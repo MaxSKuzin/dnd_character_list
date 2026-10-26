@@ -1,3 +1,4 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
@@ -75,10 +76,7 @@ import 'package:flutter/material.dart' as _i25;
 /// [_i1.BattleScreen]
 class BattleRoute extends _i24.PageRouteInfo<void> {
   const BattleRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          BattleRoute.name,
-          initialChildren: children,
-        );
+    : super(BattleRoute.name, initialChildren: children);
 
   static const String name = 'BattleRoute';
 
@@ -94,10 +92,7 @@ class BattleRoute extends _i24.PageRouteInfo<void> {
 /// [_i2.CreateCharacterFlow]
 class CreateCharacterRoute extends _i24.PageRouteInfo<void> {
   const CreateCharacterRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          CreateCharacterRoute.name,
-          initialChildren: children,
-        );
+    : super(CreateCharacterRoute.name, initialChildren: children);
 
   static const String name = 'CreateCharacterRoute';
 
@@ -123,19 +118,19 @@ class FillStatsRoute extends _i24.PageRouteInfo<FillStatsRouteArgs> {
     dynamic Function(Map<_i26.StatKind, int>)? onStatsFilled,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          FillStatsRoute.name,
-          args: FillStatsRouteArgs(
-            key: key,
-            title: title,
-            isInitial: isInitial,
-            canSpendOnOneStat: canSpendOnOneStat,
-            maxPoints: maxPoints,
-            initialStats: initialStats,
-            forbiddenStats: forbiddenStats,
-            onStatsFilled: onStatsFilled,
-          ),
-          initialChildren: children,
-        );
+         FillStatsRoute.name,
+         args: FillStatsRouteArgs(
+           key: key,
+           title: title,
+           isInitial: isInitial,
+           canSpendOnOneStat: canSpendOnOneStat,
+           maxPoints: maxPoints,
+           initialStats: initialStats,
+           forbiddenStats: forbiddenStats,
+           onStatsFilled: onStatsFilled,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'FillStatsRoute';
 
@@ -143,7 +138,8 @@ class FillStatsRoute extends _i24.PageRouteInfo<FillStatsRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<FillStatsRouteArgs>(
-          orElse: () => const FillStatsRouteArgs());
+        orElse: () => const FillStatsRouteArgs(),
+      );
       return _i3.FillStatsScreen(
         key: args.key,
         title: args.title,
@@ -202,14 +198,14 @@ class InventoryAddItemRoute
     required _i27.PlayerCubit playerCubit,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          InventoryAddItemRoute.name,
-          args: InventoryAddItemRouteArgs(
-            key: key,
-            itemType: itemType,
-            playerCubit: playerCubit,
-          ),
-          initialChildren: children,
-        );
+         InventoryAddItemRoute.name,
+         args: InventoryAddItemRouteArgs(
+           key: key,
+           itemType: itemType,
+           playerCubit: playerCubit,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'InventoryAddItemRoute';
 
@@ -249,10 +245,7 @@ class InventoryAddItemRouteArgs {
 /// [_i5.InventoryScreen]
 class InventoryRoute extends _i24.PageRouteInfo<void> {
   const InventoryRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          InventoryRoute.name,
-          initialChildren: children,
-        );
+    : super(InventoryRoute.name, initialChildren: children);
 
   static const String name = 'InventoryRoute';
 
@@ -268,10 +261,7 @@ class InventoryRoute extends _i24.PageRouteInfo<void> {
 /// [_i6.LevelUpClassScreen]
 class LevelUpClassRoute extends _i24.PageRouteInfo<void> {
   const LevelUpClassRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          LevelUpClassRoute.name,
-          initialChildren: children,
-        );
+    : super(LevelUpClassRoute.name, initialChildren: children);
 
   static const String name = 'LevelUpClassRoute';
 
@@ -291,13 +281,10 @@ class LevelUpFlowRoute extends _i24.PageRouteInfo<LevelUpFlowRouteArgs> {
     required _i28.Player player,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          LevelUpFlowRoute.name,
-          args: LevelUpFlowRouteArgs(
-            key: key,
-            player: player,
-          ),
-          initialChildren: children,
-        );
+         LevelUpFlowRoute.name,
+         args: LevelUpFlowRouteArgs(key: key, player: player),
+         initialChildren: children,
+       );
 
   static const String name = 'LevelUpFlowRoute';
 
@@ -305,19 +292,13 @@ class LevelUpFlowRoute extends _i24.PageRouteInfo<LevelUpFlowRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<LevelUpFlowRouteArgs>();
-      return _i7.LevelUpFlow(
-        key: args.key,
-        player: args.player,
-      );
+      return _i7.LevelUpFlow(key: args.key, player: args.player);
     },
   );
 }
 
 class LevelUpFlowRouteArgs {
-  const LevelUpFlowRouteArgs({
-    this.key,
-    required this.player,
-  });
+  const LevelUpFlowRouteArgs({this.key, required this.player});
 
   final _i25.Key? key;
 
@@ -337,13 +318,10 @@ class MainFlowRoute extends _i24.PageRouteInfo<MainFlowRouteArgs> {
     required _i28.Player player,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          MainFlowRoute.name,
-          args: MainFlowRouteArgs(
-            key: key,
-            player: player,
-          ),
-          initialChildren: children,
-        );
+         MainFlowRoute.name,
+         args: MainFlowRouteArgs(key: key, player: player),
+         initialChildren: children,
+       );
 
   static const String name = 'MainFlowRoute';
 
@@ -351,19 +329,13 @@ class MainFlowRoute extends _i24.PageRouteInfo<MainFlowRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<MainFlowRouteArgs>();
-      return _i8.MainFlow(
-        key: args.key,
-        player: args.player,
-      );
+      return _i8.MainFlow(key: args.key, player: args.player);
     },
   );
 }
 
 class MainFlowRouteArgs {
-  const MainFlowRouteArgs({
-    this.key,
-    required this.player,
-  });
+  const MainFlowRouteArgs({this.key, required this.player});
 
   final _i25.Key? key;
 
@@ -379,10 +351,7 @@ class MainFlowRouteArgs {
 /// [_i9.MainScreen]
 class MainRoute extends _i24.PageRouteInfo<void> {
   const MainRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          MainRoute.name,
-          initialChildren: children,
-        );
+    : super(MainRoute.name, initialChildren: children);
 
   static const String name = 'MainRoute';
 
@@ -398,10 +367,7 @@ class MainRoute extends _i24.PageRouteInfo<void> {
 /// [_i10.PersonalityScreen]
 class PersonalityRoute extends _i24.PageRouteInfo<void> {
   const PersonalityRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          PersonalityRoute.name,
-          initialChildren: children,
-        );
+    : super(PersonalityRoute.name, initialChildren: children);
 
   static const String name = 'PersonalityRoute';
 
@@ -422,13 +388,10 @@ class SelectBackgroundRoute
     required void Function() onContinue,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          SelectBackgroundRoute.name,
-          args: SelectBackgroundRouteArgs(
-            key: key,
-            onContinue: onContinue,
-          ),
-          initialChildren: children,
-        );
+         SelectBackgroundRoute.name,
+         args: SelectBackgroundRouteArgs(key: key, onContinue: onContinue),
+         initialChildren: children,
+       );
 
   static const String name = 'SelectBackgroundRoute';
 
@@ -445,10 +408,7 @@ class SelectBackgroundRoute
 }
 
 class SelectBackgroundRouteArgs {
-  const SelectBackgroundRouteArgs({
-    this.key,
-    required this.onContinue,
-  });
+  const SelectBackgroundRouteArgs({this.key, required this.onContinue});
 
   final _i25.Key? key;
 
@@ -464,10 +424,7 @@ class SelectBackgroundRouteArgs {
 /// [_i12.SelectCharacterScreen]
 class SelectCharacterRoute extends _i24.PageRouteInfo<void> {
   const SelectCharacterRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          SelectCharacterRoute.name,
-          initialChildren: children,
-        );
+    : super(SelectCharacterRoute.name, initialChildren: children);
 
   static const String name = 'SelectCharacterRoute';
 
@@ -487,13 +444,10 @@ class SelectClassRoute extends _i24.PageRouteInfo<SelectClassRouteArgs> {
     required Map<_i26.StatKind, int> stats,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          SelectClassRoute.name,
-          args: SelectClassRouteArgs(
-            key: key,
-            stats: stats,
-          ),
-          initialChildren: children,
-        );
+         SelectClassRoute.name,
+         args: SelectClassRouteArgs(key: key, stats: stats),
+         initialChildren: children,
+       );
 
   static const String name = 'SelectClassRoute';
 
@@ -501,19 +455,13 @@ class SelectClassRoute extends _i24.PageRouteInfo<SelectClassRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<SelectClassRouteArgs>();
-      return _i13.SelectClassScreen(
-        key: args.key,
-        stats: args.stats,
-      );
+      return _i13.SelectClassScreen(key: args.key, stats: args.stats);
     },
   );
 }
 
 class SelectClassRouteArgs {
-  const SelectClassRouteArgs({
-    this.key,
-    required this.stats,
-  });
+  const SelectClassRouteArgs({this.key, required this.stats});
 
   final _i25.Key? key;
 
@@ -534,13 +482,13 @@ class SelectCollegiumRoute
     _i25.Key? key,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          SelectCollegiumRoute.name,
-          args: SelectCollegiumRouteArgs(
-            onCollegiumSelected: onCollegiumSelected,
-            key: key,
-          ),
-          initialChildren: children,
-        );
+         SelectCollegiumRoute.name,
+         args: SelectCollegiumRouteArgs(
+           onCollegiumSelected: onCollegiumSelected,
+           key: key,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'SelectCollegiumRoute';
 
@@ -557,10 +505,7 @@ class SelectCollegiumRoute
 }
 
 class SelectCollegiumRouteArgs {
-  const SelectCollegiumRouteArgs({
-    required this.onCollegiumSelected,
-    this.key,
-  });
+  const SelectCollegiumRouteArgs({required this.onCollegiumSelected, this.key});
 
   final void Function(_i29.BardCollegium) onCollegiumSelected;
 
@@ -581,13 +526,13 @@ class SelectFightingStyleRoute
     required void Function(_i30.FightingStyle) onStyleSelected,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          SelectFightingStyleRoute.name,
-          args: SelectFightingStyleRouteArgs(
-            key: key,
-            onStyleSelected: onStyleSelected,
-          ),
-          initialChildren: children,
-        );
+         SelectFightingStyleRoute.name,
+         args: SelectFightingStyleRouteArgs(
+           key: key,
+           onStyleSelected: onStyleSelected,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'SelectFightingStyleRoute';
 
@@ -604,10 +549,7 @@ class SelectFightingStyleRoute
 }
 
 class SelectFightingStyleRouteArgs {
-  const SelectFightingStyleRouteArgs({
-    this.key,
-    required this.onStyleSelected,
-  });
+  const SelectFightingStyleRouteArgs({this.key, required this.onStyleSelected});
 
   final _i25.Key? key;
 
@@ -629,14 +571,14 @@ class SelectLanguagesRoute
     required int maxLanguages,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          SelectLanguagesRoute.name,
-          args: SelectLanguagesRouteArgs(
-            key: key,
-            knownLanguages: knownLanguages,
-            maxLanguages: maxLanguages,
-          ),
-          initialChildren: children,
-        );
+         SelectLanguagesRoute.name,
+         args: SelectLanguagesRouteArgs(
+           key: key,
+           knownLanguages: knownLanguages,
+           maxLanguages: maxLanguages,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'SelectLanguagesRoute';
 
@@ -676,10 +618,7 @@ class SelectLanguagesRouteArgs {
 /// [_i17.SelectRaceScreen]
 class SelectRaceRoute extends _i24.PageRouteInfo<void> {
   const SelectRaceRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          SelectRaceRoute.name,
-          initialChildren: children,
-        );
+    : super(SelectRaceRoute.name, initialChildren: children);
 
   static const String name = 'SelectRaceRoute';
 
@@ -704,18 +643,18 @@ class SelectSkillsRoute extends _i24.PageRouteInfo<SelectSkillsRouteArgs> {
     void Function(List<_i33.Skill>)? onSkillsSelected,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          SelectSkillsRoute.name,
-          args: SelectSkillsRouteArgs(
-            key: key,
-            title: title,
-            classKind: classKind,
-            availableSkills: availableSkills,
-            maxSkills: maxSkills,
-            isInitial: isInitial,
-            onSkillsSelected: onSkillsSelected,
-          ),
-          initialChildren: children,
-        );
+         SelectSkillsRoute.name,
+         args: SelectSkillsRouteArgs(
+           key: key,
+           title: title,
+           classKind: classKind,
+           availableSkills: availableSkills,
+           maxSkills: maxSkills,
+           isInitial: isInitial,
+           onSkillsSelected: onSkillsSelected,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'SelectSkillsRoute';
 
@@ -780,18 +719,18 @@ class SelectSpellsRoute extends _i24.PageRouteInfo<SelectSpellsRouteArgs> {
     required _i32.ClassKind classKind,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          SelectSpellsRoute.name,
-          args: SelectSpellsRouteArgs(
-            key: key,
-            knownSpells: knownSpells,
-            availableSlots: availableSlots,
-            onSpellsSelected: onSpellsSelected,
-            maxSpells: maxSpells,
-            maxConspiracies: maxConspiracies,
-            classKind: classKind,
-          ),
-          initialChildren: children,
-        );
+         SelectSpellsRoute.name,
+         args: SelectSpellsRouteArgs(
+           key: key,
+           knownSpells: knownSpells,
+           availableSlots: availableSlots,
+           onSpellsSelected: onSpellsSelected,
+           maxSpells: maxSpells,
+           maxConspiracies: maxConspiracies,
+           classKind: classKind,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'SelectSpellsRoute';
 
@@ -852,14 +791,14 @@ class SelectToolsRoute extends _i24.PageRouteInfo<SelectToolsRouteArgs> {
     required List<_i36.Tool> tools,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          SelectToolsRoute.name,
-          args: SelectToolsRouteArgs(
-            key: key,
-            onContinue: onContinue,
-            tools: tools,
-          ),
-          initialChildren: children,
-        );
+         SelectToolsRoute.name,
+         args: SelectToolsRouteArgs(
+           key: key,
+           onContinue: onContinue,
+           tools: tools,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'SelectToolsRoute';
 
@@ -903,13 +842,10 @@ class SelectWeaponsRoute extends _i24.PageRouteInfo<SelectWeaponsRouteArgs> {
     required _i37.StartEquipment startEquip,
     List<_i24.PageRouteInfo>? children,
   }) : super(
-          SelectWeaponsRoute.name,
-          args: SelectWeaponsRouteArgs(
-            key: key,
-            startEquip: startEquip,
-          ),
-          initialChildren: children,
-        );
+         SelectWeaponsRoute.name,
+         args: SelectWeaponsRouteArgs(key: key, startEquip: startEquip),
+         initialChildren: children,
+       );
 
   static const String name = 'SelectWeaponsRoute';
 
@@ -926,10 +862,7 @@ class SelectWeaponsRoute extends _i24.PageRouteInfo<SelectWeaponsRouteArgs> {
 }
 
 class SelectWeaponsRouteArgs {
-  const SelectWeaponsRouteArgs({
-    this.key,
-    required this.startEquip,
-  });
+  const SelectWeaponsRouteArgs({this.key, required this.startEquip});
 
   final _i25.Key? key;
 
@@ -945,10 +878,7 @@ class SelectWeaponsRouteArgs {
 /// [_i22.SetPersonalityScreen]
 class SetPersonalityRoute extends _i24.PageRouteInfo<void> {
   const SetPersonalityRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          SetPersonalityRoute.name,
-          initialChildren: children,
-        );
+    : super(SetPersonalityRoute.name, initialChildren: children);
 
   static const String name = 'SetPersonalityRoute';
 
@@ -964,10 +894,7 @@ class SetPersonalityRoute extends _i24.PageRouteInfo<void> {
 /// [_i23.SpellsScreen]
 class SpellsRoute extends _i24.PageRouteInfo<void> {
   const SpellsRoute({List<_i24.PageRouteInfo>? children})
-      : super(
-          SpellsRoute.name,
-          initialChildren: children,
-        );
+    : super(SpellsRoute.name, initialChildren: children);
 
   static const String name = 'SpellsRoute';
 

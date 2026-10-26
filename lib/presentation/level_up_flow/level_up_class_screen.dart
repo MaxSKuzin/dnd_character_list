@@ -12,6 +12,7 @@ import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 @RoutePage()
 class LevelUpClassScreen extends StatefulWidget {
@@ -110,7 +111,7 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            e.name,
+                                            e.localizedName,
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 24,

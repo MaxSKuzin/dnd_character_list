@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -17,6 +18,11 @@ class SpellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final details = spell.details;
+    final tags = [
+      if (spell.isConcentration) 'Концентрация',
+      if (spell.isRitual) 'Ритуал',
+    ];
     return DecoratedBox(
       decoration: ShapeDecoration(
         color: backgroundColor ?? context.customColors?.cardColor,
@@ -43,28 +49,20 @@ class SpellWidget extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  if (spell.isRitual) const Text('(Ритуал)'),
+                  if (tags.isNotEmpty) Text('(${tags.join(', ')})'),
                   const Gap(8),
-                  Text(spell.slot.name),
+                  Text('${spell.slot.localizedName}, ${spell.school.toLowerCase()}'),
                   const Gap(8),
-                  Text('Время наложения: $_castTime'),
+                  Text('Время накладывания: ${details?.castTime ?? spell.castTimeType?.localizedName ?? '—'}'),
+                  if (details != null) ...[
+                    const Gap(8),
+                    Text('Длительность: ${details.duration}'),
+                    const Gap(8),
+                    Text('Дистанция: ${details.distance}'),
+                  ],
                   const Gap(8),
-                  Text('Длительность: $_durationText'),
-                  const Gap(8),
-                  Text('Дистация: $_distanceText'),
-                  const Gap(8),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: 'Компоненты: ',
-                        ),
-                        TextSpan(
-                          text: spell.components.map((e) => e.name).join(', '),
-                        ),
-                      ],
-                      style: context.theme.textTheme.bodyMedium,
-                    ),
+                  Text(
+                    'Компоненты: ${details?.components ?? spell.components.map((e) => e.localizedName).join(', ')}',
                   ),
                 ],
               ),
@@ -73,25 +71,5 @@ class SpellWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String get _distanceText {
-    if (spell.distance != 0) {
-      return '${spell.distance} футов';
-    }
-    return 'На себя';
-  }
-
-  String get _castTime {
-    return '${spell.timeToCast} ${spell.castTimeType.name}';
-  }
-
-  String get _durationText {
-    if (spell.duration != null && spell.duration != Duration.zero) {
-      return '${spell.duration!.inMinutes} минут';
-    } else if (spell.durationInRounds != null) {
-      return '${spell.durationInRounds} раундов';
-    }
-    return 'Мгновенная';
   }
 }

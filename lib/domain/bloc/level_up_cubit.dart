@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/data/sp_source.dart';
+import 'package:dnd_character_list/data/spells_repository.dart';
 import 'package:dnd_character_list/domain/models/bard_collegiums/bard_collegium.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
@@ -21,11 +22,12 @@ class LevelUpCubit extends Cubit<Player?> {
   final Player player;
 
   final SpSource _spSource;
+  final SpellsRepository _spellsRepository;
 
   ClassKind? _classToUpdate;
   bool? _isClassMain;
   List<Spell>? _newSpells;
-  Map<SpellSlot, Spell>? _raceSpells;
+  Map<SpellSlot, String>? _raceSpells;
 
   List<Skill>? _newSkills;
 
@@ -37,6 +39,7 @@ class LevelUpCubit extends Cubit<Player?> {
 
   LevelUpCubit(
     this._spSource,
+    this._spellsRepository,
     @factoryParam this.player,
   ) : super(null);
 
@@ -65,7 +68,7 @@ class LevelUpCubit extends Cubit<Player?> {
     _fightingStyle = fightingStyle;
   }
 
-  void setRaceSpells(Map<SpellSlot, Spell> spells) {
+  void setRaceSpells(Map<SpellSlot, String> spells) {
     _raceSpells = spells;
   }
 
@@ -186,7 +189,7 @@ class LevelUpCubit extends Cubit<Player?> {
       newPlayer = newPlayer.copyWith(chosenSkills: _newSkills!);
     }
     if (_raceSpells != null) {
-      newPlayer = newPlayer.copyWith(raceSpells: _raceSpells!);
+      newPlayer = newPlayer.copyWith(raceSpells: await _spellsRepository.resolve(_raceSpells!));
     }
     await _spSource.savePlayer(newPlayer);
     emit(newPlayer);

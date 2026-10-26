@@ -4,7 +4,6 @@ import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
-import 'package:dnd_character_list/domain/models/spell/spells_entities/conspiracies/thaumaturgy.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 enum Race with ItemWithName {
@@ -97,18 +96,19 @@ enum Race with ItemWithName {
           ],
       };
 
-  Map<SpellSlot, Spell> spellForLevel(int level) => switch (this) {
+  /// Ссылки на заклинания dnd.su, которые раса даёт к указанному уровню.
+  Map<SpellSlot, String> spellForLevel(int level) => switch (this) {
         tiefling => {
             1: {
-              SpellSlot.conspiracy: Thaumaturgy(),
+              SpellSlot.conspiracy: '/spells/80-thaumaturgy/',
             },
           },
         tieflingFaerun => {
             1: {
-              SpellSlot.conspiracy: Thaumaturgy(),
+              SpellSlot.conspiracy: '/spells/80-thaumaturgy/',
             },
           },
-        halfElf => <int, Map<SpellSlot, Thaumaturgy>>{},
+        halfElf => <int, Map<SpellSlot, String>>{},
       }
           ._getSpellsMap(level);
 
@@ -143,10 +143,10 @@ extension on Map<int, List<Spell>> {
   }
 }
 
-extension on Map<int, Map<SpellSlot, Spell>> {
-  Map<SpellSlot, Spell> _getSpellsMap(int level) {
+extension on Map<int, Map<SpellSlot, String>> {
+  Map<SpellSlot, String> _getSpellsMap(int level) {
     final spells = entries.fold(
-      <MapEntry<SpellSlot, Spell>>[],
+      <MapEntry<SpellSlot, String>>[],
       (previousValue, element) {
         if (element.key <= level) {
           return [...previousValue, ...element.value.entries];

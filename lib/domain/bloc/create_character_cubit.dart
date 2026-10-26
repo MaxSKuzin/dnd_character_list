@@ -1,4 +1,5 @@
 import 'package:dnd_character_list/data/sp_source.dart';
+import 'package:dnd_character_list/data/spells_repository.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
@@ -20,6 +21,7 @@ import 'package:injectable/injectable.dart';
 @injectable
 class CreateCharacterCubit extends Cubit<Player?> {
   final SpSource _source;
+  final SpellsRepository _spellsRepository;
 
   Map<StatKind, int>? _stats;
   Race? race;
@@ -33,7 +35,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
   List<Language>? _languages;
   List<InventoryItem>? _inventoryItems;
 
-  CreateCharacterCubit(this._source) : super(null);
+  CreateCharacterCubit(this._source, this._spellsRepository) : super(null);
 
   void setStats(Map<StatKind, int> stats) {
     _stats = {...stats};
@@ -127,7 +129,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
       _ => throw UnimplementedError(),
     };
     final player = Player(
-      raceSpells: race!.spellForLevel(1),
+      raceSpells: await _spellsRepository.resolve(race!.spellForLevel(1)),
       knownLanguages: _languages ?? [],
       background: background!,
       classes: [spec],

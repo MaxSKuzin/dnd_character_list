@@ -16,20 +16,12 @@ enum SpellSlot {
 
   const SpellSlot(this.mana);
 
-  int compareTo(SpellSlot other) => index - other.index;
+  /// Уровень заклинания: 0 для заговоров.
+  int get level => index;
 
-  String get name => switch (this) {
-        SpellSlot.conspiracy => 'Заговор',
-        SpellSlot.level1 => '1 уровень',
-        SpellSlot.level2 => '2 уровень',
-        SpellSlot.level3 => '3 уровень',
-        SpellSlot.level4 => '4 уровень',
-        SpellSlot.level5 => '5 уровень',
-        SpellSlot.level6 => '6 уровень',
-        SpellSlot.level7 => '7 уровень',
-        SpellSlot.level8 => '8 уровень',
-        SpellSlot.level9 => '9 уровень',
-      };
+  static SpellSlot fromLevel(int level) => values[level];
+
+  int compareTo(SpellSlot other) => index - other.index;
 
   static Map<SpellSlot, int> getSpellCells(Map<ClassKind, int> classes) {
     final magicLevel = classes.entries.fold(
