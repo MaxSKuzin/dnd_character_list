@@ -177,7 +177,7 @@ void main() {
     expect(player.maxExtras, {ClassExtras.sorceryPoints: 4});
     expect(
       sorcerer.abilities.map((e) => e.name),
-      ['МЕТАМАГИЯ: АККУРАТНОЕ ЗАКЛИНАНИЕ', 'МЕТАМАГИЯ: УДВОЕННОЕ ЗАКЛИНАНИЕ'],
+      ['ВАРИАНТ МЕТАМАГИИ: АККУРАТНОЕ ЗАКЛИНАНИЕ', 'ВАРИАНТ МЕТАМАГИИ: УДВОЕННОЕ ЗАКЛИНАНИЕ'],
     );
     expect(sorcerer.abilities.first.isHtml, isTrue);
     // До 2 уровня единиц чародейства нет.

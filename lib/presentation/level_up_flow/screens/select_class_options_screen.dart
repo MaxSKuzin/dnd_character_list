@@ -24,6 +24,9 @@ class SelectClassOptionsScreen extends StatefulWidget {
   /// Уже известные варианты: их нельзя выбрать снова.
   final List<ClassOption> known;
 
+  /// Уровень класса: варианты с более высоким требованием ([ClassOption.level]) не показываются.
+  final int? maxLevel;
+
   final void Function(List<ClassOption> options) onSelected;
 
   const SelectClassOptionsScreen({
@@ -33,6 +36,7 @@ class SelectClassOptionsScreen extends StatefulWidget {
     this.description,
     required this.count,
     this.known = const [],
+    this.maxLevel,
     required this.onSelected,
   });
 
@@ -88,7 +92,10 @@ class _SelectClassOptionsScreenState extends State<SelectClassOptionsScreen> {
                       );
                     }
                     if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-                    final options = snapshot.data!.where((e) => !widget.known.contains(e)).toList()
+                    final options = snapshot.data!
+                        .where((e) => !widget.known.contains(e))
+                        .where((e) => widget.maxLevel == null || (e.level ?? 0) <= widget.maxLevel!)
+                        .toList()
                       ..sort((a, b) => a.name.compareTo(b.name));
                     return ListView.separated(
                       itemCount: options.length,
@@ -104,7 +111,12 @@ class _SelectClassOptionsScreenState extends State<SelectClassOptionsScreen> {
                           ),
                           child: ListTile(
                             title: Text(option.name, style: const TextStyle(fontWeight: FontWeight.w700)),
-                            subtitle: option.source == null ? null : Text(option.source!),
+                            subtitle: Text(
+                              [
+                                if (option.source != null) option.source!,
+                                if (option.level != null) 'с ${option.level} уровня'
+                              ].join(' · '),
+                            ),
                             onTap: () => _toggle(option),
                             trailing: IconButton(
                               onPressed: () => showDialog(

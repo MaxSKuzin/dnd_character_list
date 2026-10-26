@@ -10,6 +10,7 @@ import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/fighter.dart';
 import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
+import 'package:dnd_character_list/domain/models/classes/ranger.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/thief.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
@@ -155,6 +156,7 @@ abstract class Specialization {
         'Sorcerer' => Sorcerer.fromJson(json),
         'Monk' => Monk.fromJson(json),
         'Fighter' => Fighter.fromJson(json),
+        'Ranger' => Ranger.fromJson(json),
         _ => throw 'No such class',
       };
 }

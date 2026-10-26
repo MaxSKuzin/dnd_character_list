@@ -27,6 +27,7 @@ enum ClassKind {
         ClassKind.sorcerer => '/classes/sorcerer',
         ClassKind.monk => '/classes/monk',
         ClassKind.warrior => '/classes/fighter',
+        ClassKind.ranger => '/classes/ranger',
         _ => null,
       };
 
@@ -41,7 +42,8 @@ enum ClassKind {
         ClassKind.thief ||
         ClassKind.sorcerer ||
         ClassKind.monk ||
-        ClassKind.warrior =>
+        ClassKind.warrior ||
+        ClassKind.ranger =>
           true,
         _ => false,
       };
@@ -69,6 +71,7 @@ enum ClassKind {
         ClassKind.sorcerer => 2,
         ClassKind.monk => 2,
         ClassKind.warrior => 2,
+        ClassKind.ranger => 3,
         _ => throw UnimplementedError(),
       };
 
@@ -137,6 +140,16 @@ enum ClassKind {
             Skill.insight,
             Skill.animalHandling,
           ],
+        ClassKind.ranger => [
+            Skill.investigation,
+            Skill.athletics,
+            Skill.perception,
+            Skill.survival,
+            Skill.nature,
+            Skill.insight,
+            Skill.stealth,
+            Skill.animalHandling,
+          ],
         _ => throw UnimplementedError(),
       };
 
@@ -148,6 +161,8 @@ enum ClassKind {
         ClassKind.thief => 0,
         ClassKind.sorcerer => level < 11 ? level + 1 : min(15, 11 + (level - 9) ~/ 2),
         ClassKind.monk || ClassKind.warrior => 0,
+        // Число известных заклинаний следопыта — из таблицы класса на сайте; на 1 уровне заклинаний нет.
+        ClassKind.ranger => 0,
         _ => throw UnimplementedError(),
       };
 
@@ -170,7 +185,7 @@ enum ClassKind {
             4: 5,
             10: 6,
           }._getValue(level),
-        ClassKind.monk || ClassKind.warrior => 0,
+        ClassKind.monk || ClassKind.warrior || ClassKind.ranger => 0,
         _ => throw UnimplementedError(),
       };
 
@@ -182,6 +197,7 @@ enum ClassKind {
         ClassKind.thief => 0,
         ClassKind.sorcerer => 1,
         ClassKind.monk || ClassKind.warrior => 0,
+        ClassKind.ranger => 0.5,
         _ => throw UnimplementedError(),
       };
 

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
+import 'package:dnd_character_list/domain/models/class_option.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/combat.dart';
@@ -35,6 +36,14 @@ final class Monk extends Specialization {
   // Последние части ссылок на традиции на ttg.club, у которых есть механики в коде.
   static const drunkenMaster = 'drunken_master';
   static const mercy = 'mercy';
+  static const fourElements = 'four_elements';
+
+  /// «Адепт стихий»: «Родство со стихией» известно всегда.
+  static const elementalAttunement = '/options/elemental_attunement';
+
+  /// Сколько практик, кроме «Родства со стихией», знает монах Пути Четырёх Стихий: одну на 3 уровне и ещё по одной
+  /// на 6, 11 и 17 (на сайте — только в тексте умения).
+  static int disciplinesCountAt(int level) => level < 3 ? 0 : 1 + [6, 11, 17].where((e) => level >= e).length;
 
   static const _shortsword = '/weapons/shortsword';
 
@@ -48,6 +57,9 @@ final class Monk extends Specialization {
   final String? traditionName;
 
   final List<AbilityScoreImprovement> improvements;
+
+  /// Стихийные практики Пути Четырёх Стихий, включая «Родство со стихией».
+  final List<ElementalDiscipline> disciplines;
 
   /// Кость боевых искусств из таблицы класса.
   final Dice martialArtsDice;
@@ -66,6 +78,7 @@ final class Monk extends Specialization {
     this.traditionId,
     this.traditionName,
     this.improvements = const [],
+    this.disciplines = const [],
     this.kiPoints = 0,
     this.unarmoredMovement = 0,
   });
@@ -149,8 +162,16 @@ final class Monk extends Specialization {
         _ => const [],
       };
 
+  /// Умения и стихийные практики.
   @override
-  List<Peculiarity> get abilities => features;
+  List<Peculiarity> get abilities => [
+        ...features,
+        for (final discipline in disciplines)
+          Peculiarity(
+              name: 'ПРАКТИКА: ${discipline.name.toUpperCase()}',
+              description: discipline.descriptionHtml,
+              isHtml: true),
+      ];
 
   @override
   List<ChosenFeat> get feats => improvements.map((e) => e.feat).nonNulls.toList();
@@ -185,6 +206,7 @@ final class Monk extends Specialization {
     String? traditionId,
     String? traditionName,
     List<AbilityScoreImprovement>? improvements,
+    List<ElementalDiscipline>? disciplines,
     Dice? martialArtsDice,
     int? kiPoints,
     int? unarmoredMovement,
@@ -196,6 +218,7 @@ final class Monk extends Specialization {
         traditionId: traditionId ?? this.traditionId,
         traditionName: traditionName ?? this.traditionName,
         improvements: improvements ?? this.improvements,
+        disciplines: disciplines ?? this.disciplines,
         martialArtsDice: martialArtsDice ?? this.martialArtsDice,
         kiPoints: kiPoints ?? this.kiPoints,
         unarmoredMovement: unarmoredMovement ?? this.unarmoredMovement,
@@ -210,6 +233,7 @@ final class Monk extends Specialization {
         'traditionId': traditionId,
         'traditionName': traditionName,
         'improvements': improvements.map((e) => e.toJson()).toList(),
+        'disciplines': disciplines.map((e) => e.toJson()).toList(),
         'martialArtsDice': martialArtsDice.toJson(),
         'kiPoints': kiPoints,
         'unarmoredMovement': unarmoredMovement,
@@ -222,6 +246,7 @@ final class Monk extends Specialization {
         traditionId: json['traditionId'],
         traditionName: json['traditionName'],
         improvements: (json['improvements'] as List).map((e) => AbilityScoreImprovement.fromJson(e)).toList(),
+        disciplines: (json['disciplines'] as List).map((e) => ElementalDiscipline.fromJson(e)).toList(),
         martialArtsDice: Dice.fromJson(json['martialArtsDice']),
         kiPoints: json['kiPoints'],
         unarmoredMovement: json['unarmoredMovement'],

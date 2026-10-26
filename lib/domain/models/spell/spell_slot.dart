@@ -19,11 +19,21 @@ enum SpellSlot {
 
   int compareTo(SpellSlot other) => index - other.index;
 
+  /// Уровень заклинателя для таблицы ячеек по множителям классов (1 — полный заклинатель, 0.5 — паладин и
+  /// следопыт) и их уровням. Один класс-заклинатель пользуется своей таблицей: у полузаклинателя уровень
+  /// округляется вверх и ячейки появляются со 2 уровня. В мультиклассе уровни полузаклинателей округляются вниз.
+  static int casterLevel(Iterable<MapEntry<double, int>> classes) {
+    final casters = classes.where((e) => e.key > 0).toList();
+    if (casters.length == 1) {
+      final MapEntry(key: multiplier, value: level) = casters.single;
+      if (multiplier < 1 && level < 2) return 0;
+      return (level * multiplier).ceil();
+    }
+    return casters.fold(0, (sum, e) => sum + (e.value * e.key).toInt());
+  }
+
   static Map<SpellSlot, int> getSpellCells(Map<ClassKind, int> classes) {
-    final magicLevel = classes.entries.fold(
-      0,
-      (prev, e) => prev + (e.value * e.key.magicLevelMultiplier).toInt(),
-    );
+    final magicLevel = casterLevel(classes.entries.map((e) => MapEntry(e.key.magicLevelMultiplier, e.value)));
     if (magicLevel == 0) {
       return {};
     }

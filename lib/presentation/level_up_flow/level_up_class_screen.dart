@@ -19,6 +19,7 @@ import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/fighter.dart';
 import 'package:dnd_character_list/domain/models/classes/monk.dart';
+import 'package:dnd_character_list/domain/models/classes/ranger.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
@@ -26,6 +27,7 @@ import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/bard_level_up.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/fighter_level_up.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/monk_level_up.dart';
+import 'package:dnd_character_list/presentation/level_up_flow/ranger_level_up.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/sorcerer_level_up.dart';
 
 @RoutePage()
@@ -49,7 +51,7 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
 
     final link = classKind.ttgLink;
     final bool passed;
-    const ttgClasses = [ClassKind.bard, ClassKind.sorcerer, ClassKind.monk, ClassKind.warrior];
+    const ttgClasses = [ClassKind.bard, ClassKind.sorcerer, ClassKind.monk, ClassKind.warrior, ClassKind.ranger];
     if (ttgClasses.contains(classKind) && link != null) {
       final ClassInfo info;
       setState(() => _isLoading = true);
@@ -69,6 +71,8 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
       passed = await switch (classKind) {
         ClassKind.bard => BardLevelUp(context: context, player: player, info: info, bard: selectedClass as Bard?).run(),
         ClassKind.monk => MonkLevelUp(context: context, player: player, info: info, monk: selectedClass as Monk?).run(),
+        ClassKind.ranger =>
+          RangerLevelUp(context: context, player: player, info: info, ranger: selectedClass as Ranger?).run(),
         ClassKind.warrior =>
           FighterLevelUp(context: context, player: player, info: info, fighter: selectedClass as Fighter?).run(),
         _ => SorcererLevelUp(context: context, player: player, info: info, sorcerer: selectedClass as Sorcerer?).run(),

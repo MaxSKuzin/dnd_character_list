@@ -9,8 +9,10 @@ import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
+import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
 /// Воин по правилам https://5e14.ttg.club/classes/fighter.
@@ -31,6 +33,25 @@ final class Fighter extends Specialization {
   // Последние части ссылок на архетипы на ttg.club, у которых есть механики в коде.
   static const champion = 'champion';
   static const battleMaster = 'battle_master';
+  static const cavalier = 'cavalier';
+  static const samurai = 'samurai';
+  static const purpleDragon = 'purple_dragon';
+
+  /// Навык или язык архетипа: умение и уровень. Кавалерист и самурай выбирают навык из списка или язык на 3 уровне,
+  /// рыцарь Пурпурного Дракона на 7 получает Убеждение с компетентностью (если уже владеет — другой навык из списка).
+  static const bonusProficiencyFeatures = {
+    cavalier: 'ДОПОЛНИТЕЛЬНЫЕ НАВЫКИ',
+    samurai: 'ДОПОЛНИТЕЛЬНЫЕ НАВЫКИ',
+    purpleDragon: 'ПОСЛАННИК КОРОНЫ',
+  };
+  static const bonusProficiencyLevels = {cavalier: 3, samurai: 3, purpleDragon: 7};
+
+  /// Навыки, из которых выбирают в этих умениях (на сайте — только в тексте).
+  static const bonusSkills = {
+    cavalier: [Skill.animalHandling, Skill.history, Skill.insight, Skill.performance, Skill.persuasion],
+    samurai: [Skill.history, Skill.insight, Skill.performance, Skill.persuasion],
+    purpleDragon: [Skill.animalHandling, Skill.insight, Skill.intimidation, Skill.performance],
+  };
 
   /// Чемпион: «Выдающийся атлет» и «Дополнительный боевой стиль».
   static const remarkableAthleteLevel = 7;
@@ -67,6 +88,13 @@ final class Fighter extends Specialization {
   /// Известные приёмы с описаниями с сайта.
   final List<Maneuver> maneuvers;
 
+  /// Инструменты «Ученика войны» мастера боевых искусств.
+  final List<String> archetypeTools;
+
+  /// Навык или язык архетипа ([bonusProficiencyFeatures]).
+  final List<Skill> archetypeSkills;
+  final List<Language> archetypeLanguages;
+
   /// Использований «Всплеска действий» и «Упорного» по таблице класса.
   final int actionSurgeUses;
   final int indomitableUses;
@@ -80,6 +108,9 @@ final class Fighter extends Specialization {
     this.archetypeName,
     this.improvements = const [],
     this.maneuvers = const [],
+    this.archetypeTools = const [],
+    this.archetypeSkills = const [],
+    this.archetypeLanguages = const [],
     this.actionSurgeUses = 0,
     this.indomitableUses = 0,
   });
@@ -118,6 +149,18 @@ final class Fighter extends Specialization {
   int get startHealth => 10;
 
   @override
+  List<Skill> get grantedSkills => archetypeSkills;
+
+  @override
+  List<Language> get grantedLanguages => archetypeLanguages;
+
+  /// «Посланник короны»: компетентность в Убеждении.
+  @override
+  List<Skill> get expertise => archetypeId == purpleDragon && level >= bonusProficiencyLevels[purpleDragon]!
+      ? const [Skill.persuasion]
+      : const [];
+
+  @override
   FightingStyle? get fightingStyle => fightingStyles.firstOrNull;
 
   @override
@@ -151,9 +194,7 @@ final class Fighter extends Specialization {
   /// Боевые стили, умения и приёмы.
   @override
   List<Peculiarity> get abilities => [
-        for (final style in fightingStyles)
-          Peculiarity(name: 'БОЕВОЙ СТИЛЬ: ${style.title.toUpperCase()}', description: style.description, isHtml: true),
-        ...features,
+        ...withFightingStyles(features, fightingStyles),
         for (final maneuver in maneuvers)
           Peculiarity(
               name: 'ПРИЁМ: ${maneuver.name.toUpperCase()}', description: maneuver.descriptionHtml, isHtml: true),
@@ -226,6 +267,9 @@ final class Fighter extends Specialization {
     String? archetypeName,
     List<AbilityScoreImprovement>? improvements,
     List<Maneuver>? maneuvers,
+    List<String>? archetypeTools,
+    List<Skill>? archetypeSkills,
+    List<Language>? archetypeLanguages,
     int? actionSurgeUses,
     int? indomitableUses,
   }) =>
@@ -238,6 +282,9 @@ final class Fighter extends Specialization {
         archetypeName: archetypeName ?? this.archetypeName,
         improvements: improvements ?? this.improvements,
         maneuvers: maneuvers ?? this.maneuvers,
+        archetypeTools: archetypeTools ?? this.archetypeTools,
+        archetypeSkills: archetypeSkills ?? this.archetypeSkills,
+        archetypeLanguages: archetypeLanguages ?? this.archetypeLanguages,
         actionSurgeUses: actionSurgeUses ?? this.actionSurgeUses,
         indomitableUses: indomitableUses ?? this.indomitableUses,
       );
@@ -253,6 +300,9 @@ final class Fighter extends Specialization {
         'archetypeName': archetypeName,
         'improvements': improvements.map((e) => e.toJson()).toList(),
         'maneuvers': maneuvers.map((e) => e.toJson()).toList(),
+        'archetypeTools': archetypeTools,
+        'archetypeSkills': archetypeSkills.map((e) => e.name).toList(),
+        'archetypeLanguages': archetypeLanguages.map((e) => e.name).toList(),
         'actionSurgeUses': actionSurgeUses,
         'indomitableUses': indomitableUses,
       };
@@ -266,6 +316,9 @@ final class Fighter extends Specialization {
         archetypeName: json['archetypeName'],
         improvements: (json['improvements'] as List).map((e) => AbilityScoreImprovement.fromJson(e)).toList(),
         maneuvers: (json['maneuvers'] as List).map((e) => Maneuver.fromJson(e)).toList(),
+        archetypeTools: (json['archetypeTools'] as List).cast<String>(),
+        archetypeSkills: (json['archetypeSkills'] as List).map((e) => Skill.values.byName(e)).toList(),
+        archetypeLanguages: (json['archetypeLanguages'] as List).map((e) => Language.values.byName(e)).toList(),
         actionSurgeUses: json['actionSurgeUses'],
         indomitableUses: json['indomitableUses'],
       );

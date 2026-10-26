@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -10,7 +11,10 @@ class SelectOption {
   final String title;
   final String? subtitle;
 
-  const SelectOption({required this.title, this.subtitle});
+  /// Описание варианта в html (например, текст умения с сайта): открывается кнопкой «i».
+  final String? detailsHtml;
+
+  const SelectOption({required this.title, this.subtitle, this.detailsHtml});
 }
 
 /// Выбор одного варианта из списка: драконьего предка, склонности «Божественной души» и т.п.
@@ -85,6 +89,15 @@ class _SelectOptionScreenState extends State<SelectOptionScreen> {
                         title: Text(option.title, style: const TextStyle(fontWeight: FontWeight.w700)),
                         subtitle: option.subtitle == null ? null : Text(option.subtitle!),
                         onTap: () => setState(() => _selected = isSelected ? null : index),
+                        trailing: option.detailsHtml == null
+                            ? null
+                            : IconButton(
+                                onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (_) => HtmlDialog(title: option.title, html: option.detailsHtml!),
+                                ),
+                                icon: const Icon(Icons.info),
+                              ),
                       ),
                     );
                   },

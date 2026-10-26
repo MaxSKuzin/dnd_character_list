@@ -751,6 +751,7 @@ class SelectClassOptionsRoute
     String? description,
     required int count,
     List<_i41.ClassOption> known = const [],
+    int? maxLevel,
     required void Function(List<_i41.ClassOption>) onSelected,
     List<_i28.PageRouteInfo>? children,
   }) : super(
@@ -762,6 +763,7 @@ class SelectClassOptionsRoute
            description: description,
            count: count,
            known: known,
+           maxLevel: maxLevel,
            onSelected: onSelected,
          ),
          initialChildren: children,
@@ -780,6 +782,7 @@ class SelectClassOptionsRoute
         description: args.description,
         count: args.count,
         known: args.known,
+        maxLevel: args.maxLevel,
         onSelected: args.onSelected,
       );
     },
@@ -794,6 +797,7 @@ class SelectClassOptionsRouteArgs {
     this.description,
     required this.count,
     this.known = const [],
+    this.maxLevel,
     required this.onSelected,
   });
 
@@ -809,11 +813,13 @@ class SelectClassOptionsRouteArgs {
 
   final List<_i41.ClassOption> known;
 
+  final int? maxLevel;
+
   final void Function(List<_i41.ClassOption>) onSelected;
 
   @override
   String toString() {
-    return 'SelectClassOptionsRouteArgs{key: $key, kind: $kind, title: $title, description: $description, count: $count, known: $known, onSelected: $onSelected}';
+    return 'SelectClassOptionsRouteArgs{key: $key, kind: $kind, title: $title, description: $description, count: $count, known: $known, maxLevel: $maxLevel, onSelected: $onSelected}';
   }
 }
 

@@ -242,7 +242,9 @@ final class Sorcerer extends Specialization {
         ...features,
         for (final option in metamagic)
           Peculiarity(
-              name: 'МЕТАМАГИЯ: ${option.name.toUpperCase()}', description: option.descriptionHtml, isHtml: true),
+              name: 'ВАРИАНТ МЕТАМАГИИ: ${option.name.toUpperCase()}',
+              description: option.descriptionHtml,
+              isHtml: true),
       ];
 
   @override

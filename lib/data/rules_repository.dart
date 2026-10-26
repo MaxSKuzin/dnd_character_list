@@ -67,7 +67,9 @@ class RulesRepository {
   /// Версия разбора классов в ключе кэша. Поднимите, если `TtgClassMapper` разбирает те же ответы иначе,
   /// а формат JSON не изменился: иначе до 30 дней используется старый разбор.
   /// 2 — оружие без ссылки («воинское оружие») стало выбором из категории.
-  static const _classCacheVersion = 2;
+  /// 3 — «колчан с 20 стрелами» разбирается на два предмета.
+  /// 4 — варианты умений архетипов (`SubclassFeature.options`).
+  static const _classCacheVersion = 4;
 
   /// Описание класса по ссылке, например `/classes/bard`, вместе с официальными подклассами.
   Future<ClassInfo> getClass(String link) => _classes[link] ??= _cache

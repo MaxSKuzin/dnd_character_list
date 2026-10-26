@@ -70,16 +70,32 @@ class TtgClassMapper {
       name: root?['name'] ?? TtgText.names(archetype?['name'] ?? json['name']).$1,
       source: (root?['source'] as Map?)?['name'] ?? (archetype?['source'] as Map?)?['name'],
       descriptionHtml: TtgText.html(root?['description']),
-      features: features
-          .where((e) => e['archetypeFeature'] == true && e['archetypeRoot'] != true)
-          .map((e) =>
-              SubclassFeature(name: e['name'], level: e['level'], descriptionHtml: TtgText.html(e['description'])))
-          .toList(),
+      features: features.where((e) => e['archetypeFeature'] == true && e['archetypeRoot'] != true).map((e) {
+        final html = TtgText.html(e['description']);
+        return SubclassFeature(name: e['name'], level: e['level'], descriptionHtml: html, options: _options(html));
+      }).toList(),
       spells: {
         for (final row in ((json['archetypeSpellTable'] as Map?)?['levels'] as List? ?? const []).cast<Map>())
           row['level'] as int: (row['spells'] as List).map((e) => TtgText.normalizeLink((e as Map)['url'])).toList(),
       },
     );
+  }
+
+  /// Варианты умения «…получаете одно из следующих умений на свой выбор:» — абзацы или пункты списка,
+  /// которые начинаются с выделенного названия: «<strong>Убийца колоссов.</strong> …».
+  List<FeatureOption> _options(String html) {
+    final nodes = html_parser.parseFragment(html).children;
+    final intro = nodes.firstOrNull;
+    if (intro == null || !RegExp(r'одн\S* из следующих умений').hasMatch(intro.text)) return const [];
+    return [
+      for (final element in nodes.skip(1).expand((e) => e.localName == 'ul' ? e.children : [e]))
+        if (element.nodes.firstWhereOrNull((e) => e is! Text || e.text.trim().isNotEmpty) case final Element title
+            when title.localName == 'strong')
+          FeatureOption(
+            name: TtgText.cleanText(title.text).replaceFirst(RegExp(r'\.$'), ''),
+            descriptionHtml: '<p>${element.innerHtml}</p>',
+          ),
+    ];
   }
 
   /// В ответе подкласса `url` указывает на класс, поэтому ссылка восстанавливается из вкладок
@@ -151,7 +167,10 @@ class TtgClassMapper {
         final html = part.replaceFirst(RegExp(r'(,|\s+или)\s*$'), '');
         return StartingEquipmentOption(
           text: TtgText.capitalize(TtgText.plainText(html)),
-          items: TtgText.splitTopLevel(html.replaceAll(RegExp(r'\s+и\s+'), ', ')).map(_parseEquipmentRef).toList(),
+          // «Колчан с 20 стрелами» — два предмета: колчан и 20 стрел.
+          items: TtgText.splitTopLevel(html.replaceAll(RegExp(r'\s+и\s+|\s+с\s+(?=\d)'), ', '))
+              .map(_parseEquipmentRef)
+              .toList(),
         );
       }).toList(),
     );

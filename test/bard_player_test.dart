@@ -6,6 +6,7 @@ import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
+import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
@@ -129,7 +130,8 @@ void main() {
           const AbilityScoreImprovement(level: 4, stats: {StatKind.charisma: 2}),
           AbilityScoreImprovement(
             level: 8,
-            feat: ChosenFeat(feat: _feat('resilient', statIncrease: StatKind.values), increasedStat: StatKind.constitution),
+            feat: ChosenFeat(
+                feat: _feat('resilient', statIncrease: StatKind.values), increasedStat: StatKind.constitution),
           ),
         ],
       ),
@@ -185,7 +187,9 @@ void main() {
         improvements: [
           AbilityScoreImprovement(
             level: 4,
-            feat: ChosenFeat(feat: _feat('athlete', statIncrease: const [StatKind.strength, StatKind.dexterity]), increasedStat: StatKind.dexterity),
+            feat: ChosenFeat(
+                feat: _feat('athlete', statIncrease: const [StatKind.strength, StatKind.dexterity]),
+                increasedStat: StatKind.dexterity),
           ),
         ],
       ),
@@ -219,5 +223,19 @@ void main() {
       replacement.applyTo([spell('heroism'), spell('charm_person'), spell('thunderwave')]).map((e) => e.link),
       ['/spells/heroism', '/spells/sleep', '/spells/thunderwave'],
     );
+  });
+
+  test('college of swords fighting style is shown in abilities', () {
+    final bard = Bard(
+      level: 3,
+      isMain: true,
+      knownSpells: const [],
+      features: const [Peculiarity(name: 'ВДОХНОВЕНИЕ БАРДА', description: '<p>Вдохновение.</p>', isHtml: true)],
+      inspirationDice: Dice.k6,
+      collegeId: Bard.swordsCollege,
+      fightingStyle: FightingStyle.dueling,
+    );
+
+    expect(bard.abilities.map((e) => e.name), ['БОЕВОЙ СТИЛЬ: ДУЭЛЯНТ', 'ВДОХНОВЕНИЕ БАРДА']);
   });
 }

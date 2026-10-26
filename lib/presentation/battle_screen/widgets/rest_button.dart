@@ -22,6 +22,8 @@ class RestButton extends StatelessWidget {
         ClassExtras.actionSurge => 'всплеск действий',
         ClassExtras.indomitable => 'упорство',
         ClassExtras.superiorityDice => 'кости превосходства',
+        ClassExtras.favoredFoe => 'предпочтительный противник',
+        ClassExtras.tireless => 'неутомимость',
         _ => null,
       };
 

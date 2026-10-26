@@ -13,6 +13,7 @@ import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/fighter.dart';
 import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
+import 'package:dnd_character_list/domain/models/classes/ranger.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/thief.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
@@ -49,6 +50,9 @@ class CreateCharacterCubit extends Cubit<Player?> {
   FightingStyle? fightingStyle;
   List<Maneuver> maneuvers = [];
 
+  /// Следопыт 1 уровня с выборами умений (избранный враг, известная местность, варианты «Котла Таши»).
+  Ranger? ranger;
+
   /// Заклинания подкласса: известны всегда и не учитываются в числе известных заклинаний.
   List<Spell> subclassSpells = [];
   Map<StatKind, int>? stats;
@@ -73,6 +77,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
     divineAffinity = null;
     fightingStyle = null;
     maneuvers = [];
+    ranger = null;
     subclassSpells = [];
   }
 
@@ -92,6 +97,8 @@ class CreateCharacterCubit extends Cubit<Player?> {
   }
 
   void setManeuvers(List<Maneuver> value) => maneuvers = [...value];
+
+  void setRanger(Ranger value) => ranger = value;
 
   Future<void> setDivineAffinity(DivineAffinity value) async {
     divineAffinity = value;
@@ -180,6 +187,7 @@ class CreateCharacterCubit extends Cubit<Player?> {
           fightingStyles: [fightingStyle!],
           maneuvers: maneuvers,
         ),
+      ClassKind.ranger => ranger!,
       ClassKind.monk => Monk(
           level: 1,
           isMain: true,

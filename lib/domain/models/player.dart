@@ -383,10 +383,7 @@ class Player {
 
   /// Ячейки заклинаний по таблице заклинателя (уровни без ячеек не включаются).
   Map<SpellSlot, int> get spellCells {
-    final magicLevel = classes.fold(
-      0,
-      (prev, e) => prev + (e.level * e.magicLevelMultiplier).toInt(),
-    );
+    final magicLevel = SpellSlot.casterLevel(classes.map((e) => MapEntry(e.magicLevelMultiplier, e.level)));
     if (magicLevel == 0) {
       return {};
     }

@@ -185,8 +185,9 @@ final class Bard extends Specialization {
     return bonuses;
   }
 
+  /// Боевой стиль коллегии мечей отмечается в умениях.
   @override
-  List<Peculiarity> get abilities => features;
+  List<Peculiarity> get abilities => withFightingStyles(features, [if (fightingStyle != null) fightingStyle!]);
 
   @override
   final List<ClassExtras> classExtras = const [ClassExtras.inspiration];

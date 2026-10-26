@@ -16,7 +16,12 @@ Set<String> _childrenOf(String flow) =>
 void main() {
   // Маршрут, которого нет среди дочерних маршрутов потока, падает при переходе: «Failed to navigate to …».
   test('create character steps open only routes of the create character flow', () {
-    final used = _routesUsedIn(['lib/presentation/create_character_flow/create_character_steps.dart']);
+    // Шаги следопыта 1 уровня открываются и при создании персонажа.
+    final used = _routesUsedIn([
+      'lib/presentation/create_character_flow/create_character_steps.dart',
+      'lib/presentation/level_up_flow/ranger_steps.dart',
+      'lib/presentation/level_up_flow/level_up_steps.dart',
+    ]);
 
     expect(used, isNotEmpty);
     expect(_childrenOf(CreateCharacterRoute.name), containsAll(used));

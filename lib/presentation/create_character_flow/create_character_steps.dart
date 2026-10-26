@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/class_option.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/classes/ranger.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/presentation/create_character_flow/screens/select_option_screen/select_option_screen.dart';
@@ -10,6 +11,7 @@ import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/stat.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
+import 'package:dnd_character_list/presentation/level_up_flow/ranger_steps.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,6 +32,7 @@ enum CreateCharacterStep {
   classSkills,
   raceSkills,
   expertise,
+  classFeatures,
   classTools,
   equipment,
   spells,
@@ -43,6 +46,11 @@ abstract final class CreateCharacterSteps {
   static void next(BuildContext context, CreateCharacterStep current) {
     final cubit = context.read<CreateCharacterCubit>();
     for (final step in CreateCharacterStep.values.skip(current.index + 1)) {
+      // Выборы умений следопыта — несколько экранов подряд.
+      if (step == CreateCharacterStep.classFeatures && cubit.classKind == ClassKind.ranger) {
+        _rangerFeatures(context, cubit);
+        return;
+      }
       final route = _route(context, cubit, step);
       if (route != null) {
         context.pushRoute(route);
@@ -79,6 +87,7 @@ abstract final class CreateCharacterSteps {
       case CreateCharacterStep.fightingStyle:
         if (classKind != ClassKind.warrior) return null;
         return SelectFightingStyleRoute(
+          styles: FightingStyle.fighterStyles,
           onStyleSelected: (style) {
             cubit.setFightingStyle(style);
             next();
@@ -187,6 +196,8 @@ abstract final class CreateCharacterSteps {
           cubit.knownSkills,
           next,
         );
+      case CreateCharacterStep.classFeatures:
+        return null;
       case CreateCharacterStep.classTools:
         final tools = classInfo?.tools ?? const <ToolProficiencyOption>[];
         if (!tools.any((e) => e.isChoice)) {
@@ -228,7 +239,10 @@ abstract final class CreateCharacterSteps {
               classKind == ClassKind.sorcerer ? Sorcerer.spellListsFor(cubit.subclass?.id).skip(1).toList() : null,
           description: [
             'Класс «${classInfo?.name ?? classKind.localizedName}»: '
-                '${[if (cantrips > 0) _count(cantrips, 'заговор', 'заговора', 'заговоров'), if (spells > 0) '${_count(spells, 'заклинание', 'заклинания', 'заклинаний')} 1 уровня'].join(' и ')}.',
+                '${[
+              if (cantrips > 0) _count(cantrips, 'заговор', 'заговора', 'заговоров'),
+              if (spells > 0) '${_count(spells, 'заклинание', 'заклинания', 'заклинаний')} 1 уровня'
+            ].join(' и ')}.',
             if (classKind == ClassKind.sorcerer && cubit.subclass?.id == Sorcerer.divineSoul)
               '«Божественная магия»: можно выбирать и из списка жреца.',
             if (granted.isNotEmpty)
@@ -249,6 +263,30 @@ abstract final class CreateCharacterSteps {
       case CreateCharacterStep.personality:
         return SetPersonalityRoute(tables: cubit.background!.tables);
     }
+  }
+
+  /// Выборы умений следопыта 1 уровня; назад с первого экрана — остаться на предыдущем шаге.
+  static Future<void> _rangerFeatures(BuildContext context, CreateCharacterCubit cubit) async {
+    final info = cubit.classInfo!;
+    final choices = await context.askRangerFirstLevel(
+      info,
+      skills: cubit.knownSkills,
+      languages: {...cubit.knownLanguages, ...cubit.languages}.toList(),
+    );
+    if (choices == null || !context.mounted) return;
+    cubit.setRanger(
+      Ranger(
+        level: 1,
+        isMain: true,
+        features: Ranger.featuresAt(info, 1, tceFeatures: choices.tceFeatures),
+        tceFeatures: choices.tceFeatures,
+        favoredEnemies: choices.favoredEnemies,
+        favoredTerrains: choices.favoredTerrains,
+        languages: choices.languages,
+        expertise: choices.expertise,
+      ),
+    );
+    next(context, CreateCharacterStep.classFeatures);
   }
 
   /// Выбор внутри подкласса: драконий предок, склонность «Божественной души».

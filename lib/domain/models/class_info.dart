@@ -277,21 +277,41 @@ class SubclassFeature {
   final int level;
   final String descriptionHtml;
 
+  /// Варианты, из которых выбирают один («Добыча охотника»: «Сокрушитель орд», «Убийца великанов»…);
+  /// пусто — выбора нет.
+  final List<FeatureOption> options;
+
   const SubclassFeature({
     required this.name,
     required this.level,
     required this.descriptionHtml,
+    this.options = const [],
   });
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'level': level,
         'descriptionHtml': descriptionHtml,
+        'options': options.map((e) => e.toJson()).toList(),
       };
 
   factory SubclassFeature.fromJson(Map<String, dynamic> json) => SubclassFeature(
         name: json['name'],
         level: json['level'],
         descriptionHtml: json['descriptionHtml'],
+        options: (json['options'] as List).map((e) => FeatureOption.fromJson(e)).toList(),
       );
+}
+
+/// Вариант умения: название и описание в html.
+class FeatureOption {
+  final String name;
+  final String descriptionHtml;
+
+  const FeatureOption({required this.name, required this.descriptionHtml});
+
+  Map<String, dynamic> toJson() => {'name': name, 'descriptionHtml': descriptionHtml};
+
+  factory FeatureOption.fromJson(Map<String, dynamic> json) =>
+      FeatureOption(name: json['name'], descriptionHtml: json['descriptionHtml']);
 }

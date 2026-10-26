@@ -8,7 +8,9 @@ enum ClassExtras {
   secondWind,
   actionSurge,
   indomitable,
-  superiorityDice;
+  superiorityDice,
+  favoredFoe,
+  tireless;
 
   String get name => switch (this) {
         ClassExtras.rage => 'Ярость',
@@ -21,5 +23,7 @@ enum ClassExtras {
         ClassExtras.actionSurge => 'Всплеск действий',
         ClassExtras.indomitable => 'Упорный',
         ClassExtras.superiorityDice => 'Кости превосходства',
+        ClassExtras.favoredFoe => 'Предпочтительный противник',
+        ClassExtras.tireless => 'Неутомимый',
       };
 }

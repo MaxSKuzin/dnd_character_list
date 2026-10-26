@@ -194,4 +194,33 @@ void main() {
     expect(restored.maneuvers, [riposte]);
     expect(restored.maneuvers.single.descriptionHtml, '<p>Реакцией атакуйте.</p>');
   });
+
+  test('fighting style features show the chosen style', () {
+    final info = TtgClassMapper().map(ttgFixture('class_fighter'), subclasses: [ttgFixture('class_fighter_champion')]);
+    final fighter = _fighter(styles: [FightingStyle.archery]).copyWith(features: Fighter.featuresAt(info, 1));
+
+    final style = fighter.abilities.first;
+    expect(style.name, 'БОЕВОЙ СТИЛЬ: СТРЕЛЬБА');
+    expect(style.description, startsWith('<p>${FightingStyle.archery.description}</p>'));
+    // Ниже — текст умения с сайта; отдельной особенности стиля нет.
+    expect(style.description, contains('Выберите один из следующих вариантов'));
+    expect(fighter.abilities.where((e) => e.name.startsWith('БОЕВОЙ СТИЛЬ')), hasLength(1));
+
+    // Второй стиль чемпиона — в «Дополнительном боевом стиле».
+    final champion = _fighter(
+      level: 10,
+      archetypeId: Fighter.champion,
+      styles: [FightingStyle.archery, FightingStyle.defence],
+    ).copyWith(
+      features: [
+        ...Fighter.featuresAt(info, 1),
+        ...Fighter.featuresAt(info, 10, archetypeId: Fighter.champion),
+      ],
+    );
+    expect(champion.abilities.map((e) => e.name),
+        containsAll(['БОЕВОЙ СТИЛЬ: СТРЕЛЬБА', 'ДОПОЛНИТЕЛЬНЫЙ БОЕВОЙ СТИЛЬ: ОБОРОНА']));
+
+    // Без умения с сайта стиль показывается отдельной особенностью.
+    expect(_fighter(styles: [FightingStyle.dueling]).abilities.single.name, 'БОЕВОЙ СТИЛЬ: ДУЭЛЯНТ');
+  });
 }

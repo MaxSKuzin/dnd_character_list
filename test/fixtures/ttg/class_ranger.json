@@ -1,0 +1,1213 @@
+{
+  "id": 7,
+  "name": {
+    "rus": "Следопыт",
+    "eng": "Ranger"
+  },
+  "url": "/classes/ranger",
+  "source": {
+    "shortName": "PHB",
+    "name": "Книга игрока",
+    "group": {
+      "name": "Официальные источники",
+      "shortName": "Basic"
+    }
+  },
+  "dice": "к10",
+  "archetypes": [
+    {
+      "name": {
+        "rus": "Охотник",
+        "eng": "Hunter"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "PHB",
+        "name": "Книга игрока",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/ranger/hunter"
+    },
+    {
+      "name": {
+        "rus": "Повелитель Зверей",
+        "eng": "Beast Master"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "PHB",
+        "name": "Книга игрока",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/ranger/beast_master"
+    },
+    {
+      "name": {
+        "rus": "Странник Горизонта",
+        "eng": "Horizon Walker"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "XGE",
+        "name": "Руководство Занатара обо всем",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/ranger/horizon_walker"
+    },
+    {
+      "name": {
+        "rus": "Сумрачный Охотник",
+        "eng": "Gloom Stalker"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "XGE",
+        "name": "Руководство Занатара обо всем",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/ranger/gloom_stalker"
+    },
+    {
+      "name": {
+        "rus": "Убийца Монстров",
+        "eng": "Monster Slayer"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "XGE",
+        "name": "Руководство Занатара обо всем",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/ranger/monster_slayer"
+    },
+    {
+      "name": {
+        "rus": "Повелитель Растений",
+        "eng": "Seedmaster"
+      },
+      "type": {
+        "name": "Homebrew",
+        "order": 5
+      },
+      "source": {
+        "shortName": "PG",
+        "name": "Путеводитель игрока: Прорастающий хаос",
+        "group": {
+          "name": "Хомбрю ",
+          "shortName": "HB"
+        },
+        "homebrew": true
+      },
+      "url": "/classes/ranger/seedmaster"
+    },
+    {
+      "name": {
+        "rus": "Странник Пустошей",
+        "eng": "Wasteland Wanderer"
+      },
+      "type": {
+        "name": "Homebrew",
+        "order": 5
+      },
+      "source": {
+        "shortName": "LPZAE",
+        "name": "Потерянные страницы Занатара обо всем",
+        "group": {
+          "name": "Хомбрю ",
+          "shortName": "HB"
+        },
+        "homebrew": true
+      },
+      "url": "/classes/ranger/wasteland_wanderer"
+    },
+    {
+      "name": {
+        "rus": "Городской Разведчик",
+        "eng": "Burghal Explorer"
+      },
+      "type": {
+        "name": "Homebrew",
+        "order": 5
+      },
+      "source": {
+        "shortName": "LPZAE",
+        "name": "Потерянные страницы Занатара обо всем",
+        "group": {
+          "name": "Хомбрю ",
+          "shortName": "HB"
+        },
+        "homebrew": true
+      },
+      "url": "/classes/ranger/burghal_explorer"
+    },
+    {
+      "name": {
+        "rus": "Фейский Странник",
+        "eng": "Fey Wanderer"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "TCE",
+        "name": "Котел Таши со всякой всячиной",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/ranger/fey_wanderer"
+    },
+    {
+      "name": {
+        "rus": "Роевод",
+        "eng": "Swarmkeeper"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "TCE",
+        "name": "Котел Таши со всякой всячиной",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/ranger/swarmkeeper"
+    },
+    {
+      "name": {
+        "rus": "Конклав Амазонок",
+        "eng": "Conclave of the Amazons"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "ODL",
+        "name": "Одиссея Повелителей драконов",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/ranger/conclave_of_the_amazons"
+    },
+    {
+      "name": {
+        "rus": "Дрейковод",
+        "eng": "Drakewarden"
+      },
+      "type": {
+        "name": "Базовые",
+        "order": 0
+      },
+      "source": {
+        "shortName": "FTD",
+        "name": "Сокровищница драконов Фицбана",
+        "group": {
+          "name": "Официальные источники",
+          "shortName": "Basic"
+        }
+      },
+      "url": "/classes/ranger/drakewarden"
+    },
+    {
+      "name": {
+        "rus": "Истребитель Вампиров",
+        "eng": "Vampire Slayer"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "MHH",
+        "name": "Мидгард Справочник героя",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/ranger/vampire_slayer"
+    },
+    {
+      "name": {
+        "rus": "Скаут Зобека",
+        "eng": "Zobecker Scout"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "MHH",
+        "name": "Мидгард Справочник героя",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/ranger/zobecker_scout"
+    },
+    {
+      "name": {
+        "rus": "Зелёный Жнец",
+        "eng": "Green Reaper"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "GHtPG",
+        "name": "Руководство игрока в Мрачной лощине",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/ranger/green_reaper"
+    },
+    {
+      "name": {
+        "rus": "Повелитель Паразитов",
+        "eng": "Vermin Lord"
+      },
+      "type": {
+        "name": "3rd party",
+        "order": 4
+      },
+      "source": {
+        "shortName": "GHtPG",
+        "name": "Руководство игрока в Мрачной лощине",
+        "group": {
+          "name": "Контент от третьих лиц",
+          "shortName": "3rd"
+        }
+      },
+      "url": "/classes/ranger/vermin_lord"
+    }
+  ],
+  "archetypeName": "Архетипы следопыта",
+  "tabs": [
+    {
+      "name": "Навыки",
+      "url": "/classes/fragment/ranger",
+      "type": "traits",
+      "order": 0,
+      "raw": true
+    },
+    {
+      "name": "Описание",
+      "url": "/classes/ranger/description",
+      "type": "description",
+      "order": 1,
+      "raw": true
+    },
+    {
+      "name": "Заклинания",
+      "url": "/filters/spells/ranger",
+      "type": "spells",
+      "order": 2,
+      "raw": false
+    },
+    {
+      "name": "Боевые стили",
+      "url": "/filters/options/ranger",
+      "type": "options",
+      "order": 3,
+      "raw": false
+    }
+  ],
+  "traits": {
+    "diceHp": 10,
+    "armor": "Лёгкие доспехи, средние доспехи, щиты",
+    "weapon": "Простое и воинское оружие",
+    "tools": "Нет",
+    "savingThrows": "Сила, Ловкость",
+    "skillAvailableCount": 3,
+    "availableSkills": [
+      "Анализ",
+      "Атлетика",
+      "Внимательность",
+      "Выживание",
+      "Природа",
+      "Проницательность",
+      "Скрытность",
+      "Уход за животными"
+    ],
+    "equipment": "<ul><li>а) <detail-tooltip type=\"armor\"> <a href=\"/armors/scale_mail_armor\">чешуйчатый доспех [scale mail armor]</a></detail-tooltip> или б) <detail-tooltip type=\"armor\"> <a href=\"/armors/leather_armor\">кожаный доспех [leather armor]</a></detail-tooltip></li><li>а) два <detail-tooltip type=\"weapon\"> <a href=\"/weapons/shortsword\">коротких меча [shortsword]</a></detail-tooltip> или б) два простых рукопашных оружия</li><li>а) <detail-tooltip type=\"item\"> <a href=\"/items/dungeoneer's_pack\">набор исследователя подземелий [dungeoneer's pack]</a></detail-tooltip> или б) <detail-tooltip type=\"item\"> <a href=\"/items/explorer's_pack\">набор путешественника [explorer's pack]</a></detail-tooltip></li><li><detail-tooltip type=\"weapon\"> <a href=\"/weapons/Longbow\">длинный лук [longbow]</a></detail-tooltip> и <detail-tooltip type=\"item\"><a href=\"/items/quiver\">колчан [quiver]</a></detail-tooltip> с 20 <detail-tooltip type=\"item\"><a href=\"/items/arrows\">стрелами [arrows]</a></detail-tooltip></li></ul><p>В качестве альтернативы базовому снаряжению класса и предыстории, вы можете получить <dice-roller formula=\"5к4 * 10\">5к4 &times; 10</dice-roller>&nbsp;зм. монеты и приобрести себе снаряжение самостоятельно.</p>",
+    "classFeatureLevels": [
+      {
+        "name": "Известные заклинания",
+        "prefix": null,
+        "suffix": null
+      }
+    ],
+    "archetypeFeatureLevels": [],
+    "levels": [
+      {
+        "level": 1,
+        "proficiencyBonus": 2,
+        "traits": [
+          {
+            "name": "избранный враг",
+            "anchor": "#c51",
+            "tooltipUrl": "/classes/feature/51",
+            "archetypeFeature": false
+          },
+          {
+            "name": "исследователь природы",
+            "anchor": "#c52",
+            "tooltipUrl": "/classes/feature/52",
+            "archetypeFeature": false
+          },
+          {
+            "name": "предпочтительный противник",
+            "anchor": "#c322",
+            "tooltipUrl": "/classes/feature/322",
+            "archetypeFeature": false
+          },
+          {
+            "name": "искусный исследователь",
+            "anchor": "#c323",
+            "tooltipUrl": "/classes/feature/323",
+            "archetypeFeature": false
+          },
+          {
+            "name": "хитрец",
+            "anchor": "#c329",
+            "tooltipUrl": "/classes/feature/329",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "—"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "—",
+          "—",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 2,
+        "proficiencyBonus": 2,
+        "traits": [
+          {
+            "name": "боевой стиль",
+            "anchor": "#c53",
+            "tooltipUrl": "/classes/feature/53",
+            "archetypeFeature": false
+          },
+          {
+            "name": "использование заклинаний",
+            "anchor": "#c54",
+            "tooltipUrl": "/classes/feature/54",
+            "archetypeFeature": false
+          },
+          {
+            "name": "фокусировка заклинания",
+            "anchor": "#c333",
+            "tooltipUrl": "/classes/feature/333",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "2"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "2",
+          "—",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 3,
+        "proficiencyBonus": 2,
+        "traits": [
+          {
+            "name": "первозданная осведомлённость",
+            "anchor": "#c56",
+            "tooltipUrl": "/classes/feature/56",
+            "archetypeFeature": false
+          },
+          {
+            "name": "изначальное чутье",
+            "anchor": "#c324",
+            "tooltipUrl": "/classes/feature/324",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "3"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "3",
+          "—",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 4,
+        "proficiencyBonus": 2,
+        "traits": [
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c57",
+            "tooltipUrl": "/classes/feature/57",
+            "archetypeFeature": false
+          },
+          {
+            "name": "универсальность воина",
+            "anchor": "#c325",
+            "tooltipUrl": "/classes/feature/325",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "3"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "3",
+          "—",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 5,
+        "proficiencyBonus": 3,
+        "traits": [
+          {
+            "name": "дополнительная атака",
+            "anchor": "#c58",
+            "tooltipUrl": "/classes/feature/58",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "4"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "2",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 6,
+        "proficiencyBonus": 3,
+        "traits": [
+          {
+            "name": "улучшение избранного врага",
+            "anchor": "#c51",
+            "tooltipUrl": "/classes/feature/186",
+            "archetypeFeature": false
+          },
+          {
+            "name": "улучшение исследователя природы",
+            "anchor": "#c52",
+            "tooltipUrl": "/classes/feature/188",
+            "archetypeFeature": false
+          },
+          {
+            "name": "бродяга",
+            "anchor": "#c330",
+            "tooltipUrl": "/classes/feature/330",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "4"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "2",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 7,
+        "proficiencyBonus": 3,
+        "traits": [],
+        "classFeatureValues": [
+          "5"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 8,
+        "proficiencyBonus": 3,
+        "traits": [
+          {
+            "name": "тропами земли",
+            "anchor": "#c59",
+            "tooltipUrl": "/classes/feature/59",
+            "archetypeFeature": false
+          },
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c57",
+            "tooltipUrl": "/classes/feature/193",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "5"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "—",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 9,
+        "proficiencyBonus": 4,
+        "traits": [],
+        "classFeatureValues": [
+          "6"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "2",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 10,
+        "proficiencyBonus": 4,
+        "traits": [
+          {
+            "name": "маскировка на виду",
+            "anchor": "#c60",
+            "tooltipUrl": "/classes/feature/60",
+            "archetypeFeature": false
+          },
+          {
+            "name": "улучшение исследователя природы",
+            "anchor": "#c52",
+            "tooltipUrl": "/classes/feature/189",
+            "archetypeFeature": false
+          },
+          {
+            "name": "природная завеса",
+            "anchor": "#c328",
+            "tooltipUrl": "/classes/feature/328",
+            "archetypeFeature": false
+          },
+          {
+            "name": "неутомимый",
+            "anchor": "#c332",
+            "tooltipUrl": "/classes/feature/332",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "6"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "2",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 11,
+        "proficiencyBonus": 4,
+        "traits": [],
+        "classFeatureValues": [
+          "7"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 12,
+        "proficiencyBonus": 4,
+        "traits": [
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c57",
+            "tooltipUrl": "/classes/feature/194",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "7"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "—",
+          "—"
+        ]
+      },
+      {
+        "level": 13,
+        "proficiencyBonus": 5,
+        "traits": [],
+        "classFeatureValues": [
+          "8"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "1",
+          "—"
+        ]
+      },
+      {
+        "level": 14,
+        "proficiencyBonus": 5,
+        "traits": [
+          {
+            "name": "исчезновение",
+            "anchor": "#c61",
+            "tooltipUrl": "/classes/feature/61",
+            "archetypeFeature": false
+          },
+          {
+            "name": "улучшение избранного врага",
+            "anchor": "#c51",
+            "tooltipUrl": "/classes/feature/187",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "8"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "1",
+          "—"
+        ]
+      },
+      {
+        "level": 15,
+        "proficiencyBonus": 5,
+        "traits": [],
+        "classFeatureValues": [
+          "9"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "2",
+          "—"
+        ]
+      },
+      {
+        "level": 16,
+        "proficiencyBonus": 5,
+        "traits": [
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c57",
+            "tooltipUrl": "/classes/feature/195",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "9"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "2",
+          "—"
+        ]
+      },
+      {
+        "level": 17,
+        "proficiencyBonus": 6,
+        "traits": [],
+        "classFeatureValues": [
+          "10"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "3",
+          "1"
+        ]
+      },
+      {
+        "level": 18,
+        "proficiencyBonus": 6,
+        "traits": [
+          {
+            "name": "дикие чувства",
+            "anchor": "#c62",
+            "tooltipUrl": "/classes/feature/62",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "10"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "3",
+          "1"
+        ]
+      },
+      {
+        "level": 19,
+        "proficiencyBonus": 6,
+        "traits": [
+          {
+            "name": "увеличение характеристик",
+            "anchor": "#c57",
+            "tooltipUrl": "/classes/feature/196",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "11"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "3",
+          "2"
+        ]
+      },
+      {
+        "level": 20,
+        "proficiencyBonus": 6,
+        "traits": [
+          {
+            "name": "убийца врагов",
+            "anchor": "#c63",
+            "tooltipUrl": "/classes/feature/63",
+            "archetypeFeature": false
+          }
+        ],
+        "classFeatureValues": [
+          "11"
+        ],
+        "archetypeFeatureValues": [],
+        "spellSlots": [
+          "4",
+          "3",
+          "3",
+          "3",
+          "2"
+        ]
+      }
+    ],
+    "features": [
+      {
+        "id": "c51",
+        "name": "Избранный враг",
+        "level": 1,
+        "type": "1-й уровень",
+        "description": "<p>Начиная с 1 уровня у вас есть значительный опыт изучения, отслеживания, охоты и даже общения с определённым видом врагов.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c52",
+        "name": "Исследователь природы",
+        "level": 1,
+        "type": "1-й уровень",
+        "description": "<p>Вы очень хорошо знакомы с одним видом природной среды и имеете большой опыт путешествий и выживания в регионах с таким климатом. Выберите один вид известной местности: арктика, болота, горы, леса, луга, побережье, подземье или пустыня. Когда вы совершаете проверку <strong>Интеллекта</strong> или <strong>Мудрости</strong>, связанную с известной вам местностью, ваш бонус мастерства удваивается, если вы используете навык, которым владеете.&nbsp;</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c322",
+        "name": "Предпочтительный противник",
+        "level": 1,
+        "type": "1-й уровень",
+        "description": "<p><em>умение, заменяет умение <a href=\"#c51\">Избранного врага</a></em><em>&nbsp;и работает вместе с Убийцей врагов.</em></p><p>Когда вы попадаете атакой по существу, вы можете призвать силы природы, чтобы отметить существо и сделать его вашим заклятым противником на 1 минуту или до тех пор, не потеряете концентрацию (как если бы вы концентрировались на заклинании).</p><p>Впервые в каждый свой ход, когда вы попадаете атакой по предпочтительному противнику и наносите ему урон, в том числе и когда вы отмечаете его, вы можете дополнительно нанести <dice-roller formula=\"1к4\">1к4</dice-roller> урона того же типа.</p><p>Вы можете использовать это умение для отметки предпочтительного врага количество раз, равное вашему <em>бонусу мастерства</em>. Вы восстанавливаете все потраченные использования после <detail-tooltip type=\"screen\"><a href=\"/screens/long_rest\">долгого отдыха</a></detail-tooltip>.</p><p>Дополнительный урон этого умения увеличивается, когда вы достигаете определенных уровней в этом классе: на 6-м уровне до <dice-roller formula=\"1к6\">1к6</dice-roller>, на 14-м уровне до <dice-roller formula=\"1к8\">1к8</dice-roller>.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c323",
+        "name": "Искусный исследователь",
+        "level": 1,
+        "type": "1-й уровень",
+        "description": "<p><em>умение которое заменяет умение </em><a href=\"#c52\">Исследователь природы</a></p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c329",
+        "name": "Хитрец",
+        "level": 1,
+        "type": "1-й уровень",
+        "description": "<p>Выберите один из навыков которым вы владеете. Ваш бонус мастерства удваивается для всех проверок характеристики, которые вы совершаете, используя выбранный навык.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c53",
+        "name": "Боевой стиль",
+        "level": 2,
+        "type": "2-й уровень",
+        "description": "<p>На 2 уровне вы выбираете стиль сражения, соответствующий вашей специализации. Выберите один из следующих вариантов. Вы не можете выбирать один и тот же вариант боевого стиля, даже если позже у вас будет возможность выбрать ещё один стиль.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c54",
+        "name": "Использование заклинаний",
+        "level": 2,
+        "type": "2-й уровень",
+        "description": "<p>Получив 2 уровень, вы обучаетесь использованию волшебной сущности природы для сотворения заклинаний подобно друиду. Общие правила по использованию заклинаний смотрите в главе 10, а в&nbsp;главе 11 вы найдёте список заклинаний, доступных следопыту.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c333",
+        "name": "Фокусировка заклинания",
+        "level": 2,
+        "type": "2-й уровень",
+        "description": "<p>Вы можете использовать друидическую фокусировку в качестве магической фокусировки для своих заклинаний следопыта. Друидической фокусировкой может быть веточка омелы или остролиста, палочка или жезл из тиса или другого особого дерева, посох, целиком сделанный из живого дерева, или предмет, состоящий из перьев, меха, костей и зубов&nbsp;священных животных.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c56",
+        "name": "Первозданная осведомлённость",
+        "level": 3,
+        "type": "3-й уровень",
+        "description": "<p>Начиная с 3 уровня вы можете <em>Действием</em> потратить одну ячейку заклинаний следопыта, чтобы сосредоточиться на познании пространства вокруг себя. В течение 1 минуты за каждый уровень использованной ячейки заклинаний вы можете ощутить присутствие следующих видов существ в пределах 1 мили (или в пределах 6 миль, если вы находитесь в избранной местности): аберрации, драконы, исчадия, небожители, нежить, феи и элементали.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c324",
+        "name": "Изначальное чутье",
+        "level": 3,
+        "type": "3-й уровень",
+        "description": "<p><em>умение, которое заменяет умение <a href=\"#c56\">Первозданную Осведомлённость</a>.</em></p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c57",
+        "name": "Увеличение характеристик",
+        "level": 4,
+        "type": "4-й уровень",
+        "description": "<p>При достижении 4, 8, 12, 16 и 19 уровней вы можете повысить значение одной из ваших характеристик на 2 или двух характеристик на 1 или выбрать <a href=\"/feats\">черту</a>. Как обычно, значение характеристики при этом не должно превысить 20.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c325",
+        "name": "Универсальность воина",
+        "level": 4,
+        "type": "4-й уровень",
+        "description": "<p>Каждый раз, когда вы достигаете определённого уровня в этом классе, и вам предоставляется &laquo;Увеличение Характеристик&raquo;, вы можете заменить известный вам Боевой стиль на другой, доступный Следопыту. Эта замена представляет собой изменение направленности вашей боевой практики.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c58",
+        "name": "Дополнительная атака",
+        "level": 5,
+        "type": "5-й уровень",
+        "description": "<p>Начиная с 5 уровня, если вы в свой ход совершаете действие <em>Атака</em>, вы можете совершить две&nbsp;атаки вместо одной.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c330",
+        "name": "Бродяга",
+        "level": 6,
+        "type": "6-й уровень",
+        "description": "<p>Ваша скорость передвижения увеличивается на 5 футов, а также вы получаете скорость лазания и плавания, равную вашей скорости передвижения.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c59",
+        "name": "Тропами земли",
+        "level": 8,
+        "type": "8-й уровень",
+        "description": "<p>Начиная с 8 уровня перемещение по немагической <detail-tooltip type=\"screen\"><a href=\"/screens/difficult_terrain_move\">труднопроходимой местности</a></detail-tooltip> не стоит вам&nbsp; никакого дополнительного перемещения. Вы также можете проходить через немагические растения без замедления и не получать от них урона, даже если у них есть шипы, колючки или аналогичная опасность.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c60",
+        "name": "Маскировка на виду",
+        "level": 10,
+        "type": "10-й уровень",
+        "description": "<p>Начиная с 10 уровня, вы можете потратить 1 минуту для создания персонального камуфляжа. У вас должен быть доступ к свежим илу, грязи, растениям, саже и другим природным материалам, с помощью которых будет создаваться камуфляж. После того как вы замаскировались подобным образом, вы можете попытаться спрятаться, прижавшись к твёрдой поверхности, такой как дерево или стена, не уступающей вам по высоте и ширине.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c328",
+        "name": "Природная завеса",
+        "level": 10,
+        "type": "10-й уровень",
+        "description": "<p><em>умение, которое заменяет </em><a href=\"#c60\">Маскировку на виду</a></p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c332",
+        "name": "Неутомимый",
+        "level": 10,
+        "type": "10-й уровень",
+        "description": "<p><em>Действием</em>, вы можете дать себе количество временных хитов, равное <dice-roller formula=\"1к8\">1к8</dice-roller> + модификатор <strong>Мудрости</strong> (минимум 1 хит). Вы можете использовать это умение количество раз, равное вашему <em>бонусу мастерства</em>. Вы восстанавливаете все потраченные использования после окончания <detail-tooltip type=\"screen\"><a href=\"/screens/long_rest\">продолжительного отдыха</a></detail-tooltip>.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": true,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c61",
+        "name": "Исчезновение",
+        "level": 14,
+        "type": "14-й уровень",
+        "description": "<p>Начиная с 14 уровня вы можете использовать в свой ход действие <detail-tooltip type=\"screen\"><a href=\"/screens/hide\">Засада</a></detail-tooltip> <em>бонусным действием</em>.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c62",
+        "name": "Дикие чувства",
+        "level": 18,
+        "type": "18-й уровень",
+        "description": "<p>На 18 уровне вы получаете сверхъестественные&nbsp;чувства, которые помогут вам сражаться с существами, которых вы не можете увидеть. Когда вы атакуете существо, которое не видите, ваша неспособность видеть не накладывает <span class=\"disadvantage\">помеху</span> на броски атаки по нему.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      },
+      {
+        "id": "c63",
+        "name": "Убийца врагов",
+        "level": 20,
+        "type": "20-й уровень",
+        "description": "<p>На 20 уровне вы становитесь беспрецедентным охотником на своих врагов. Один раз в каждом своём ходу вы можете добавить модификатор&nbsp;<strong>Мудрости</strong> к броску атаки или урона по существу&nbsp;из списка ваших избранных врагов. Вы можете использовать это умение до или после броска, но до того, как эффекты броска вступят в силу.</p>",
+        "source": {
+          "name": "Книга игрока",
+          "shortName": "PHB"
+        },
+        "optional": false,
+        "archetypeFeature": false,
+        "archetypeRoot": false
+      }
+    ],
+    "archetype": null
+  },
+  "description": "<p><strong>Быстрое создание. </strong>Вы можете быстро создать следопыта, следуя&nbsp;этим рекомендациям.</p><p>Во-первых, у вашей <strong>Ловкости</strong> должно быть наивысшее значение. Следующим по величине должно быть значение <strong>Мудрости</strong>. Следопыты, концентрирующиеся на сражении с двумя оружиями, делают наивысшей характеристикой <strong>Силу</strong>, а не <strong>Ловкость</strong>.</p><p>Во-вторых, выберите предысторию <a href=\"/backgrounds/outlander\">Чужеземец [outlander]</a>.</p><div class=\"table-responsive\"><table><thead><tr><th>к6</th><th style=\"text-align: left;\">Я стал следопытом, потому что...</th></tr></thead><tbody><tr><td style=\"text-align: center;\">1</td><td>Я обрёл цель, пока оттачивал свои охотничьи навыки, уничтожая опасных животных на краю цивилизации.</td></tr><tr><td style=\"text-align: center;\">2</td><td>У меня всегда был особы подход к животным &ndash; я могу успокоить их словом или прикосновением.</td></tr><tr><td style=\"text-align: center;\">3</td><td>Я страдал от страшной тяги к путешествиям, а образ жизни следопыта давал мне причину не задерживаться на одном месте слишком долго.</td></tr><tr><td style=\"text-align: center;\">4</td><td>Я уже видел, что происходит, когда монстры выходят из темноты. Я взял на себя обязательно стать первым рубежом защиты от зла, находящегося за пределами цивилизации.</td></tr><tr><td style=\"text-align: center;\">5</td><td>Я встретил седого следопыта, который обучил меня выживать в лесу и рассказал много секретов диких земель.</td></tr><tr><td style=\"text-align: center;\">6</td><td>Я служил в армии, изучая принципы моей профессии во время прокладывания троп и поиска вражеских лагерей.</td></tr></tbody></table></div>",
+  "accusativeName": "следопыта",
+  "spellAbility": "WISDOM",
+  "spellcasterType": "HALF",
+  "primaryAbilities": [
+    "DEXTERITY",
+    "WISDOM"
+  ],
+  "availableSkillsRaw": [
+    "INVESTIGATION",
+    "ATHLETICS",
+    "PERCEPTION",
+    "SURVIVAL",
+    "NATURE",
+    "INSIGHT",
+    "STEALTH",
+    "ANIMAL_HANDLING"
+  ],
+  "optionType": "FIGHTING_STYLE_RANGER",
+  "slotsReset": "LONG",
+  "enabledArhitypeLevel": 3,
+  "page": 90
+}

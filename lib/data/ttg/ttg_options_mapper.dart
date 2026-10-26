@@ -11,5 +11,6 @@ class TtgOptionsMapper {
         name: TtgText.names(json['name']).$1,
         source: (json['source'] as Map?)?['name'],
         descriptionHtml: TtgText.html(json['description']),
+        level: json['level'],
       );
 }

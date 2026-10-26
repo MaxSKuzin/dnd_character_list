@@ -5,9 +5,11 @@ import 'package:dnd_character_list/domain/models/classes/fighter.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart';
 import 'package:dnd_character_list/presentation/create_character_flow/screens/select_option_screen/select_option_screen.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 import 'package:dnd_character_list/presentation/level_up_flow/level_up_steps.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/widgets.dart';
@@ -33,7 +35,7 @@ class FighterLevelUp {
 
   Future<FightingStyle?> _askStyle(List<FightingStyle> known) => context.ask<FightingStyle>(
         (done) => SelectFightingStyleRoute(
-          styles: FightingStyle.values.where((e) => !known.contains(e)).toList(),
+          styles: FightingStyle.fighterStyles.where((e) => !known.contains(e)).toList(),
           onStyleSelected: done,
         ),
       );
@@ -111,6 +113,41 @@ class FighterLevelUp {
         );
         if (selected == null) return false;
         tools.addAll(selected);
+      }
+    }
+
+    // Навык или язык кавалериста и самурая, «Посланник короны» рыцаря Пурпурного Дракона.
+    final archetypeSkills = [...?fighter?.archetypeSkills];
+    final archetypeLanguages = [...?fighter?.archetypeLanguages];
+    if (Fighter.bonusProficiencyLevels[archetypeId] == level) {
+      final known = player.chosenSkills;
+      final skills = Fighter.bonusSkills[archetypeId]!.where((e) => !known.contains(e)).toList();
+      if (archetypeId == Fighter.purpleDragon && !known.contains(Skill.persuasion)) {
+        archetypeSkills.add(Skill.persuasion);
+      } else {
+        final canLearnLanguage = archetypeId != Fighter.purpleDragon;
+        final index = await context.ask<int>(
+          (done) => SelectOptionRoute(
+            title: archetypeId == Fighter.purpleDragon ? 'Посланник короны' : 'Дополнительные навыки',
+            description: archetypeId == Fighter.purpleDragon
+                ? 'Убеждением вы уже владеете: выберите другой навык.'
+                : 'Владение одним из навыков или один язык на выбор.',
+            options: [
+              for (final skill in skills) SelectOption(title: skill.localizedName),
+              if (canLearnLanguage) const SelectOption(title: 'Язык на выбор'),
+            ],
+            onSelected: done,
+          ),
+        );
+        if (index == null) return false;
+        if (index < skills.length) {
+          archetypeSkills.add(skills[index]);
+        } else {
+          if (!context.mounted) return false;
+          final language = await context.askLanguages(1, player.knownLanguages, 'Один язык на выбор.');
+          if (language == null) return false;
+          archetypeLanguages.addAll(language);
+        }
       }
     }
 
@@ -212,6 +249,9 @@ class FighterLevelUp {
         archetypeName: archetypeName,
         improvements: improvements,
         maneuvers: maneuvers,
+        archetypeTools: [...?fighter?.archetypeTools, ...tools],
+        archetypeSkills: archetypeSkills,
+        archetypeLanguages: archetypeLanguages,
         actionSurgeUses: Fighter.usesAt(info, Fighter.actionSurgeFeature, level),
         indomitableUses: Fighter.usesAt(info, Fighter.indomitableFeature, level),
       ),

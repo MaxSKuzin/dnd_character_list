@@ -7,11 +7,15 @@ class ClassOption {
   final String? source;
   final String descriptionHtml;
 
+  /// Минимальный уровень класса, например 11 у практики «Пламя феникса»; `null` — без требования.
+  final int? level;
+
   const ClassOption({
     required this.link,
     required this.name,
     required this.source,
     required this.descriptionHtml,
+    this.level,
   });
 
   @override
@@ -25,6 +29,7 @@ class ClassOption {
         'name': name,
         'source': source,
         'descriptionHtml': descriptionHtml,
+        'level': level,
       };
 
   factory ClassOption.fromJson(Map<String, dynamic> json) => ClassOption(
@@ -32,6 +37,7 @@ class ClassOption {
         name: json['name'],
         source: json['source'],
         descriptionHtml: json['descriptionHtml'],
+        level: json['level'],
       );
 }
 
@@ -39,10 +45,13 @@ typedef Metamagic = ClassOption;
 
 typedef Maneuver = ClassOption;
 
+typedef ElementalDiscipline = ClassOption;
+
 /// Вид особенностей класса: значение фильтра `classOption` в `POST /options`.
 enum ClassOptionKind {
   metamagic('METAMAGIC', 'Метамагия'),
-  maneuver('MANEUVER', 'Приёмы');
+  maneuver('MANEUVER', 'Приёмы'),
+  elementalDiscipline('ELEMENTAL_DISCIPLINE', 'Стихийные практики');
 
   const ClassOptionKind(this.ttgFilter, this.title);
 

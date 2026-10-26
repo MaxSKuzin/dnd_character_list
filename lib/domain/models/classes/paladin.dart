@@ -44,7 +44,7 @@ final class Paladin extends Specialization {
         ...baseAbilities,
         if (fightingStyle != null)
           Peculiarity(
-            name: 'БОЕВОЙ СТИЛЬ',
+            name: 'БОЕВОЙ СТИЛЬ: ${fightingStyle!.title.toUpperCase()}',
             description: fightingStyle!.description,
           ),
       ];

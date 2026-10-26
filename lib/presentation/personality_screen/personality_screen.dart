@@ -4,6 +4,7 @@ import 'package:dnd_character_list/presentation/common/widgets/html_content.dart
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
+import 'package:dnd_character_list/presentation/extensions/feature_choices.dart';
 import 'package:dnd_character_list/presentation/personality_screen/widgets/peculiarity_widget.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,8 @@ class _PersonalityScreenState extends State<PersonalityScreen> {
   Widget build(BuildContext context) {
     final player = PlayerModel.watch(context);
     final languages = player.knownLanguages;
-    final abilities = player.abilities;
+    // В умениях с выбором он виден в названии: «ИЗБРАННЫЙ ВРАГ: НЕЖИТЬ».
+    final abilities = player.abilitiesWithChoices;
     final personality = player.personality;
     final proficiencies = {
       if (player.armorProficiencies.isNotEmpty)
