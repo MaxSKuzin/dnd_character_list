@@ -12,6 +12,7 @@ class SpSource {
   Stream<List<Player>> get playersStream => _playersSubject;
 
   static const _playersKey = 'players';
+  static const _spellsGridKey = 'spellsGrid';
 
   final SharedPreferences _sharedPreferences;
 
@@ -58,6 +59,11 @@ class SpSource {
 
     return rawPlayers.map((e) => Player.fromJson(jsonDecode(e))).toList();
   }
+
+  /// Заклинания показываются сеткой, а не списком. Настройка устройства, общая для всех персонажей.
+  bool get isSpellsGrid => _sharedPreferences.getBool(_spellsGridKey) ?? false;
+
+  Future<void> setSpellsGrid(bool value) => _sharedPreferences.setBool(_spellsGridKey, value);
 
   Future<void> removePlayer(Player player) async {
     final rawSavedPlayers = _sharedPreferences.getStringList(_playersKey) ?? [];
