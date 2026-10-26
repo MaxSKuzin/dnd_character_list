@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
@@ -8,9 +9,11 @@ import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/paladin.dart';
 import 'package:dnd_character_list/domain/models/classes/thief.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
+import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
@@ -77,6 +80,20 @@ abstract class Specialization {
   ClassKind get classKind;
 
   bool get canUseTwoWeapons => false;
+
+  List<ArmorProficiency> get armorProficiencies => [];
+
+  /// Черты, взятые вместо увеличения характеристик.
+  List<ChosenFeat> get feats => [];
+
+  /// Навыки с удвоенным бонусом мастерства.
+  List<Skill> get expertise => [];
+
+  /// Навыки, которыми класс наделяет помимо выбранных при создании (например, у коллегии знаний).
+  List<Skill> get grantedSkills => [];
+
+  /// «Мастер на все руки»: половина бонуса мастерства к проверкам без владения.
+  bool get hasJackOfAllTrades => false;
 
   @override
   bool operator ==(Object other) {

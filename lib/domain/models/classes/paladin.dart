@@ -1,3 +1,4 @@
+import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
@@ -12,6 +13,9 @@ import 'package:dnd_character_list/domain/models/stat_kind.dart';
 final class Paladin extends Specialization {
   @override
   ClassKind get classKind => ClassKind.paladin;
+
+  @override
+  List<ArmorProficiency> get armorProficiencies => const [ArmorProficiency.light, ArmorProficiency.medium, ArmorProficiency.heavy, ArmorProficiency.shields];
 
   @override
   final Map<StatKind, int> statBonuses;

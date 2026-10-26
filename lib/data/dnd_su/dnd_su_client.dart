@@ -47,6 +47,38 @@ class DndSuClient {
     return utf8.decode(response.bodyBytes);
   }
 
+  /// Загружает и разбирает страницу. Сайт периодически отвечает страницей без основного
+  /// содержимого, поэтому при ошибке загрузки или разбора пробуем ещё несколько раз.
+  Future<T> getParsed<T>(String path, T Function(String body) parse, {int attempts = 3}) async {
+    for (var attempt = 1;; attempt++) {
+      try {
+        return parse(await get(path));
+      } on DndSuException {
+        if (attempt == attempts) rethrow;
+        await Future.delayed(Duration(milliseconds: 500 * attempt));
+      }
+    }
+  }
+
+  /// Выполняет [load] для всех элементов, не больше [concurrency] запросов одновременно.
+  static Future<List<R>> mapConcurrently<T, R>(
+    List<T> items,
+    Future<R> Function(T item) load, {
+    int concurrency = 4,
+  }) async {
+    final results = List<R?>.filled(items.length, null);
+    var next = 0;
+    Future<void> worker() async {
+      while (next < items.length) {
+        final index = next++;
+        results[index] = await load(items[index]);
+      }
+    }
+
+    await Future.wait(List.generate(concurrency, (_) => worker()));
+    return results.cast<R>();
+  }
+
   @disposeMethod
   void dispose() => _client.close();
 }

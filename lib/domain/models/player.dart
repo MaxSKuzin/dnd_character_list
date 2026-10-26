@@ -2,11 +2,13 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
+import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
+import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
@@ -50,6 +52,9 @@ class Player {
   final Personality personality;
   final List<Language> _additionalLanguages;
   final Map<SpellSlot, Spell> raceSpells;
+
+  /// Инструменты, которыми владеет персонаж, например «Лютня» или «Набор для грима».
+  final List<String> toolProficiencies;
   bool isDead;
 
   final List<Skill> _rawchosenSkills;
@@ -81,6 +86,7 @@ class Player {
     required this.inventory,
     required this.background,
     required this.raceSpells,
+    this.toolProficiencies = const [],
     Map<ClassExtras, int>? classExtras,
     DeathThrows? deathThrows,
     int? hits,
@@ -100,10 +106,12 @@ class Player {
               death: 0,
               life: 0,
             ) {
-    this.chosenSkills = [
+    this.chosenSkills = {
       ..._rawchosenSkills,
       ...background.skills,
-    ];
+      ...classes.expand((e) => e.grantedSkills),
+      ...feats.expand((e) => e.skills),
+    }.toList();
     this.strength = Stat(
       value: strength +
           (race.statBonuses[StatKind.strength] ?? 0) +
@@ -185,7 +193,9 @@ class Player {
         StatKind.charisma: charisma,
       };
 
-  int get maxHits => classes.fold(0, (previous, spec) => previous + spec.hitPoints(this));
+  int get maxHits =>
+      classes.fold(0, (previous, spec) => previous + spec.hitPoints(this)) +
+      feats.fold(0, (previous, e) => previous + e.feat.hitPointsPerLevel * level);
 
   Player takeDamage(int value) {
     bool isDead = currentHits - value <= -maxHits;
@@ -249,6 +259,49 @@ class Player {
 
   int get proficiencyBonus => (level - 1) ~/ 4 + 2;
 
+  List<ChosenFeat> get feats => classes.expand((e) => e.feats).toList();
+
+  /// Навыки с удвоенным бонусом мастерства («Компетентность»).
+  /// Навыки, выбранные при создании и повышении уровня, без навыков предыстории и классовых.
+  List<Skill> get rawChosenSkills => _rawchosenSkills;
+
+  /// Плут пока отмечает компетентность повтором навыка: дважды выбранный навык
+  /// или выбранный повторно навык предыстории.
+  List<Skill> get expertiseSkills {
+    final owned = [..._rawchosenSkills, ...background.skills];
+    return {
+      ...classes.expand((e) => e.expertise),
+      ...owned.where((skill) => owned.where((e) => e == skill).length > 1),
+    }.toList();
+  }
+
+  /// Бонус к проверкам характеристик без владения: половина бонуса мастерства у «Мастера на все руки».
+  int get unskilledCheckBonus => classes.any((e) => e.hasJackOfAllTrades) ? proficiencyBonus ~/ 2 : 0;
+
+  /// Инициатива — проверка Ловкости, поэтому к ней применяется и «Мастер на все руки».
+  int get initiative =>
+      dexterity.bonus + unskilledCheckBonus + feats.fold(0, (previous, e) => previous + e.feat.initiativeBonus);
+
+  int get speed => 30 + feats.fold(0, (previous, e) => previous + e.feat.speedBonus);
+
+  int get _passiveBonus => feats.fold(0, (previous, e) => previous + e.feat.passiveBonus);
+
+  int get passivePerception => 10 + Skill.perception.getBonus(this) + _passiveBonus;
+
+  int get passiveInvestigation => 10 + Skill.investigation.getBonus(this) + _passiveBonus;
+
+  Set<ArmorProficiency> get armorProficiencies => {
+        ...classes.expand((e) => e.armorProficiencies),
+        ...feats.map((e) => e.feat.armorProficiency).nonNulls,
+      };
+
+  bool get canCastSpells => classes.any((e) => e.spellKind != null);
+
+  List<StatKind> get savingThrowProficiencies => [
+        ...classes.firstWhere((e) => e.isMain).chosenSaveThrows,
+        ...feats.map((e) => e.savingThrow).nonNulls,
+      ];
+
   List<PlayerSkill> get skills => Skill.values
       .map(
         (e) => PlayerSkill(
@@ -260,7 +313,7 @@ class Player {
       .toList();
 
   List<SaveThrow> get saveThrows {
-    final mainClass = classes.firstWhere((e) => e.isMain);
+    final proficiencies = savingThrowProficiencies;
     final throws = StatKind.values.map(
       (e) {
         var mainBonus = switch (e) {
@@ -272,7 +325,7 @@ class Player {
           StatKind.charisma => charisma.bonus,
         };
 
-        final int chosenThrowsCount = mainClass.chosenSaveThrows.where((el) => el == e).length;
+        final int chosenThrowsCount = proficiencies.where((el) => el == e).length;
 
         mainBonus += chosenThrowsCount * proficiencyBonus;
 
@@ -406,29 +459,37 @@ class Player {
     );
   }
 
+  /// Заклинания классов вместе с заклинаниями, полученными от черт этих классов.
   Map<Specialization, List<Spell>> get spells => Map.fromEntries(
-        classes.where((e) => e.knownSpells.isNotEmpty).map(
-              (e) => MapEntry(
-                e,
-                e.knownSpells,
-              ),
-            ),
+        classes
+            .map((e) => MapEntry(e, [...e.knownSpells, ...e.feats.expand((feat) => feat.spells)]))
+            .where((e) => e.value.isNotEmpty),
       );
 
   List<Peculiarity> get abilities => [
         ...race.peculiarities,
+        if (background.featureName != null)
+          Peculiarity(
+            name: background.featureName!.toUpperCase(),
+            description: background.featureHtml ?? '',
+            isHtml: true,
+          ),
         ...classes.fold(
           <Peculiarity>[],
           (prev, e) => [...prev, ...e.abilities],
+        ),
+        ...feats.map(
+          (e) => Peculiarity(name: 'ЧЕРТА: ${e.feat.name.toUpperCase()}', description: e.feat.descriptionHtml, isHtml: true),
         ),
       ];
 
   bool get canUseTwoWeapons => classes.any((e) => e.canUseTwoWeapons);
 
-  List<Language> get knownLanguages => [
+  List<Language> get knownLanguages => {
         ...race.knownLanguages,
         ..._additionalLanguages,
-      ];
+        ...feats.expand((e) => e.languages),
+      }.toList();
 
   Player equipMainWeapon(Weapon weapon) {
     final isMelee = weapon.kind.isMelee;
@@ -645,6 +706,7 @@ class Player {
     Weapon? Function()? secondRangeWeapon,
     Inventory? inventory,
     Map<SpellSlot, Spell>? raceSpells,
+    List<String>? toolProficiencies,
   }) =>
       Player(
         inventory: inventory ?? this.inventory,
@@ -669,6 +731,7 @@ class Player {
         mainRangeWeapon: mainRangeWeapon != null ? mainRangeWeapon() : this.mainRangeWeapon,
         secondRangeWeapon: secondRangeWeapon != null ? secondRangeWeapon() : this.secondRangeWeapon,
         raceSpells: raceSpells ?? this.raceSpells,
+        toolProficiencies: toolProficiencies ?? this.toolProficiencies,
         race: race,
         background: background,
         knownLanguages: _additionalLanguages,
@@ -684,7 +747,7 @@ class Player {
         'intelligence': _rawIntelligence,
         'strength': _rawStrength,
         'wisdom': _rawWisdom,
-        'chosenSkills': _rawchosenSkills.map((e) => e.index).toList(),
+        'chosenSkills': _rawchosenSkills.map((e) => e.name).toList(),
         'race': race.index,
         'mainWeapon': mainWeapon?.toJson(),
         'secondWeapon': secondWeapon?.toJson(),
@@ -692,8 +755,9 @@ class Player {
         'secondRangeWeapon': secondRangeWeapon?.toJson(),
         'shield': shield?.toJson(),
         'inventory': inventory.toJson(),
-        'background': background.index,
-        'knownLanguages': _additionalLanguages.map((e) => e.index).toList(),
+        'background': background.toJson(),
+        'toolProficiencies': toolProficiencies,
+        'knownLanguages': _additionalLanguages.map((e) => e.name).toList(),
         'raceSpells': raceSpells.map(
           (key, value) => MapEntry(
             key.name,
@@ -713,15 +777,16 @@ class Player {
         intelligence: json['intelligence'],
         strength: json['strength'],
         wisdom: json['wisdom'],
-        chosenSkills: (json['chosenSkills'] as List).map((e) => Skill.values[e]).toList(),
+        chosenSkills: (json['chosenSkills'] as List).map((e) => Skill.values.byName(e)).toList(),
         race: Race.values[json['race']],
         mainWeapon: json['mainWeapon'] != null ? Weapon.fromJson(json['mainWeapon']) : null,
         secondWeapon: json['secondWeapon'] != null ? Weapon.fromJson(json['secondWeapon']) : null,
         mainRangeWeapon: json['mainRangeWeapon'] != null ? Weapon.fromJson(json['mainRangeWeapon']) : null,
         secondRangeWeapon: json['secondRangeWeapon'] != null ? Weapon.fromJson(json['secondRangeWeapon']) : null,
         shield: json['shield'] != null ? Shield.fromJson(json['shield']) : null,
-        background: Background.values[json['background']],
-        knownLanguages: (json['knownLanguages'] as List).map((e) => Language.values[e]).toList(),
+        background: Background.fromJson(json['background']),
+        toolProficiencies: (json['toolProficiencies'] as List).cast<String>(),
+        knownLanguages: (json['knownLanguages'] as List).map((e) => Language.values.byName(e)).toList(),
         raceSpells: json['raceSpells'] != null
             ? (json['raceSpells'] as Map).map(
                 (key, value) => MapEntry(SpellSlot.values.byName(key), Spell.fromJson(value)),

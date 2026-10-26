@@ -11,9 +11,13 @@ class Peculiarity {
   final int? dicePerLevel;
   final int? maxDiceCount;
 
+  /// Описание в html с dnd.su; иначе — текст с разметкой <b>/<i>.
+  final bool isHtml;
+
   const Peculiarity({
     required this.name,
     required this.description,
+    this.isHtml = false,
     String? magicDescription,
     this.manaRequired,
     this.valueDice,
@@ -59,6 +63,7 @@ class Peculiarity {
         'dicePerLevel': dicePerLevel,
         'magicDescription': _magicDescription,
         'maxDiceCount': maxDiceCount,
+        'isHtml': isHtml,
       };
 
   factory Peculiarity.fromJson(Map<String, dynamic> json) => Peculiarity(
@@ -70,5 +75,6 @@ class Peculiarity {
         dicePerLevel: json['dicePerLevel'],
         magicDescription: json['magicDescription'],
         maxDiceCount: json['maxDiceCount'],
+        isHtml: json['isHtml'] ?? false,
       );
 }

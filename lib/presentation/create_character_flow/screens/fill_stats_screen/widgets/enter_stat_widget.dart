@@ -1,6 +1,7 @@
 import 'package:dnd_character_list/domain/models/stat.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:flutter/material.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 class EnterStatWidget extends StatelessWidget {
   final StatKind statKind;
@@ -42,7 +43,7 @@ class EnterStatWidget extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    stat.kind.name,
+                    stat.kind.localizedName,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

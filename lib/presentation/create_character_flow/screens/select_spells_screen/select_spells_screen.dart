@@ -3,35 +3,41 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/data/spells_repository.dart';
-import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/injection.dart';
+import 'package:dnd_character_list/presentation/common/widgets/loading_error.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_info_dialog.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_search_field.dart';
 import 'package:dnd_character_list/presentation/spells_screen/widgets/spell_widget.dart';
-import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 @RoutePage()
 class SelectSpellsScreen extends StatefulWidget {
-  final ClassKind classKind;
+  /// Класс, из списка которого выбираются заклинания (с расширенным списком TCE).
+  /// `null` — любой класс, как для «Тайн магии».
+  final ClassKind? classKind;
   final int maxConspiracies;
   final int maxSpells;
   final List<Spell> knownSpells;
-  final Function(List<Spell> spells)? onSpellsSelected;
+  final void Function(List<Spell> spells) onSpellsSelected;
   final List<SpellSlot> availableSlots;
+  final String title;
+
+  /// Заговоры входят в общий лимит [maxSpells] (как в «Тайнах магии»).
+  final bool cantripsCountAsSpells;
 
   const SelectSpellsScreen({
     super.key,
     this.knownSpells = const [],
     List<SpellSlot>? availableSlots,
-    this.onSpellsSelected,
+    this.title = 'Заклинания',
+    this.cantripsCountAsSpells = false,
+    required this.onSpellsSelected,
     required this.maxSpells,
     required this.maxConspiracies,
     required this.classKind,
@@ -48,7 +54,6 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
   final _selectedSpells = <Spell>[];
   SpellSlot? _selectedSpellSlot;
   String _query = '';
-  bool _includeTce = false;
   bool _isSaving = false;
 
   /// Заклинания, доступные классу, по мере загрузки дополняются полными данными.
@@ -83,7 +88,7 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
           .where(
             (e) =>
                 widget.availableSlots.contains(e.slot) &&
-                e.isAvailableFor(widget.classKind, includeTce: true) &&
+                _isClassSpell(e) &&
                 !widget.knownSpells.contains(e),
           )
           .sorted((a, b) => a.slot != b.slot ? a.slot.compareTo(b.slot) : a.name.compareTo(b.name));
@@ -100,12 +105,7 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
   }
 
   void _loadDetails(List<Spell> spells) {
-    // Сначала основной список класса, затем расширенный.
-    final ordered = [
-      ...spells.where((e) => e.isAvailableFor(widget.classKind)),
-      ...spells.whereNot((e) => e.isAvailableFor(widget.classKind)),
-    ];
-    _detailsSubscription = _repository.loadDetails(ordered).listen(
+    _detailsSubscription = _repository.loadDetails(spells).listen(
       (spell) => setState(() {
         _loadedDetailsCount++;
         _spells = _spells?.map((e) => e == spell ? spell : e).toList();
@@ -125,14 +125,16 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
   List<Spell> _visibleSpells(List<Spell> spells) => spells
       .where(
         (e) =>
-            e.isAvailableFor(widget.classKind, includeTce: _includeTce) &&
             (_selectedSpellSlot == null || e.slot == _selectedSpellSlot) &&
             e.matchesQuery(_query),
       )
       .toList();
 
+  /// Расширенные списки TCE при создании и развитии персонажа включены всегда.
+  bool _isClassSpell(Spell spell) => widget.classKind == null || spell.isAvailableFor(widget.classKind!, includeTce: true);
+
   void _toggle(Spell spell) {
-    if (spell.slot != SpellSlot.conspiracy) {
+    if (spell.slot != SpellSlot.conspiracy || widget.cantripsCountAsSpells) {
       if (_selectedSpells.contains(spell)) {
         _selectedSpells.remove(spell);
       } else if (_selectedSpells.length < widget.maxSpells) {
@@ -158,28 +160,7 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
     if (!mounted) return;
     setState(() => _isSaving = false);
 
-    if (widget.onSpellsSelected != null) {
-      widget.onSpellsSelected!(selected);
-    } else {
-      context.read<CreateCharacterCubit>().setSpells([
-        ...widget.knownSpells,
-        ...selected,
-      ]);
-      context.pushRoute(
-        SelectBackgroundRoute(
-          onContinue: () {
-            context.pushRoute(
-              SelectSkillsRoute(
-                isInitial: true,
-                maxSkills: widget.classKind.startSkillCount,
-                availableSkills: widget.classKind.availableSkills,
-                classKind: widget.classKind,
-              ),
-            );
-          },
-        ),
-      );
-    }
+    widget.onSpellsSelected(selected);
   }
 
   @override
@@ -194,10 +175,10 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Заклинания',
+              Text(
+                widget.title,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -252,14 +233,6 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: FilterChip(
-                        label: const Text('Расширенный список (TCE)'),
-                        selected: _includeTce,
-                        onSelected: (value) => setState(() => _includeTce = value),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -278,7 +251,8 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
                 child: Builder(
                   builder: (context) {
                     if (_error != null) {
-                      return _LoadingError(
+                      return LoadingError(
+                        message: 'Не удалось загрузить заклинания с dnd.su.',
                         error: _error!,
                         onRetry: () => _load(forceRefresh: true),
                       );
@@ -342,33 +316,6 @@ class _SelectSpellsScreenState extends State<SelectSpellsScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _LoadingError extends StatelessWidget {
-  final Object error;
-  final VoidCallback onRetry;
-
-  const _LoadingError({required this.error, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Не удалось загрузить заклинания с dnd.su.\n$error',
-            textAlign: TextAlign.center,
-          ),
-          const Gap(8),
-          OutlinedButton(
-            onPressed: onRetry,
-            child: const Text('Повторить'),
-          ),
-        ],
       ),
     );
   }

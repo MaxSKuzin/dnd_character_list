@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
+import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
@@ -7,6 +8,7 @@ import 'package:dnd_character_list/presentation/personality_screen/widgets/pecul
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 @RoutePage()
 class PersonalityScreen extends StatefulWidget {
@@ -23,6 +25,11 @@ class _PersonalityScreenState extends State<PersonalityScreen> {
     final languages = player.knownLanguages;
     final abilities = player.abilities;
     final personality = player.personality;
+    final proficiencies = {
+      if (player.armorProficiencies.isNotEmpty)
+        'Доспехи': player.armorProficiencies.map((e) => e.localizedName).join(', '),
+      if (player.toolProficiencies.isNotEmpty) 'Инструменты': player.toolProficiencies.join(', '),
+    };
     final classes = PlayerModel.classes(context);
     return SafeArea(
       child: Padding(
@@ -169,7 +176,7 @@ class _PersonalityScreenState extends State<PersonalityScreen> {
                     children: languages
                         .map(
                           (e) => Text(
-                            e.name.toUpperCase(),
+                            e.localizedName.toUpperCase(),
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         )
@@ -177,13 +184,83 @@ class _PersonalityScreenState extends State<PersonalityScreen> {
                   ),
                 ),
               ),
+              if (proficiencies.isNotEmpty) ...[
+                const Gap(16),
+                LabeledBorder(
+                  backgroundColor: context.customColors?.cardColor,
+                  text: 'ВЛАДЕНИЯ',
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: proficiencies.entries
+                          .map(
+                            (e) => Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(text: '${e.key}: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  TextSpan(text: e.value),
+                                ],
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ),
+              ],
+              if (personality.traits.isNotEmpty) ...[
+                const Gap(16),
+                LabeledBorder(
+                  backgroundColor: context.customColors?.cardColor,
+                  text: 'ХАРАКТЕР',
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final trait in personality.traits.entries) ...[
+                          Text(trait.key.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(trait.value),
+                          const Gap(8),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               const Gap(16),
               LabeledBorder(
                 backgroundColor: context.customColors?.cardColor,
                 text: 'ПРЕДЫСТОРИЯ',
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                  child: Text(personality.story),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              player.background.name.toUpperCase(),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (_) => HtmlDialog(
+                                title: player.background.name,
+                                html: player.background.descriptionHtml,
+                              ),
+                            ),
+                            icon: const Icon(Icons.info),
+                          ),
+                        ],
+                      ),
+                      Text(personality.story),
+                    ],
+                  ),
                 ),
               ),
             ],

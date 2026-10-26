@@ -1,22 +1,20 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/data/rules_repository.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
+import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
-import 'package:dnd_character_list/domain/models/stat.dart';
-import 'package:dnd_character_list/domain/models/stat_kind.dart';
+import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
-import 'package:dnd_character_list/router.gr.dart';
+import 'package:dnd_character_list/presentation/create_character_flow/create_character_steps.dart';
+import 'package:dnd_character_list/presentation/create_character_flow/screens/select_class_screen/class_info_dialog.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 @RoutePage()
 class SelectClassScreen extends StatefulWidget {
-  final Map<StatKind, int> stats;
-  const SelectClassScreen({
-    super.key,
-    required this.stats,
-  });
+  const SelectClassScreen({super.key});
 
   @override
   State<SelectClassScreen> createState() => _SelectClassScreenState();
@@ -24,6 +22,48 @@ class SelectClassScreen extends StatefulWidget {
 
 class _SelectClassScreenState extends State<SelectClassScreen> {
   ClassKind? _selectedClass;
+  bool _isLoading = false;
+
+  /// Загружает описание класса с dnd.su, если оно есть. Ошибка показывается пользователю.
+  Future<ClassInfo?> _loadInfo(ClassKind classKind) async {
+    final link = classKind.dndSuLink;
+    if (link == null) return null;
+    setState(() => _isLoading = true);
+    try {
+      return await getIt<RulesRepository>().getClass(link);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Не удалось загрузить описание класса с dnd.su: $e')),
+        );
+      }
+      rethrow;
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _showInfo(ClassKind classKind) async {
+    final info = await _loadInfo(classKind);
+    if (info == null || !mounted) return;
+    await showDialog(
+      context: context,
+      builder: (_) => ClassInfoDialog(info: info),
+    );
+  }
+
+  Future<void> _continue() async {
+    final classKind = _selectedClass!;
+    final ClassInfo? info;
+    try {
+      info = await _loadInfo(classKind);
+    } catch (_) {
+      return;
+    }
+    if (!mounted) return;
+    context.read<CreateCharacterCubit>().setClass(classKind, info);
+    CreateCharacterSteps.next(context, CreateCharacterStep.classKind);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +113,15 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
                                 Positioned.fill(
                                   child: ClassImage(classType: e),
                                 ),
+                                if (e.dndSuLink != null)
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: IconButton(
+                                      onPressed: _isLoading ? null : () => _showInfo(e),
+                                      icon: const Icon(Icons.info),
+                                    ),
+                                  ),
                                 DecoratedBox(
                                   decoration: const ShapeDecoration(
                                     shape: CircleBorder(
@@ -112,44 +161,10 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
               ),
               const Gap(16),
               OutlinedButton(
-                onPressed: _selectedClass != null
-                    ? () {
-                        final knownSpellsCount = _selectedClass!.knownSpellsCount(
-                          1,
-                          (StatKind statKind) => Stat(
-                            value: widget.stats[statKind]!,
-                            kind: statKind,
-                          ).bonus,
-                        );
-                        context.read<CreateCharacterCubit>().setClass(_selectedClass!);
-                        if (_selectedClass!.knownConspiracies(1) > 0 || knownSpellsCount > 0) {
-                          context.pushRoute(
-                            SelectSpellsRoute(
-                              classKind: _selectedClass!,
-                              maxConspiracies: _selectedClass!.knownConspiracies(1),
-                              maxSpells: knownSpellsCount,
-                            ),
-                          );
-                        } else {
-                          context.read<CreateCharacterCubit>().setSpells([]);
-                          context.pushRoute(
-                            SelectBackgroundRoute(
-                              onContinue: () {
-                                context.pushRoute(
-                                  SelectSkillsRoute(
-                                    isInitial: true,
-                                    maxSkills: _selectedClass!.startSkillCount,
-                                    availableSkills: _selectedClass!.availableSkills,
-                                    classKind: _selectedClass!,
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        }
-                      }
-                    : null,
-                child: const Text('Далее'),
+                onPressed: _selectedClass != null && !_isLoading ? _continue : null,
+                child: _isLoading
+                    ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Далее'),
               ),
             ],
           ),

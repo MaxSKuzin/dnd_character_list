@@ -1,10 +1,8 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/presentation/create_character_flow/screens/fill_stats_screen/widgets/enter_stat_widget.dart';
-import 'package:dnd_character_list/router.gr.dart';
+import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 @RoutePage()
@@ -12,10 +10,14 @@ class FillStatsScreen extends StatefulWidget {
   final Map<StatKind, int> initialStats;
   final int maxPoints;
   final bool isInitial;
-  final Function(Map<StatKind, int> stats)? onStatsFilled;
+  /// Получает прибавку к [initialStats] (при пустых [initialStats] — сами значения).
+  final void Function(Map<StatKind, int> stats) onStatsFilled;
   final bool canSpendOnOneStat;
   final String? title;
   final List<StatKind> forbiddenStats;
+
+  /// Рекомендации класса из раздела «Быстрое создание» на dnd.su.
+  final String? quickBuildHtml;
 
   const FillStatsScreen({
     super.key,
@@ -25,7 +27,8 @@ class FillStatsScreen extends StatefulWidget {
     this.maxPoints = 27,
     this.initialStats = const {},
     this.forbiddenStats = const [],
-    this.onStatsFilled,
+    this.quickBuildHtml,
+    required this.onStatsFilled,
   });
 
   @override
@@ -72,6 +75,14 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              if (widget.quickBuildHtml != null) ...[
+                const Gap(8),
+                ExpansionTile(
+                  title: const Text('Быстрое создание'),
+                  childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  children: [HtmlContent(widget.quickBuildHtml!)],
+                ),
+              ],
               const Gap(16),
               Expanded(
                 child: GridView(
@@ -122,33 +133,9 @@ class _FillStatsScreenState extends State<FillStatsScreen> {
               const Gap(16),
               OutlinedButton(
                 onPressed: points == 0
-                    ? () {
-                        if (widget.onStatsFilled != null) {
-                          widget.onStatsFilled!(
-                            stats.map(
-                              (key, value) => MapEntry(key, value - widget.initialStats[key]!),
-                            ),
-                          );
-                        } else {
-                          context.read<CreateCharacterCubit>().setStats(stats);
-                          final statsBonus = context.read<CreateCharacterCubit>().race!.additionalStatsCount;
-                          if (widget.isInitial && statsBonus > 0) {
-                            final forbiddenStats = context.read<CreateCharacterCubit>().race!.forbiddenStats;
-                            context.pushRoute(
-                              FillStatsRoute(
-                                maxPoints: statsBonus,
-                                forbiddenStats: forbiddenStats,
-                                initialStats: stats,
-                                isInitial: false,
-                                canSpendOnOneStat: false,
-                                title: 'Внесите дополнительные очки от расы',
-                              ),
-                            );
-                          } else {
-                            context.pushRoute(SelectClassRoute(stats: stats));
-                          }
-                        }
-                      }
+                    ? () => widget.onStatsFilled(
+                          stats.map((key, value) => MapEntry(key, value - (widget.initialStats[key] ?? 0))),
+                        )
                     : null,
                 child: const Text('Далее'),
               ),

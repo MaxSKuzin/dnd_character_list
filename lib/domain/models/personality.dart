@@ -8,6 +8,10 @@ class Personality {
   final String hairColor;
   final String skinColor;
 
+  /// Выбранная строка каждой таблицы персонализации предыстории по заголовку таблицы,
+  /// например «Черта характера» → «Я безнадёжный романтик».
+  final Map<String, String> traits;
+
   Personality({
     required this.eyesColor,
     required this.hairColor,
@@ -17,6 +21,7 @@ class Personality {
     required this.height,
     required this.weight,
     required this.story,
+    this.traits = const {},
   });
 
   Map<String, dynamic> toJson() => {
@@ -28,6 +33,7 @@ class Personality {
         'eyesColor': eyesColor,
         'hairColor': hairColor,
         'skinColor': skinColor,
+        'traits': traits,
       };
 
   factory Personality.fromJson(Map<String, dynamic> json) => Personality(
@@ -39,5 +45,6 @@ class Personality {
         height: json['height'],
         weight: json['weight'],
         story: json['story'],
+        traits: (json['traits'] as Map).cast<String, String>(),
       );
 }

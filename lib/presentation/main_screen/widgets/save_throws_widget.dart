@@ -3,6 +3,7 @@ import 'package:dnd_character_list/presentation/extensions/context_extensions.da
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/main_screen/widgets/skill_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 class SaveThrowsWidget extends StatelessWidget {
   const SaveThrowsWidget({
@@ -27,7 +28,7 @@ class SaveThrowsWidget extends StatelessWidget {
             for (final save in saves)
               SkillWidget(
                 bonus: save.bonus,
-                title: save.origin.name,
+                title: save.origin.localizedName,
                 isChosen: save.isChosen,
               )
           ],

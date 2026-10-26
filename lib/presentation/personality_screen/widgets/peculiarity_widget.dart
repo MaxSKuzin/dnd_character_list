@@ -2,6 +2,7 @@ import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/peculiarity.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
+import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
 import 'package:dnd_character_list/presentation/common/widgets/text_parser/text_parses_base.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -124,9 +125,12 @@ class _DialogInfoState extends State<_DialogInfo> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  TextParses(
-                    widget.classAbility.description.trim(),
-                  ),
+                  if (widget.classAbility.isHtml)
+                    HtmlContent(widget.classAbility.description)
+                  else
+                    TextParses(
+                      widget.classAbility.description.trim(),
+                    ),
                   if (_slot != null)
                     TextParses(
                       '\n${widget.classAbility.magicDescription(_slot!)}',

@@ -13,6 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
+import 'package:dnd_character_list/data/rules_repository.dart';
+import 'package:dnd_character_list/domain/models/class_info.dart';
+import 'package:dnd_character_list/domain/models/classes/bard.dart';
+import 'package:dnd_character_list/domain/models/classes/specialization.dart';
+import 'package:dnd_character_list/domain/models/player.dart';
+import 'package:dnd_character_list/injection.dart';
+import 'package:dnd_character_list/presentation/level_up_flow/bard_level_up.dart';
 
 @RoutePage()
 class LevelUpClassScreen extends StatefulWidget {
@@ -24,6 +31,139 @@ class LevelUpClassScreen extends StatefulWidget {
 
 class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
   ClassKind? _selectedClassKind;
+  bool _isLoading = false;
+
+  Future<void> _levelUp() async {
+    final player = PlayerModel.getPlayer(context);
+    final classKind = _selectedClassKind!;
+    final selectedClass = player.classes.firstWhereOrNull((e) => e.classKind == classKind);
+    final cubit = context.read<LevelUpCubit>();
+    cubit.setClass(classKind, selectedClass?.isMain ?? false);
+
+    final link = classKind.dndSuLink;
+    final bool passed;
+    if (link != null) {
+      final ClassInfo info;
+      setState(() => _isLoading = true);
+      try {
+        info = await getIt<RulesRepository>().getClass(link);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Не удалось загрузить описание класса с dnd.su: $e')),
+          );
+        }
+        return;
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+      if (!mounted) return;
+      passed = await BardLevelUp(context: context, player: player, info: info, bard: selectedClass as Bard?).run();
+    } else {
+      passed = await _levelUpLegacy(player, classKind, selectedClass);
+    }
+
+    cubit.setRaceSpells(player.race.spellForLevel(player.level + 1));
+    if (passed) cubit.levelUp();
+  }
+
+  /// Классы, которые ещё не переведены на описание с dnd.su.
+  Future<bool> _levelUpLegacy(Player player, ClassKind classKind, Specialization? selectedClass) async {
+    final classes = player.classes;
+    final stats = player.stats;
+    final newLevel = (selectedClass?.level ?? 0) + 1;
+    final knownSpellsCount = classKind.knownSpellsCount(
+      newLevel,
+      (StatKind statKind) => stats[statKind]!.bonus,
+    );
+
+    final knownConspiraciesCount = classKind.knownConspiracies(newLevel);
+    final classKnownSpells = selectedClass?.knownSpells.where((e) => e.slot != SpellSlot.conspiracy).toList() ?? [];
+    final classKnownConspiracies =
+        selectedClass?.knownSpells.where((e) => e.slot == SpellSlot.conspiracy).toList() ?? [];
+
+    final knownSpells = player.spells.values.expand((e) => e).toList();
+
+    final conspiraciesDiff = max(0, knownConspiraciesCount - classKnownConspiracies.length);
+    final spellsDiff = max(0, knownSpellsCount - classKnownSpells.length);
+
+    final availableSlots = SpellSlot.getSpellCells(
+      Map.fromEntries(
+        [
+          ...classes.map(
+            (e) => MapEntry(e.classKind, classKind == e.classKind ? e.level + 1 : e.level),
+          ),
+          if (selectedClass == null) MapEntry(classKind, 1),
+        ],
+      ),
+    );
+
+    final cubit = context.read<LevelUpCubit>();
+    bool passed = true;
+
+    if (newLevel != 1) {
+      final doubledSkillPoints = classKind.getDoubledSkillPoints(newLevel);
+      if (doubledSkillPoints > 0) {
+        passed = await context.pushRoute(
+              SelectSkillsRoute(
+                title: 'Компетентность',
+                description: 'Выберите навыки из тех, которыми владеете: бонус мастерства для них удваивается.',
+                maxSkills: doubledSkillPoints,
+                availableSkills: player.chosenSkills.toSet().toList(),
+                onSkillsSelected: (skills) {
+                  cubit.setSkills([...skills, ...player.rawChosenSkills]);
+                  context.maybePop(true);
+                },
+              ),
+            ) ??
+            false;
+      }
+    } else {
+      passed = await context.pushRoute(
+            SelectSkillsRoute(
+              title: 'Владение навыками',
+              description: 'Класс «${classKind.localizedName}»: выберите навыки из списка класса.',
+              maxSkills: classKind.startSkillCount,
+              availableSkills: classKind.availableSkills.where((e) => !player.chosenSkills.contains(e)).toList(),
+              onSkillsSelected: (skills) {
+                cubit.setSkills([...skills, ...player.rawChosenSkills]);
+                context.maybePop(true);
+              },
+            ),
+          ) ??
+          false;
+    }
+    if (!mounted) return false;
+
+    final route = classKind.getClassSpecificRoute(context, newLevel);
+    if (route != null) {
+      passed = await context.pushRoute(route) ?? false;
+    }
+    if (!mounted) return false;
+
+    if (conspiraciesDiff > 0 || spellsDiff > 0) {
+      passed = await context.pushRoute(
+            SelectSpellsRoute(
+              classKind: classKind,
+              maxConspiracies: conspiraciesDiff,
+              maxSpells: spellsDiff,
+              availableSlots: [
+                if (conspiraciesDiff > 0) SpellSlot.conspiracy,
+                ...availableSlots.keys,
+              ],
+              knownSpells: knownSpells,
+              onSpellsSelected: (spells) {
+                cubit.setSpells([...classKnownSpells, ...classKnownConspiracies, ...spells]);
+                context.maybePop(true);
+              },
+            ),
+          ) ??
+          false;
+    } else {
+      cubit.setSpells([...classKnownSpells, ...classKnownConspiracies]);
+    }
+    return passed;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,151 +284,10 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
               ),
               const Gap(16),
               OutlinedButton(
-                onPressed: _selectedClassKind != null
-                    ? () async {
-                        final selectedClass = classes.firstWhereOrNull((e) => e.classKind == _selectedClassKind!);
-                        final player = PlayerModel.getPlayer(context);
-                        final stats = player.stats;
-                        final classKind = _selectedClassKind!;
-                        final newLevel = (selectedClass?.level ?? 0) + 1;
-                        final knownSpellsCount = classKind.knownSpellsCount(
-                          newLevel,
-                          (StatKind statKind) => stats[statKind]!.bonus,
-                        );
-
-                        final knownConspiraciesCount = classKind.knownConspiracies(newLevel);
-                        final classKnownSpells = selectedClass?.knownSpells
-                                .where(
-                                  (e) => e.slot != SpellSlot.conspiracy,
-                                )
-                                .toList() ??
-                            [];
-                        final classKnownConspiracies = selectedClass?.knownSpells
-                                .where(
-                                  (e) => e.slot == SpellSlot.conspiracy,
-                                )
-                                .toList() ??
-                            [];
-
-                        final knownSpells =
-                            player.spells.values.expand((e) => e).where((e) => e.slot != SpellSlot.conspiracy).toList();
-                        final knownConspiracies =
-                            player.spells.values.expand((e) => e).where((e) => e.slot == SpellSlot.conspiracy).toList();
-
-                        final conspiraciesDiff = max(0, knownConspiraciesCount - classKnownConspiracies.length);
-                        final spellsDiff = max(0, knownSpellsCount - classKnownSpells.length);
-
-                        final availableSlots = SpellSlot.getSpellCells(
-                          Map.fromEntries(
-                            [
-                              ...classes.map(
-                                (e) => MapEntry(e.classKind, classKind == e.classKind ? e.level + 1 : e.level),
-                              ),
-                              if (selectedClass == null) MapEntry(classKind, 1),
-                            ],
-                          ),
-                        );
-
-                        context.read<LevelUpCubit>().setClass(classKind, selectedClass?.isMain ?? false);
-
-                        bool passed = true;
-
-                        if (newLevel != 1) {
-                          final doubledSkillPoins = classKind.getDoubledSkillPoints(newLevel);
-                          if (doubledSkillPoins > 0) {
-                            passed = await context.pushRoute(
-                                  SelectSkillsRoute(
-                                    classKind: classKind,
-                                    maxSkills: doubledSkillPoins,
-                                    availableSkills: player.chosenSkills.toSet().toList(),
-                                    onSkillsSelected: (skills) {
-                                      context.read<LevelUpCubit>().setSkills([...skills, ...player.chosenSkills]);
-                                      context.maybePop(true);
-                                    },
-                                  ),
-                                ) ??
-                                false;
-                          }
-                        } else {
-                          passed = await context.pushRoute(
-                                SelectSkillsRoute(
-                                  maxSkills: classKind.startSkillCount,
-                                  availableSkills: classKind.availableSkills,
-                                  classKind: classKind,
-                                  onSkillsSelected: (skills) {
-                                    context.read<LevelUpCubit>().setSkills([...skills, ...player.chosenSkills]);
-                                    context.maybePop(true);
-                                  },
-                                ),
-                              ) ??
-                              false;
-                        }
-
-                        final statsBonus = classKind.getStatsBonus(newLevel);
-                        if (statsBonus > 0) {
-                          passed = await context.pushRoute(
-                                FillStatsRoute(
-                                  maxPoints: statsBonus,
-                                  initialStats: player.stats.map((key, value) => MapEntry(key, value.value)),
-                                  isInitial: false,
-                                  onStatsFilled: (stats) {
-                                    context.read<LevelUpCubit>().setStatsBonus(stats);
-                                    context.maybePop(true);
-                                  },
-                                ),
-                              ) ??
-                              false;
-                        }
-
-                        final route = classKind.getClassSpecificRoute(context, newLevel);
-                        if (route != null) {
-                          passed = await context.pushRoute(route) ?? false;
-                        }
-
-                        final raceSpells = player.race.spellForLevel(player.level + 1);
-
-                        if (conspiraciesDiff > 0 || spellsDiff > 0) {
-                          passed = await context.pushRoute(
-                                SelectSpellsRoute(
-                                  classKind: classKind,
-                                  maxConspiracies: conspiraciesDiff,
-                                  maxSpells: spellsDiff,
-                                  availableSlots: [
-                                    if (conspiraciesDiff > 0) SpellSlot.conspiracy,
-                                    ...availableSlots.keys,
-                                  ],
-                                  knownSpells: [
-                                    ...knownSpells,
-                                    ...knownConspiracies,
-                                  ],
-                                  onSpellsSelected: (spells) {
-                                    context.read<LevelUpCubit>().setSpells(
-                                      [
-                                        ...classKnownSpells,
-                                        ...classKnownConspiracies,
-                                        ...spells,
-                                      ],
-                                    );
-                                    context.maybePop(true);
-                                  },
-                                ),
-                              ) ??
-                              false;
-                        } else {
-                          context.read<LevelUpCubit>().setSpells(
-                            [
-                              ...classKnownSpells,
-                              ...classKnownConspiracies,
-                            ],
-                          );
-                        }
-                        context.read<LevelUpCubit>().setRaceSpells(raceSpells);
-                        if (passed) {
-                          context.read<LevelUpCubit>().levelUp();
-                        }
-                      }
-                    : null,
-                child: const Text('Далее'),
+                onPressed: _selectedClassKind != null && !_isLoading ? _levelUp : null,
+                child: _isLoading
+                    ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Далее'),
               ),
             ],
           ),
@@ -301,16 +300,6 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
 extension on ClassKind {
   PageRouteInfo<dynamic>? getClassSpecificRoute(BuildContext context, int level) {
     switch (this) {
-      case ClassKind.bard:
-        switch (level) {
-          case 3:
-            return SelectCollegiumRoute(onCollegiumSelected: (collegium) {
-              context.read<LevelUpCubit>().setCollegium(collegium);
-              context.maybePop(true);
-            });
-          default:
-            return null;
-        }
       case ClassKind.paladin:
         switch (level) {
           case 2:

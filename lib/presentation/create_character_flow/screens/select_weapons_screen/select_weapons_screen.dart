@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
-import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
@@ -13,18 +12,19 @@ import 'package:dnd_character_list/presentation/battle_screen/widgets/weapon_inf
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/common/widgets/text_parser/text_parses_base.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
-import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 @RoutePage()
 class SelectWeaponsScreen extends StatefulWidget {
   final StartEquipment startEquip;
+  final void Function(List<InventoryItem> items) onSelected;
 
   const SelectWeaponsScreen({
     super.key,
     required this.startEquip,
+    required this.onSelected,
   });
 
   @override
@@ -111,20 +111,7 @@ class _SelectWeaponsScreenState extends State<SelectWeaponsScreen> {
                             ..._selectedItems.expand((e) => e.value),
                             ..._selectedKit!.items,
                           ];
-                          context.read<CreateCharacterCubit>().setInventoryItems(items);
-                          final newLanguagesCount =
-                              context.read<CreateCharacterCubit>().race!.additionalLanguagesCount +
-                                  context.read<CreateCharacterCubit>().background!.additionalLangauges;
-                          if (newLanguagesCount > 0) {
-                            context.pushRoute(
-                              SelectLanguagesRoute(
-                                knownLanguages: context.read<CreateCharacterCubit>().race!.knownLanguages,
-                                maxLanguages: newLanguagesCount,
-                              ),
-                            );
-                          } else {
-                            context.pushRoute(const SetPersonalityRoute());
-                          }
+                          widget.onSelected(items);
                         }
                       : null,
                   child: const Text('Далее'),
@@ -349,7 +336,7 @@ class WeaponWidget extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                 child: Center(
                   child: Text(
-                    weapon.isFencing ? StatKind.dexterity.name : StatKind.strength.name,
+                    weapon.isFencing ? StatKind.dexterity.localizedName : StatKind.strength.localizedName,
                   ),
                 ),
               ),

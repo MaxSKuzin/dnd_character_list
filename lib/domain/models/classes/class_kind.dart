@@ -163,6 +163,12 @@ enum ClassKind {
         _ => throw UnimplementedError(),
       };
 
+  /// Страница класса на dnd.su. Классы без ссылки пока описаны только в коде.
+  String? get dndSuLink => switch (this) {
+        ClassKind.bard => '/class/88-bard/',
+        _ => null,
+      };
+
   int get startSkillCount => switch (this) {
         ClassKind.bard => 3,
         ClassKind.barbarian => 2,
@@ -176,15 +182,15 @@ enum ClassKind {
         ClassKind.bard => Skill.values,
         ClassKind.barbarian => [
             Skill.athletics,
-            Skill.harassment,
+            Skill.intimidation,
             Skill.nature,
             Skill.perception,
-            Skill.surviving,
-            Skill.animalTaming,
+            Skill.survival,
+            Skill.animalHandling,
           ],
         ClassKind.wizard => [
             Skill.history,
-            Skill.magic,
+            Skill.arcana,
             Skill.medicine,
             Skill.insight,
             Skill.investigation,
@@ -192,24 +198,24 @@ enum ClassKind {
           ],
         ClassKind.paladin => [
             Skill.athletics,
-            Skill.harassment,
+            Skill.intimidation,
             Skill.medicine,
             Skill.insight,
             Skill.religion,
-            Skill.conviction,
+            Skill.persuasion,
           ],
         ClassKind.thief => [
             Skill.acrobatics,
             Skill.athletics,
             Skill.perception,
             Skill.performance,
-            Skill.harassment,
-            Skill.manualDexterity,
-            Skill.fraud,
+            Skill.intimidation,
+            Skill.sleightOfHand,
+            Skill.deception,
             Skill.insight,
             Skill.investigation,
             Skill.stealth,
-            Skill.conviction,
+            Skill.persuasion,
           ],
         _ => throw UnimplementedError(),
       };

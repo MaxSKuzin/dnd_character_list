@@ -77,7 +77,7 @@ class _SelectRaceScreenState extends State<SelectRaceScreen> {
                 onPressed: _selectedRace != null
                     ? () {
                         context.read<CreateCharacterCubit>().setRace(_selectedRace!);
-                        context.pushRoute(FillStatsRoute());
+                        context.pushRoute(const SelectClassRoute());
                       }
                     : null,
                 child: const Text('Далее'),

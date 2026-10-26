@@ -238,3 +238,42 @@ class _HtmlContentState extends State<HtmlContent> {
         recognizer: span.recognizer,
       );
 }
+
+/// Диалог с заголовком и описанием с dnd.su.
+class HtmlDialog extends StatelessWidget {
+  final String title;
+  final String html;
+
+  const HtmlDialog({
+    super.key,
+    required this.title,
+    required this.html,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: const RoundedRectangleBorder(
+        side: BorderSide(color: Colors.white),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            ),
+            const Gap(8),
+            Flexible(
+              child: SingleChildScrollView(child: HtmlContent(html)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

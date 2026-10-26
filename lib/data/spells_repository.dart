@@ -18,7 +18,6 @@ import 'package:path_provider/path_provider.dart';
 class SpellsRepository {
   static const _indexTtl = Duration(days: 7);
   static const _detailsConcurrency = 4;
-  static const _detailsAttempts = 3;
 
   final DndSuClient _client;
   final DndSuSpellsParser _parser;
@@ -140,21 +139,9 @@ class SpellsRepository {
       }
     }
 
-    final details = await _fetchDetails(spell);
+    final details = await _client.getParsed(spell.link, _parser.parseDetails);
     await file.writeAsString(jsonEncode(details.toJson()));
     return _details[spell.id] = details;
-  }
-
-  /// Сайт периодически отвечает страницей без карточки заклинания, поэтому пробуем несколько раз.
-  Future<SpellDetails> _fetchDetails(Spell spell) async {
-    for (var attempt = 1;; attempt++) {
-      try {
-        return _parser.parseDetails(await _client.get(spell.link));
-      } on DndSuException {
-        if (attempt == _detailsAttempts) rethrow;
-        await Future.delayed(Duration(milliseconds: 500 * attempt));
-      }
-    }
   }
 
   Future<File> _cacheFile(String name) async {

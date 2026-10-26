@@ -7,10 +7,13 @@ import 'package:gap/gap.dart';
 @RoutePage()
 class SelectFightingStyleScreen extends StatefulWidget {
   final void Function(FightingStyle style) onStyleSelected;
+  /// Доступные стили; по умолчанию — все.
+  final List<FightingStyle>? styles;
 
   const SelectFightingStyleScreen({
     super.key,
     required this.onStyleSelected,
+    this.styles,
   });
 
   @override
@@ -38,7 +41,7 @@ class _SelectFightingStyleScreenState extends State<SelectFightingStyleScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                ...FightingStyle.values.map(
+                ...(widget.styles ?? FightingStyle.values).map(
                   (e) => ListTile(
                     title: ImageFiltered(
                       imageFilter: ColorFilter.mode(

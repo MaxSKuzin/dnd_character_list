@@ -3,6 +3,7 @@ import 'package:dnd_character_list/presentation/common/widgets/labeled_border.da
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 class StatWidget extends StatelessWidget {
   final Stat stat;
@@ -25,7 +26,7 @@ class StatWidget extends StatelessWidget {
           children: [
             FittedBox(
               child: Text(
-                stat.kind.name,
+                stat.kind.localizedName,
               ),
             ),
             const Gap(8),

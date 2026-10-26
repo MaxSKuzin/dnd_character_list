@@ -5,6 +5,7 @@ import 'package:dnd_character_list/presentation/common/widgets/text_parser/text_
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 class CreateToolSection extends StatefulWidget {
   final Function(CreateItemController controller) onControllerReady;
@@ -54,7 +55,7 @@ class _CreateToolSectionState extends State<CreateToolSection> with CreateItemPr
                           _toolCategory = e;
                         }),
                         child: Chip(
-                          label: Text(e.name),
+                          label: Text(e.localizedName),
                           color: WidgetStatePropertyAll(
                             _toolCategory == e ? context.customColors?.cardColor : Colors.transparent,
                           ),

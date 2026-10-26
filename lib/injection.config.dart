@@ -9,9 +9,17 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:dnd_character_list/data/dnd_su/dnd_su_backgrounds_parser.dart'
+    as _i674;
+import 'package:dnd_character_list/data/dnd_su/dnd_su_cache.dart' as _i263;
+import 'package:dnd_character_list/data/dnd_su/dnd_su_class_parser.dart'
+    as _i364;
 import 'package:dnd_character_list/data/dnd_su/dnd_su_client.dart' as _i914;
+import 'package:dnd_character_list/data/dnd_su/dnd_su_feats_parser.dart'
+    as _i487;
 import 'package:dnd_character_list/data/dnd_su/dnd_su_spells_parser.dart'
     as _i987;
+import 'package:dnd_character_list/data/rules_repository.dart' as _i890;
 import 'package:dnd_character_list/data/sp_source.dart' as _i895;
 import 'package:dnd_character_list/data/spells_repository.dart' as _i809;
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart'
@@ -44,6 +52,11 @@ extension GetItInjectableX on _i174.GetIt {
       dispose: (i) => i.dispose(),
     );
     gh.lazySingleton<_i987.DndSuSpellsParser>(() => _i987.DndSuSpellsParser());
+    gh.lazySingleton<_i364.DndSuClassParser>(() => _i364.DndSuClassParser());
+    gh.lazySingleton<_i674.DndSuBackgroundsParser>(
+        () => _i674.DndSuBackgroundsParser());
+    gh.lazySingleton<_i487.DndSuFeatsParser>(() => _i487.DndSuFeatsParser());
+    gh.lazySingleton<_i263.DndSuCache>(() => _i263.DndSuCache());
     gh.factoryParam<_i571.PlayerCubit, _i747.Player, dynamic>((
       player,
       _,
@@ -58,6 +71,13 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.factory<_i716.CreatedCharactersCubit>(
         () => _i716.CreatedCharactersCubit(gh<_i895.SpSource>()));
+    gh.lazySingleton<_i890.RulesRepository>(() => _i890.RulesRepository(
+          gh<_i914.DndSuClient>(),
+          gh<_i263.DndSuCache>(),
+          gh<_i364.DndSuClassParser>(),
+          gh<_i674.DndSuBackgroundsParser>(),
+          gh<_i487.DndSuFeatsParser>(),
+        ));
     gh.factoryParam<_i876.LevelUpCubit, _i747.Player, dynamic>((
       player,
       _,

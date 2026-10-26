@@ -30,7 +30,7 @@ class Tool {
 
   factory Tool.fromJson(Map<String, dynamic> json) {
     return Tool(
-      category: ToolCategory.values[json['category']],
+      category: ToolCategory.values.byName(json['category']),
       name: json['name'],
       description: json['description'],
       price: Balance.fromJson(json['price']),
@@ -39,7 +39,7 @@ class Tool {
 
   Map<String, dynamic> toJson() {
     return {
-      'category': category.index,
+      'category': category.name,
       'name': name,
       'description': description,
       'price': price.toJson(),

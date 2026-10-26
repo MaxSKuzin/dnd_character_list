@@ -4,6 +4,7 @@ import 'package:dnd_character_list/presentation/common/widgets/separated_column.
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 class SpellsStatsSection extends StatelessWidget {
   final List<SpellStat> spellStats;
@@ -35,7 +36,7 @@ class SpellsStatsSection extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
                             child: Center(
-                              child: Text(e.statKind.name.substring(0, 3).toUpperCase()),
+                              child: Text(e.statKind.localizedName.substring(0, 3).toUpperCase()),
                             ),
                           ),
                         ),

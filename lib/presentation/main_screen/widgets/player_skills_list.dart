@@ -5,6 +5,7 @@ import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/main_screen/widgets/skill_widget.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 class PlayerSkillsList extends StatefulWidget {
   const PlayerSkillsList({super.key});
@@ -44,7 +45,7 @@ class _PlayerSkillsListState extends State<PlayerSkillsList> {
                 for (final skill in skills.sorted((a, b) => a.origin.name.compareTo(b.origin.name)))
                   SkillWidget(
                     key: Key(skill.origin.name),
-                    title: '${skill.origin.name} (${skill.origin.origin.name.substring(0, 3)})',
+                    title: '${skill.origin.localizedName} (${skill.origin.origin.localizedName.substring(0, 3)})',
                     isChosen: skill.isChosen,
                     bonus: skill.bonus,
                   ),

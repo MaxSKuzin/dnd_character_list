@@ -1,102 +1,43 @@
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 
+/// Навыки; имена значений совпадают с кодами dnd.su (`skill.sleightOfHand`).
 enum Skill {
-  ///Акробатика
-  acrobatics(StatKind.dexterity),
-
-  ///Атлетика
   athletics(StatKind.strength),
-
-  ///Магия
-  magic(StatKind.intelligence),
-
-  ///Обман
-  fraud(StatKind.charisma),
-
-  ///История
-  history(StatKind.intelligence),
-
-  ///Проницательность
-  insight(StatKind.wisdom),
-
-  ///Запугивание
-  harassment(StatKind.charisma),
-
-  ///Анализ
-  analysis(StatKind.intelligence),
-
-  ///Медицина
-  medicine(StatKind.wisdom),
-
-  ///Природа
-  nature(StatKind.wisdom),
-
-  ///Восприятие
-  perception(StatKind.wisdom),
-
-  ///Выступление
-  performance(StatKind.charisma),
-
-  ///Убеждение
-  conviction(StatKind.charisma),
-
-  ///Религия
-  religion(StatKind.intelligence),
-
-  ///Ловкость рук
-  manualDexterity(StatKind.dexterity),
-
-  ///Скрытность
+  acrobatics(StatKind.dexterity),
+  sleightOfHand(StatKind.dexterity),
   stealth(StatKind.dexterity),
-
-  ///Выживание
-  surviving(StatKind.wisdom),
-
-  ///Обращение с животными
-  animalTaming(StatKind.wisdom),
-
-  ///Расследование
-  investigation(StatKind.intelligence);
+  history(StatKind.intelligence),
+  arcana(StatKind.intelligence),
+  nature(StatKind.intelligence),
+  investigation(StatKind.intelligence),
+  religion(StatKind.intelligence),
+  perception(StatKind.wisdom),
+  survival(StatKind.wisdom),
+  medicine(StatKind.wisdom),
+  insight(StatKind.wisdom),
+  animalHandling(StatKind.wisdom),
+  performance(StatKind.charisma),
+  intimidation(StatKind.charisma),
+  deception(StatKind.charisma),
+  persuasion(StatKind.charisma);
 
   const Skill(this.origin);
 
   final StatKind origin;
 
-  String get name => switch (this) {
-        acrobatics => 'Акробатика',
-        athletics => 'Атлетика',
-        magic => 'Магия',
-        fraud => 'Обман',
-        history => 'История',
-        insight => 'Проницательность',
-        harassment => 'Запугивание',
-        analysis => 'Анализ',
-        medicine => 'Медицина',
-        nature => 'Природа',
-        perception => 'Восприятие',
-        performance => 'Выступление',
-        conviction => 'Убеждение',
-        religion => 'Религия',
-        manualDexterity => 'Ловкость рук',
-        stealth => 'Скрытность',
-        surviving => 'Выживание',
-        animalTaming => 'Обращение с животными',
-        investigation => 'Исследование',
-      };
+  static Skill? fromDndSu(String code) => values.where((e) => 'skill.${e.name}' == code).firstOrNull;
 
+  /// Модификатор характеристики плюс бонус мастерства при владении (двойной при компетентности).
+  /// Без владения добавляется половина бонуса, если у персонажа есть «Мастер на все руки».
   int getBonus(Player player) {
-    var mainBonus = switch (origin) {
-      StatKind.strength => player.strength.bonus,
-      StatKind.dexterity => player.dexterity.bonus,
-      StatKind.constitution => player.constitution.bonus,
-      StatKind.intelligence => player.intelligence.bonus,
-      StatKind.wisdom => player.wisdom.bonus,
-      StatKind.charisma => player.charisma.bonus,
-    };
-
-    final int containment = player.chosenSkills.where((e) => e == this).length;
-
-    return mainBonus + player.proficiencyBonus * containment;
+    final statBonus = player.stats[origin]!.bonus;
+    if (player.expertiseSkills.contains(this)) {
+      return statBonus + player.proficiencyBonus * 2;
+    }
+    if (player.chosenSkills.contains(this)) {
+      return statBonus + player.proficiencyBonus;
+    }
+    return statBonus + player.unskilledCheckBonus;
   }
 }

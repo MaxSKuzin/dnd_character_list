@@ -60,10 +60,7 @@ class AppRouter extends RootStackRouter {
               page: SelectBackgroundRoute.page,
             ),
             AdaptiveRoute(
-              page: SelectToolsRoute.page,
-            ),
-            AdaptiveRoute(
-              page: SelectLanguagesRoute.page,
+              page: ProficienciesRoute.page,
             ),
           ],
         ),
@@ -88,7 +85,13 @@ class AppRouter extends RootStackRouter {
               page: SelectSkillsRoute.page,
             ),
             AdaptiveRoute(
-              page: SelectCollegiumRoute.page,
+              page: SelectSubclassRoute.page,
+            ),
+            AdaptiveRoute(
+              page: AbilityScoreImprovementRoute.page,
+            ),
+            AdaptiveRoute(
+              page: ProficienciesRoute.page,
             ),
             AdaptiveRoute(
               page: FillStatsRoute.page,

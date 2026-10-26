@@ -1,4 +1,3 @@
-import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +7,7 @@ class InitiativeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stats = PlayerModel.stats(context);
-    final initiative = stats[StatKind.dexterity]!.bonus;
+    final initiative = PlayerModel.getPlayer(context).initiative;
 
     return DecoratedBox(
       decoration: ShapeDecoration(

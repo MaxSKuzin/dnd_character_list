@@ -1,4 +1,5 @@
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
+import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:flutter/material.dart';
 
 class SpeedWidget extends StatelessWidget {
@@ -23,24 +24,24 @@ class SpeedWidget extends StatelessWidget {
             ),
             color: context.customColors?.cardColor,
           ),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
+                const Spacer(),
                 Expanded(
                   child: Center(
                     child: Text(
-                      '30',
-                      style: TextStyle(
+                      '${PlayerModel.getPlayer(context).speed}',
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   child: Center(
                     child: FittedBox(
                       child: Text(
