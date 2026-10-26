@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:dnd_character_list/presentation/common/widgets/sheet_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:html/dom.dart' as dom;
@@ -251,29 +252,5 @@ class HtmlDialog extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: const RoundedRectangleBorder(
-        side: BorderSide(color: Colors.white),
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-            ),
-            const Gap(8),
-            Flexible(
-              child: SingleChildScrollView(child: HtmlContent(html)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => SheetDialog(title: title, child: HtmlContent(html));
 }

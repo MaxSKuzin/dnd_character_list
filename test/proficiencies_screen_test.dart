@@ -55,7 +55,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilterChip, name));
       await tester.pump();
     }
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Далее'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Далее'));
 
     expect(result, ['Флейта', 'Барабан', 'Лира']);
   });

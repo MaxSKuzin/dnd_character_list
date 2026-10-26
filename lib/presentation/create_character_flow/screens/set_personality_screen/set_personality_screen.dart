@@ -1,3 +1,6 @@
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
+import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
@@ -50,289 +53,157 @@ class _SetPersonalityScreenState extends State<SetPersonalityScreen> {
     super.dispose();
   }
 
+  Future<void> _enterNumber(
+      {required String title, required String label, required ValueChanged<int> onEntered}) async {
+    FocusScope.of(context).unfocus();
+    final value = await EnterNumberDialog.show(context, title: title, labelText: label);
+    if (value == null || !mounted) return;
+    setState(() => onEntered(value));
+  }
+
+  void _create() {
+    final cubit = context.read<CreateCharacterCubit>();
+    cubit.setPersonality(
+      Personality(
+        name: _nameController.text,
+        hairColor: _hairController.text,
+        eyesColor: _eyesController.text,
+        skinColor: _skinController.text,
+        story: _storyController.text,
+        age: _age,
+        height: _height,
+        weight: _weight,
+        traits: Map.of(_traits),
+      ),
+    );
+    cubit.createCharacter();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    final race = context.read<CreateCharacterCubit>().race!;
+    final valueStyle = context.theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700);
+    return ListenableBuilder(
+      listenable:
+          Listenable.merge([_nameController, _hairController, _eyesController, _skinController, _storyController]),
+      builder: (context, _) {
+        final controllers = [_nameController, _hairController, _eyesController, _skinController, _storyController];
+        final isFilled = controllers.every((e) => e.text.trim().isNotEmpty) &&
+            _age != 0 &&
+            _height != 0 &&
+            _weight != 0 &&
+            _traitsFilled;
+        return StepScaffold(
+          title: 'Личность',
+          description: 'Опишите персонажа и выберите по строке в таблицах предыстории: черта характера, идеал, '
+              'привязанность и слабость обязательны.',
+          actionLabel: 'Создать персонажа',
+          onAction: isFilled ? _create : null,
+          body: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             children: [
-              const Text(
-                'Личность',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const Gap(8),
-              const Text(
-                'Опишите персонажа и выберите по строке в таблицах предыстории: черта характера, идеал, '
-                'привязанность и слабость обязательны.',
-                textAlign: TextAlign.center,
-              ),
-              const Gap(16),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      TapRegion(
-                        child: TextFormField(
-                          autofocus: true,
-                          controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Имя',
-                          ),
-                          keyboardType: TextInputType.name,
-                        ),
-                      ),
-                      const Gap(16),
-                      TapRegion(
-                        child: TextFormField(
-                          autofocus: true,
-                          controller: _hairController,
-                          decoration: const InputDecoration(
-                            labelText: 'Цвет волос',
-                          ),
-                          keyboardType: TextInputType.name,
-                        ),
-                      ),
-                      const Gap(16),
-                      TapRegion(
-                        child: TextFormField(
-                          autofocus: true,
-                          controller: _eyesController,
-                          decoration: const InputDecoration(
-                            labelText: 'Цвет глаз',
-                          ),
-                          keyboardType: TextInputType.name,
-                        ),
-                      ),
-                      const Gap(16),
-                      TapRegion(
-                        child: TextFormField(
-                          autofocus: true,
-                          controller: _skinController,
-                          decoration: const InputDecoration(
-                            labelText: 'Цвет кожи',
-                          ),
-                          keyboardType: TextInputType.name,
-                        ),
-                      ),
-                      const Gap(16),
-                      TapRegion(
-                        child: TextFormField(
-                          autofocus: true,
-                          controller: _storyController,
-                          decoration: const InputDecoration(
-                            labelText: 'История',
-                          ),
-                          keyboardType: TextInputType.name,
-                        ),
-                      ),
-                      const Gap(16),
-                      GridView(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 16,
-                        ),
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              FocusScope.of(context).unfocus();
-                              final newAge = await EnterNumberDialog.show(
-                                context,
-                                title: 'Возраст',
-                                labelText: 'Введите возраст',
-                              );
-                              if (newAge == null || !mounted) {
-                                return;
-                              }
-                              setState(() {
-                                _age = newAge;
-                              });
-                            },
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.white,
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '$_age',
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const Text(
-                                    'Возраст',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              FocusScope.of(context).unfocus();
-                              final newHeight = await EnterNumberDialog.show(
-                                context,
-                                title: 'Рост',
-                                labelText: 'Рост в см. ${context.read<CreateCharacterCubit>().race!.heightHint}',
-                              );
-                              if (newHeight == null || !mounted) {
-                                return;
-                              }
-                              setState(() {
-                                _height = newHeight;
-                              });
-                            },
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.white,
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '$_height',
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const Text(
-                                    'Рост',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              FocusScope.of(context).unfocus();
-                              final newWeight = await EnterNumberDialog.show(
-                                context,
-                                title: 'Вес',
-                                labelText: 'Вес в кг. ${context.read<CreateCharacterCubit>().race!.weightHint}',
-                              );
-                              if (newWeight == null || !mounted) {
-                                return;
-                              }
-                              setState(() {
-                                _weight = newWeight;
-                              });
-                            },
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.white,
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '$_weight',
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const Text(
-                                    'Вес',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      for (final table in widget.tables) ...[
-                        const Gap(16),
-                        PersonalityTableSelector(
-                          table: table,
-                          selected: _traits[table.title],
-                          onChanged: (value) => setState(() {
-                            if (value == null) {
-                              _traits.remove(table.title);
-                            } else {
-                              _traits[table.title] = value;
-                            }
-                          }),
-                        ),
-                      ],
-                    ],
-                  ),
+              SheetSection(
+                icon: Icons.person_outline,
+                title: 'Персонаж',
+                child: Column(
+                  children: [
+                    _Field(controller: _nameController, label: 'Имя', autofocus: true),
+                    _Field(controller: _storyController, label: 'История', maxLines: 5),
+                  ],
                 ),
               ),
-              const Gap(24),
-              ListenableBuilder(
-                listenable: Listenable.merge([
-                  _nameController,
-                  _hairController,
-                  _eyesController,
-                  _skinController,
-                  _storyController,
-                ]),
-                builder: (context, values) {
-                  final isFilled = _nameController.text.isNotEmpty &&
-                      _hairController.text.isNotEmpty &&
-                      _eyesController.text.isNotEmpty &&
-                      _skinController.text.isNotEmpty &&
-                      _storyController.text.isNotEmpty &&
-                      _age != 0 &&
-                      _height != 0 &&
-                      _weight != 0 &&
-                      _traitsFilled;
-
-                  return ElevatedButton(
-                    onPressed: isFilled
-                        ? () {
-                            context.read<CreateCharacterCubit>().setPersonality(
-                                  Personality(
-                                    name: _nameController.text,
-                                    hairColor: _hairController.text,
-                                    eyesColor: _eyesController.text,
-                                    skinColor: _skinController.text,
-                                    story: _storyController.text,
-                                    age: _age,
-                                    height: _height,
-                                    weight: _weight,
-                                    traits: Map.of(_traits),
-                                  ),
-                                );
-                            context.read<CreateCharacterCubit>().createCharacter();
-                          }
-                        : null,
-                    child: const Text('Далее'),
-                  );
-                },
+              const Gap(12),
+              SheetSection(
+                icon: Icons.face_outlined,
+                title: 'Внешность',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TileGrid(
+                      columns: 3,
+                      children: [
+                        InfoTile(
+                          label: 'Возраст',
+                          value: _age == 0 ? '—' : '$_age',
+                          caption: 'лет',
+                          valueStyle: valueStyle,
+                          onTap: () =>
+                              _enterNumber(title: 'Возраст', label: 'Введите возраст', onEntered: (v) => _age = v),
+                        ),
+                        InfoTile(
+                          label: 'Рост',
+                          value: _height == 0 ? '—' : '$_height',
+                          caption: 'см',
+                          valueStyle: valueStyle,
+                          onTap: () => _enterNumber(
+                            title: 'Рост',
+                            label: 'Рост в см. ${race.heightHint}',
+                            onEntered: (v) => _height = v,
+                          ),
+                        ),
+                        InfoTile(
+                          label: 'Вес',
+                          value: _weight == 0 ? '—' : '$_weight',
+                          caption: 'кг',
+                          valueStyle: valueStyle,
+                          onTap: () => _enterNumber(
+                            title: 'Вес',
+                            label: 'Вес в кг. ${race.weightHint}',
+                            onEntered: (v) => _weight = v,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(4),
+                    _Field(controller: _hairController, label: 'Цвет волос'),
+                    _Field(controller: _eyesController, label: 'Цвет глаз'),
+                    _Field(controller: _skinController, label: 'Цвет кожи'),
+                  ],
+                ),
               ),
+              for (final table in widget.tables) ...[
+                const Gap(12),
+                PersonalityTableSelector(
+                  table: table,
+                  selected: _traits[table.title],
+                  onChanged: (value) => setState(() {
+                    if (value == null) {
+                      _traits.remove(table.title);
+                    } else {
+                      _traits[table.title] = value;
+                    }
+                  }),
+                ),
+              ],
             ],
           ),
-        ),
+        );
+      },
+    );
+  }
+}
+
+/// Поле ввода раздела; нажатие мимо поля убирает клавиатуру.
+class _Field extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final bool autofocus;
+  final int maxLines;
+
+  const _Field({required this.controller, required this.label, this.autofocus = false, this.maxLines = 1});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: TextField(
+        controller: controller,
+        autofocus: autofocus,
+        minLines: 1,
+        maxLines: maxLines,
+        textCapitalization: TextCapitalization.sentences,
+        decoration: InputDecoration(labelText: label),
+        onTapOutside: (_) => FocusScope.of(context).unfocus(),
       ),
     );
   }

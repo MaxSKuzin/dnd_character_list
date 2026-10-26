@@ -101,8 +101,9 @@ class SheetCard extends StatelessWidget {
 
   /// Фон; по умолчанию — цвет карточек.
   final Color? color;
+  final Color borderColor;
 
-  const SheetCard({super.key, required this.child, this.onTap, this.color});
+  const SheetCard({super.key, required this.child, this.onTap, this.color, this.borderColor = Colors.white});
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +111,7 @@ class SheetCard extends StatelessWidget {
       color: color ?? context.customColors?.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Colors.white),
+        side: BorderSide(color: borderColor),
       ),
       clipBehavior: Clip.antiAlias,
       child: onTap == null ? child : InkWell(onTap: onTap, child: child),
@@ -203,12 +204,15 @@ class InfoTile extends StatelessWidget {
     final content = Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white60),
+        // Длинная подпись («Телосложение» рядом с кнопками) уменьшается, а не обрезается.
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            style: context.theme.textTheme.labelSmall?.copyWith(color: Colors.white60),
+          ),
         ),
         const Gap(2),
         Text(

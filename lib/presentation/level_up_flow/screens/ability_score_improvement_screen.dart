@@ -1,3 +1,5 @@
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/data/rules_repository.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
@@ -132,71 +134,64 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
   @override
   Widget build(BuildContext context) {
     final isComplete = _takeFeat ? _isFeatComplete : _spentPoints == _points;
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Увеличение характеристик',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const Gap(16),
-              SegmentedButton<bool>(
-                segments: const [
-                  ButtonSegment(value: false, label: Text('Характеристики')),
-                  ButtonSegment(value: true, label: Text('Черта')),
-                ],
-                selected: {_takeFeat},
-                onSelectionChanged: (value) => setState(() => _takeFeat = value.first),
-              ),
-              const Gap(16),
-              Expanded(child: _takeFeat ? _buildFeats() : _buildStats()),
-              const Gap(16),
-              OutlinedButton(
-                onPressed: isComplete ? _done : null,
-                child: const Text('Далее'),
-              ),
-            ],
-          ),
-        ),
+    return StepScaffold(
+      title: 'Увеличение характеристик',
+      description: _takeFeat
+          ? 'Вместо увеличения характеристик можно взять черту из «Книги игрока».'
+          : 'Повысьте одну характеристику на 2 или две на 1. Значение не может превысить $_maxStat.',
+      counter: _takeFeat ? null : 'Осталось ${_points - _spentPoints} из $_points',
+      isCounterDone: _spentPoints == _points,
+      headerBottom: SegmentedButton<bool>(
+        segments: const [
+          ButtonSegment(value: false, label: Text('Характеристики')),
+          ButtonSegment(value: true, label: Text('Черта')),
+        ],
+        selected: {_takeFeat},
+        onSelectionChanged: (value) => setState(() => _takeFeat = value.first),
       ),
+      onAction: isComplete ? _done : null,
+      body: _takeFeat ? _buildFeats() : _buildStats(),
     );
   }
 
-  Widget _buildStats() => ListView(
-        children: [
-          Text(
-            'Повысьте одну характеристику на 2 или две на 1. Значение не может превысить $_maxStat. '
-            'Осталось: ${_points - _spentPoints}',
-            textAlign: TextAlign.center,
-          ),
-          const Gap(8),
-          for (final stat in StatKind.values)
-            ListTile(
-              title: Text(stat.localizedName),
-              subtitle: Text('${_player.stats[stat]!.value} → ${_player.stats[stat]!.value + (_stats[stat] ?? 0)}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: (_stats[stat] ?? 0) > 0 ? () => setState(() => _stats[stat] = _stats[stat]! - 1) : null,
-                    icon: const Icon(Icons.remove),
+  Widget _buildStats() {
+    final valueStyle = context.theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700);
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      children: [
+        SheetCard(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: TileGrid(
+              columns: 2,
+              children: [
+                for (final stat in StatKind.values)
+                  Builder(
+                    builder: (context) {
+                      final current = _player.stats[stat]!.value;
+                      final added = _stats[stat] ?? 0;
+                      return InfoTile(
+                        label: stat.localizedName,
+                        value: '${current + added}',
+                        caption: added > 0 ? 'было $current, +$added' : 'сейчас',
+                        valueStyle:
+                            added > 0 ? valueStyle?.copyWith(color: context.theme.colorScheme.primary) : valueStyle,
+                        decreaseTooltip: '${stat.localizedName}: меньше',
+                        increaseTooltip: '${stat.localizedName}: больше',
+                        onDecrease: added > 0 ? () => setState(() => _stats[stat] = added - 1) : null,
+                        onIncrease: _spentPoints < _points && current + added < _maxStat
+                            ? () => setState(() => _stats[stat] = added + 1)
+                            : null,
+                      );
+                    },
                   ),
-                  IconButton(
-                    onPressed: _spentPoints < _points && _player.stats[stat]!.value + (_stats[stat] ?? 0) < _maxStat
-                        ? () => setState(() => _stats[stat] = (_stats[stat] ?? 0) + 1)
-                        : null,
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
+              ],
             ),
-        ],
-      );
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildFeats() => FutureBuilder(
         future: _feats,
@@ -211,20 +206,34 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
           final taken = _player.feats.map((e) => e.feat).toSet();
           final feats = [...snapshot.data!]..sort((a, b) => a.name.compareTo(b.name));
-          return ListView.separated(
-            itemCount: feats.length,
-            separatorBuilder: (_, __) => const Gap(8),
-            itemBuilder: (context, index) {
-              final feat = feats[index];
-              final unmet = taken.contains(feat) ? 'Уже взята' : feat.requirement.unmetReason(_player);
-              return _FeatTile(
-                feat: feat,
-                unmetReason: unmet,
-                isSelected: feat == _feat,
-                onTap: unmet == null ? () => _selectFeat(feat) : null,
-                choices: feat == _feat ? _buildFeatChoices(feat) : null,
-              );
-            },
+          return ChoiceList(
+            children: [
+              for (final feat in feats)
+                Builder(
+                  builder: (context) {
+                    final unmet = taken.contains(feat) ? 'Уже взята' : feat.requirement.unmetReason(_player);
+                    final isSelected = feat == _feat;
+                    return ChoiceCard(
+                      title: feat.name,
+                      subtitle: feat.requirementText == null ? null : 'Требование: ${feat.requirementText}',
+                      unavailableReason: unmet,
+                      isSelected: isSelected,
+                      onTap: unmet == null ? () => _selectFeat(feat) : null,
+                      // Описание и выборы черты — только у выбранной, чтобы список оставался коротким.
+                      child: isSelected
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                HtmlContent(feat.descriptionHtml),
+                                const Gap(8),
+                                _buildFeatChoices(feat),
+                              ],
+                            )
+                          : null,
+                    );
+                  },
+                ),
+            ],
           );
         },
       );
@@ -241,9 +250,8 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
                     (stat) => ChoiceChip(
                       label: Text(stat.localizedName),
                       selected: _increasedStat == stat,
-                      onSelected: _player.stats[stat]!.value < _maxStat
-                          ? (_) => setState(() => _increasedStat = stat)
-                          : null,
+                      onSelected:
+                          _player.stats[stat]!.value < _maxStat ? (_) => setState(() => _increasedStat = stat) : null,
                     ),
                   )
                   .toList(),
@@ -331,55 +339,5 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
     } else if (selected.length < max) {
       selected.add(value);
     }
-  }
-}
-
-class _FeatTile extends StatelessWidget {
-  final Feat feat;
-  final String? unmetReason;
-  final bool isSelected;
-  final VoidCallback? onTap;
-  final Widget? choices;
-
-  const _FeatTile({
-    required this.feat,
-    required this.unmetReason,
-    required this.isSelected,
-    required this.onTap,
-    required this.choices,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Opacity(
-      opacity: unmetReason == null ? 1 : 0.5,
-      child: Card(
-        color: isSelected ? context.customColors?.cardColor : Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: isSelected ? Colors.white : Colors.white24),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(feat.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                if (feat.requirementText != null) Text('Требование: ${feat.requirementText}'),
-                if (unmetReason != null) Text(unmetReason!, style: const TextStyle(color: Colors.redAccent)),
-                if (isSelected) ...[
-                  const Gap(8),
-                  HtmlContent(feat.descriptionHtml),
-                  if (choices != null) ...[const Gap(8), choices!],
-                ],
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

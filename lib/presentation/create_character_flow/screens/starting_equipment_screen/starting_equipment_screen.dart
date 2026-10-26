@@ -1,3 +1,5 @@
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/data/rules_repository.dart';
 import 'package:dnd_character_list/domain/models/equipment_catalog.dart';
@@ -76,66 +78,39 @@ class _StartingEquipmentScreenState extends State<StartingEquipmentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: FutureBuilder(
-            future: _catalog,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return LoadingError(
+    return FutureBuilder(
+      future: _catalog,
+      builder: (context, snapshot) {
+        final catalog = snapshot.data;
+        return StepScaffold(
+          title: widget.title,
+          description: 'В каждой строке выберите один вариант. Снаряжение добавляется к снаряжению предыстории.',
+          onAction: catalog != null && _isComplete ? () => widget.onSelected(_items(catalog)) : null,
+          body: snapshot.hasError
+              ? LoadingError(
                   message: 'Не удалось загрузить предметы с ttg.club.',
                   error: snapshot.error!,
                   onRetry: () => setState(() => _catalog = _loadCatalog()),
-                );
-              }
-              if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-              final catalog = snapshot.data!;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    widget.title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const Gap(8),
-                  const Text(
-                    'В каждой строке выберите один вариант. Снаряжение добавляется к снаряжению предыстории.',
-                    textAlign: TextAlign.center,
-                  ),
-                  const Gap(16),
-                  Expanded(
-                    child: ListView.separated(
+                )
+              : catalog == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: widget.choices.length,
                       separatorBuilder: (_, __) => const Gap(12),
                       itemBuilder: (context, index) => _buildChoice(catalog, index),
                     ),
-                  ),
-                  const Gap(16),
-                  OutlinedButton(
-                    onPressed: _isComplete ? () => widget.onSelected(_items(catalog)) : null,
-                    child: const Text('Далее'),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildChoice(EquipmentCatalog catalog, int choice) {
     final options = widget.choices[choice].options;
-    return Card(
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Colors.white24),
-      ),
-      color: Colors.transparent,
+    // Строка, где вариант уже выбран, — цветом карточек, как выбранные варианты на других шагах.
+    return SheetCard(
+      color: _options[choice] == null ? Colors.transparent : null,
+      borderColor: _options[choice] == null ? Colors.white24 : Colors.white,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: RadioGroup<int>(

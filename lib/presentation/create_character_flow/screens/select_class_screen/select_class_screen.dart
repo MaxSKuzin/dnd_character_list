@@ -1,3 +1,5 @@
+import 'package:dnd_character_list/presentation/common/widgets/class_choice_card.dart';
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
 import 'package:collection/collection.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/data/rules_repository.dart';
@@ -5,13 +7,10 @@ import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/injection.dart';
-import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
 import 'package:dnd_character_list/presentation/create_character_flow/create_character_steps.dart';
 import 'package:dnd_character_list/presentation/create_character_flow/screens/select_class_screen/class_info_dialog.dart';
-import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
 @RoutePage()
 class SelectClassScreen extends StatefulWidget {
@@ -68,123 +67,25 @@ class _SelectClassScreenState extends State<SelectClassScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Класс',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Gap(16),
-              Expanded(
-                child: GridView(
-                  padding: EdgeInsets.zero,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                  ),
-                  // Доступные классы — первыми.
-                  children: ClassKind.values
-                      .sortedBy<num>((e) => e.canCreate ? 0 : 1)
-                      .map(
-                        (e) => GestureDetector(
-                          onTap: !e.canCreate
-                              ? null
-                              : () {
-                                  setState(() {
-                                    if (_selectedClass == e) {
-                                      _selectedClass = null;
-                                    } else {
-                                      _selectedClass = e;
-                                    }
-                                  });
-                                },
-                          child: ImageFiltered(
-                            imageFilter: ColorFilter.mode(
-                              _selectedClass == e
-                                  ? Colors.transparent
-                                  : e.canCreate
-                                      ? Colors.black45
-                                      : Colors.black87,
-                              BlendMode.srcATop,
-                            ),
-                            child: Stack(
-                              children: [
-                                Positioned.fill(
-                                  child: ClassImage(classType: e),
-                                ),
-                                if (e.ttgLink != null)
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: IconButton(
-                                      onPressed: _isLoading ? null : () => _showInfo(e),
-                                      icon: const Icon(Icons.info),
-                                    ),
-                                  ),
-                                DecoratedBox(
-                                  decoration: const ShapeDecoration(
-                                    shape: CircleBorder(
-                                      side: BorderSide(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black54,
-                                        borderRadius: BorderRadius.circular(100),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              e.localizedName,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            if (!e.canCreate)
-                                              const Text('Пока недоступен', style: TextStyle(color: Colors.white70)),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-              const Gap(16),
-              OutlinedButton(
-                onPressed: _selectedClass != null && !_isLoading ? _continue : null,
-                child: _isLoading
-                    ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Далее'),
-              ),
-            ],
-          ),
-        ),
+    return StepScaffold(
+      title: 'Класс',
+      description: 'Класс определяет хиты, владения, снаряжение и умения. Подробности — по «i».',
+      isBusy: _isLoading,
+      onAction: _selectedClass != null ? _continue : null,
+      body: ClassChoiceGrid(
+        // Доступные классы — первыми.
+        children: [
+          for (final classKind in ClassKind.values.sortedBy<num>((e) => e.canCreate ? 0 : 1))
+            ClassChoiceCard(
+              classKind: classKind,
+              isSelected: classKind == _selectedClass,
+              subtitle: classKind.canCreate ? null : 'Пока недоступен',
+              onTap: classKind.canCreate
+                  ? () => setState(() => _selectedClass = classKind == _selectedClass ? null : classKind)
+                  : null,
+              onInfo: classKind.ttgLink == null || _isLoading ? null : () => _showInfo(classKind),
+            ),
+        ],
       ),
     );
   }

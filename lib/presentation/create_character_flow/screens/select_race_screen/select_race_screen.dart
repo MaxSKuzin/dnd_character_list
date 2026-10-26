@@ -1,10 +1,12 @@
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
+import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/create_character_cubit.dart';
 import 'package:dnd_character_list/domain/models/races/race.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
 @RoutePage()
 class SelectRaceScreen extends StatefulWidget {
@@ -19,72 +21,36 @@ class _SelectRaceScreenState extends State<SelectRaceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Раса',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+    return StepScaffold(
+      title: 'Раса',
+      description: 'Раса даёт прибавки к характеристикам, скорость, языки и особенности. Подробности — по «i».',
+      onAction: _selectedRace != null
+          ? () {
+              context.read<CreateCharacterCubit>().setRace(_selectedRace!);
+              context.pushRoute(const SelectClassRoute());
+            }
+          : null,
+      body: ChoiceList(
+        children: [
+          for (final race in Race.values)
+            ChoiceCard(
+              title: race.name,
+              subtitle: [
+                race.statBonuses.entries.map((e) => '${e.key.localizedName} +${e.value}').join(', '),
+                if (race.additionalStatsCount > 0) '+1 к ${race.additionalStatsCount} на выбор',
+                'скорость ${race.speed} фт.',
+              ].join(' · '),
+              isSelected: race == _selectedRace,
+              onTap: () => setState(() => _selectedRace = race == _selectedRace ? null : race),
+              onInfo: () => showDialog(
+                context: context,
+                builder: (_) => HtmlDialog(
+                  title: race.name,
+                  html: race.peculiarities.map((e) => '<h3>${e.name}</h3><p>${e.description}</p>').join(),
                 ),
               ),
-              const Gap(16),
-              Expanded(
-                child: GridView(
-                  padding: EdgeInsets.zero,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                  ),
-                  children: Race.values
-                      .map(
-                        (e) => _selectedRace != e
-                            ? OutlinedButton(
-                                onPressed: () => setState(
-                                  () {
-                                    _selectedRace = e;
-                                  },
-                                ),
-                                child: Text(
-                                  e.name,
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                            : FilledButton(
-                                onPressed: () => setState(
-                                  () {
-                                    _selectedRace = null;
-                                  },
-                                ),
-                                child: Text(
-                                  e.name,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                      )
-                      .toList(),
-                ),
-              ),
-              const Gap(16),
-              OutlinedButton(
-                onPressed: _selectedRace != null
-                    ? () {
-                        context.read<CreateCharacterCubit>().setRace(_selectedRace!);
-                        context.pushRoute(const SelectClassRoute());
-                      }
-                    : null,
-                child: const Text('Далее'),
-              ),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
     );
   }

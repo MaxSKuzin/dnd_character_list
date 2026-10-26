@@ -132,7 +132,7 @@ void main() {
   testWidgets('step can be skipped', (tester) async {
     final results = await pump(tester, replaceable: [_charm], known: [_charm]);
 
-    expect(tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Заменить')).onPressed, isNull);
+    expect(tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Заменить')).onPressed, isNull);
     await tester.tap(find.text('Пропустить'));
     await tester.pumpAndSettle();
 

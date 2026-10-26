@@ -1,9 +1,9 @@
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 @RoutePage()
 class SelectSkillsScreen extends StatefulWidget {
@@ -33,66 +33,33 @@ class _SelectSkillsScreenState extends State<SelectSkillsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                widget.title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (widget.description != null) ...[
-                const Gap(8),
-                Text(widget.description!, textAlign: TextAlign.center),
-              ],
-              const Gap(16),
-              Text(
-                'Выбрано навыков: ${_selectedSkills.length}/${widget.maxSkills}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              const Gap(16),
-              Expanded(
-                child: ListView(
-                  children: widget.availableSkills
-                      .sorted((a, b) => a.localizedName.compareTo(b.localizedName))
-                      .map((e) {
-                    final isSelected = _selectedSkills.contains(e);
-                    return ListTile(
-                      title: Text(e.localizedName),
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            _selectedSkills.remove(e);
-                          } else if (_selectedSkills.length < widget.maxSkills) {
-                            _selectedSkills.add(e);
-                          }
-                        });
-                      },
-                      selected: isSelected,
-                    );
-                  }).toList(),
-                ),
-              ),
-              const Gap(16),
-              OutlinedButton(
-                onPressed: _selectedSkills.length == widget.maxSkills
-                    ? () => widget.onSkillsSelected(_selectedSkills)
-                    : null,
-                child: const Text('Далее'),
-              ),
-            ],
-          ),
-        ),
+    final skills = widget.availableSkills.sorted((a, b) => a.localizedName.compareTo(b.localizedName));
+    final isComplete = _selectedSkills.length == widget.maxSkills;
+    return StepScaffold(
+      title: widget.title,
+      description: widget.description,
+      counter: '${_selectedSkills.length} из ${widget.maxSkills}',
+      isCounterDone: isComplete,
+      onAction: isComplete ? () => widget.onSkillsSelected(_selectedSkills) : null,
+      body: ChoiceList(
+        children: [
+          for (final skill in skills)
+            Builder(
+              builder: (context) {
+                final isSelected = _selectedSkills.contains(skill);
+                return ChoiceCard(
+                  title: skill.localizedName,
+                  subtitle: skill.origin.localizedName,
+                  isSelected: isSelected,
+                  isMultiple: true,
+                  // Когда набрано нужное число, остальные навыки гаснут.
+                  onTap: isSelected || !isComplete
+                      ? () => setState(() => isSelected ? _selectedSkills.remove(skill) : _selectedSkills.add(skill))
+                      : null,
+                );
+              },
+            ),
+        ],
       ),
     );
   }

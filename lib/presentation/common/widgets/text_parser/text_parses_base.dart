@@ -11,8 +11,9 @@ class TextParses extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<TextItem> items = _parseText(text);
-    return RichText(
-      text: TextSpan(
+    // Text.rich, а не RichText: шрифт и цвет берутся из темы, как у остального текста.
+    return Text.rich(
+      TextSpan(
         children: items.map(
           (item) {
             final style = item.selection == TextSelection.i

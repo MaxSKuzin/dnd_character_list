@@ -1,3 +1,5 @@
+import 'package:dnd_character_list/presentation/common/widgets/class_choice_card.dart';
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
@@ -7,12 +9,10 @@ import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
-import 'package:dnd_character_list/presentation/common/widgets/class_image.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 import 'package:dnd_character_list/data/rules_repository.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
@@ -186,138 +186,30 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
   @override
   Widget build(BuildContext context) {
     final classes = PlayerModel.classes(context);
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Класс',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Gap(16),
-              Expanded(
-                child: GridView(
-                  padding: EdgeInsets.zero,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                  ),
-                  children: ClassKind.values.sorted((a, b) {
-                    final firstClass = classes.firstWhereOrNull((el) => a == el.classKind);
-                    final secondClass = classes.firstWhereOrNull((el) => b == el.classKind);
-                    if (firstClass != null) {
-                      if (secondClass != null) {
-                        return secondClass.level.compareTo(firstClass.level);
-                      } else {
-                        return -1;
-                      }
-                    } else {
-                      if (secondClass != null) {
-                        return 1;
-                      } else {
-                        return 0;
-                      }
-                    }
-                  }).map(
-                    (e) {
-                      final selectedClass = classes.firstWhereOrNull((el) => e == el.classKind);
-                      return GestureDetector(
-                        onTap: !e.canLevelUp
-                            ? null
-                            : () {
-                                setState(() {
-                                  if (_selectedClassKind == e) {
-                                    _selectedClassKind = null;
-                                  } else {
-                                    _selectedClassKind = e;
-                                  }
-                                });
-                              },
-                        child: ImageFiltered(
-                          imageFilter: ColorFilter.mode(
-                            _selectedClassKind == e
-                                ? Colors.transparent
-                                : e.canLevelUp
-                                    ? Colors.black45
-                                    : Colors.black87,
-                            BlendMode.srcATop,
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned.fill(
-                                child: ClassImage(classType: e),
-                              ),
-                              DecoratedBox(
-                                decoration: const ShapeDecoration(
-                                  shape: CircleBorder(
-                                    side: BorderSide(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            e.localizedName,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          if (selectedClass != null)
-                                            Text(
-                                              'Уровень ${selectedClass.level}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          if (!e.canLevelUp)
-                                            const Text('Пока недоступен', style: TextStyle(color: Colors.white70)),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ).toList(),
-                ),
-              ),
-              const Gap(16),
-              OutlinedButton(
-                onPressed: _selectedClassKind != null && !_isLoading ? _levelUp : null,
-                child: _isLoading
-                    ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Далее'),
-              ),
-            ],
-          ),
-        ),
+    int levelOf(ClassKind kind) => classes.firstWhereOrNull((e) => e.classKind == kind)?.level ?? 0;
+    // Классы персонажа — первыми, по убыванию уровня; затем остальные.
+    final kinds = ClassKind.values.sortedBy<num>((e) => -levelOf(e));
+    return StepScaffold(
+      title: 'Повышение уровня',
+      description: 'Повысьте уровень одного из своих классов или возьмите новый (мультиклассирование).',
+      isBusy: _isLoading,
+      onAction: _selectedClassKind != null ? _levelUp : null,
+      body: ClassChoiceGrid(
+        children: [
+          for (final classKind in kinds)
+            ClassChoiceCard(
+              classKind: classKind,
+              isSelected: classKind == _selectedClassKind,
+              subtitle: !classKind.canLevelUp
+                  ? 'Пока недоступен'
+                  : levelOf(classKind) > 0
+                      ? 'Уровень ${levelOf(classKind)} → ${levelOf(classKind) + 1}'
+                      : 'Новый класс',
+              onTap: classKind.canLevelUp
+                  ? () => setState(() => _selectedClassKind = classKind == _selectedClassKind ? null : classKind)
+                  : null,
+            ),
+        ],
       ),
     );
   }

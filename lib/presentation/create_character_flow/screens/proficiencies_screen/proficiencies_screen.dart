@@ -1,3 +1,6 @@
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
+import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/data/rules_repository.dart';
 import 'package:dnd_character_list/domain/models/equipment_catalog.dart';
@@ -79,130 +82,126 @@ class _ProficienciesScreenState extends State<ProficienciesScreen> {
   @override
   Widget build(BuildContext context) {
     final fixedTools = widget.tools.where((e) => !e.isChoice).map((e) => e.title).toList();
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    final hint = context.theme.textTheme.bodySmall?.copyWith(color: Colors.white60);
+    return StepScaffold(
+      title: widget.title,
+      description: widget.description,
+      onAction: _isComplete
+          ? () => widget.onSelected(
+                [...fixedTools, ..._selectedTools.values.expand((e) => e)],
+                _selectedLanguages,
+              )
+          : null,
+      body: FutureBuilder(
+        future: _catalog,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return LoadingError(
+              message: 'Не удалось загрузить инструменты с ttg.club.',
+              error: snapshot.error!,
+              onRetry: () => setState(() => _catalog = _loadCatalog()),
+            );
+          }
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          final catalog = snapshot.data!;
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             children: [
-              Text(
-                widget.title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              if (widget.description != null) ...[
-                const Gap(8),
-                Text(widget.description!, textAlign: TextAlign.center),
-              ],
-              const Gap(16),
-              Expanded(
-                child: FutureBuilder(
-                  future: _catalog,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return LoadingError(
-                        message: 'Не удалось загрузить инструменты с ttg.club.',
-                        error: snapshot.error!,
-                        onRetry: () => setState(() => _catalog = _loadCatalog()),
-                      );
-                    }
-                    if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-                    final catalog = snapshot.data!;
-                    return ListView(
-                      children: [
-                        if (fixedTools.isNotEmpty) ...[
-                          const _Header('Вы получаете владение инструментами'),
-                          Text(fixedTools.join(', ')),
-                          const Gap(16),
-                        ],
-                        for (final option in _choices) ...[
-                          _Header(
-                            'Выберите ${option.categories.map((e) => e.localizedName.toLowerCase()).join(' или ')} '
-                            '(${_selectedTools[option]!.length}/${option.choose})',
-                            subtitle: [
-                              'Владение инструментами: ${option.title.toLowerCase()}',
-                              if (widget.knownTools.isNotEmpty) 'Уже владеете: ${widget.knownTools.join(', ')}',
-                            ].join('\n'),
-                          ),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: option.categories
-                                .expand(catalog.toolsOf)
-                                .map(
-                                  (tool) => FilterChip(
-                                    label: Text(tool.name),
-                                    selected: _selectedTools[option]!.contains(tool.name),
-                                    onSelected: _isTaken(option, tool.name)
-                                        ? null
-                                        : (_) => _toggle(_selectedTools[option]!, tool.name, option.choose),
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                          const Gap(16),
-                        ],
-                        if (widget.languagesCount > 0) ...[
-                          _Header(
-                            'Выберите языки (${_selectedLanguages.length}/${widget.languagesCount})',
-                            subtitle: widget.knownLanguages.isEmpty
-                                ? null
-                                : 'Уже знаете: ${widget.knownLanguages.map((e) => e.localizedName).join(', ')}',
-                          ),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: Language.values
-                                .where((e) => !widget.knownLanguages.contains(e))
-                                .map(
-                                  (language) => FilterChip(
-                                    label: Text(language.localizedName),
-                                    selected: _selectedLanguages.contains(language),
-                                    onSelected: (_) => _toggle(_selectedLanguages, language, widget.languagesCount),
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                        ],
-                      ],
-                    );
-                  },
+              if (fixedTools.isNotEmpty) ...[
+                SheetSection(
+                  icon: Icons.handyman_outlined,
+                  title: 'Вы получаете',
+                  child: Text(fixedTools.join(', ')),
                 ),
-              ),
-              const Gap(16),
-              OutlinedButton(
-                onPressed: _isComplete
-                    ? () => widget.onSelected(
-                          [...fixedTools, ..._selectedTools.values.expand((e) => e)],
-                          _selectedLanguages,
-                        )
-                    : null,
-                child: const Text('Далее'),
-              ),
+                const Gap(12),
+              ],
+              for (final option in _choices) ...[
+                SheetSection(
+                  icon: Icons.handyman_outlined,
+                  title: option.categories.map((e) => e.localizedName).join(' или '),
+                  trailing: _Counter(selected: _selectedTools[option]!.length, total: option.choose),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        [
+                          'Владение инструментами: ${option.title.toLowerCase()}',
+                          if (widget.knownTools.isNotEmpty) 'Уже владеете: ${widget.knownTools.join(', ')}',
+                        ].join('\n'),
+                        style: hint,
+                      ),
+                      const Gap(8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: option.categories
+                            .expand(catalog.toolsOf)
+                            .map(
+                              (tool) => FilterChip(
+                                label: Text(tool.name),
+                                selected: _selectedTools[option]!.contains(tool.name),
+                                onSelected: _isTaken(option, tool.name)
+                                    ? null
+                                    : (_) => _toggle(_selectedTools[option]!, tool.name, option.choose),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                const Gap(12),
+              ],
+              if (widget.languagesCount > 0)
+                SheetSection(
+                  icon: Icons.translate,
+                  title: 'Языки',
+                  trailing: _Counter(selected: _selectedLanguages.length, total: widget.languagesCount),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (widget.knownLanguages.isNotEmpty) ...[
+                        Text(
+                          'Уже знаете: ${widget.knownLanguages.map((e) => e.localizedName).join(', ')}',
+                          style: hint,
+                        ),
+                        const Gap(8),
+                      ],
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: Language.values
+                            .where((e) => !widget.knownLanguages.contains(e))
+                            .map(
+                              (language) => FilterChip(
+                                label: Text(language.localizedName),
+                                selected: _selectedLanguages.contains(language),
+                                onSelected: (_) => _toggle(_selectedLanguages, language, widget.languagesCount),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                ),
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 }
 
-class _Header extends StatelessWidget {
-  final String text;
-  final String? subtitle;
+/// Сколько выбрано в разделе: «1 из 2», когда набрано — цветом темы.
+class _Counter extends StatelessWidget {
+  final int selected;
+  final int total;
 
-  const _Header(this.text, {this.subtitle});
+  const _Counter({required this.selected, required this.total});
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            if (subtitle != null) Text(subtitle!, style: Theme.of(context).textTheme.bodySmall),
-          ],
-        ),
+        padding: const EdgeInsets.only(right: 12),
+        child: SheetBadge('$selected из $total', color: selected == total ? context.theme.colorScheme.primary : null),
       );
 }

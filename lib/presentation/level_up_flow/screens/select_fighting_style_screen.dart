@@ -1,12 +1,13 @@
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/presentation/common/widgets/text_parser/text_parses_base.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 @RoutePage()
 class SelectFightingStyleScreen extends StatefulWidget {
   final void Function(FightingStyle style) onStyleSelected;
+
   /// Доступные стили; по умолчанию — все.
   final List<FightingStyle>? styles;
 
@@ -25,49 +26,21 @@ class _SelectFightingStyleScreenState extends State<SelectFightingStyleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  'Боевой стиль',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                ...(widget.styles ?? FightingStyle.values).map(
-                  (e) => ListTile(
-                    title: ImageFiltered(
-                      imageFilter: ColorFilter.mode(
-                        _selectedStyle == e ? Colors.transparent : Colors.black45,
-                        BlendMode.srcATop,
-                      ),
-                      child: TextParses(
-                        e.description,
-                      ),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _selectedStyle = e;
-                      });
-                    },
-                  ),
-                ),
-                const Gap(16),
-                OutlinedButton(
-                  onPressed: _selectedStyle != null ? () => widget.onStyleSelected(_selectedStyle!) : null,
-                  child: const Text('Продолжить'),
-                ),
-              ],
+    return StepScaffold(
+      title: 'Боевой стиль',
+      description: 'Особая манера боя. Стиль выбирается один раз, повторно его взять нельзя.',
+      onAction: _selectedStyle != null ? () => widget.onStyleSelected(_selectedStyle!) : null,
+      body: ChoiceList(
+        children: [
+          for (final style in widget.styles ?? FightingStyle.values)
+            ChoiceCard(
+              title: style.title,
+              isSelected: style == _selectedStyle,
+              onTap: () => setState(() => _selectedStyle = style == _selectedStyle ? null : style),
+              // Название уже в заголовке карточки — в описании оно не повторяется.
+              child: TextParses(style.description.replaceFirst(RegExp(r'^<b>[^<]*</b>\.\s*'), '')),
             ),
-          ),
-        ),
+        ],
       ),
     );
   }

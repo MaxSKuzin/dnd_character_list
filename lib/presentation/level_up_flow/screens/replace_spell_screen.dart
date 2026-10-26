@@ -1,3 +1,5 @@
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
+import 'package:dnd_character_list/presentation/common/widgets/step_scaffold.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/data/spells_repository.dart';
@@ -112,55 +114,37 @@ class _ReplaceSpellScreenState extends State<ReplaceSpellScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                widget.title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const Gap(8),
-              Text(widget.description, textAlign: TextAlign.center),
-              const Gap(24),
-              _SpellCard(
-                label: 'Заклинание на замену',
-                spell: _replaced,
-                placeholder: 'Выберите известное заклинание',
-                onTap: _chooseReplaced,
-              ),
-              const Gap(8),
-              const Icon(Icons.arrow_downward),
-              const Gap(8),
-              _SpellCard(
-                label: 'Новое заклинание',
-                spell: _learned,
-                placeholder: _replaced == null
-                    ? 'Сначала выберите заклинание на замену'
-                    : _replaced!.slot == SpellSlot.conspiracy
-                        ? 'Выберите заговор'
-                        : 'Выберите заклинание до ${_newSlots.last.index} уровня',
-                onTap: _replaced == null ? null : _chooseLearned,
-              ),
-              const Spacer(),
-              OutlinedButton(
-                onPressed: _replaced != null && _learned != null && !_isSaving ? _onReplace : null,
-                child: _isSaving
-                    ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Заменить'),
-              ),
-              const Gap(8),
-              TextButton(
-                onPressed: _isSaving ? null : () => widget.onSelected(null),
-                child: const Text('Пропустить'),
-              ),
-            ],
+    return StepScaffold(
+      title: widget.title,
+      description: widget.description,
+      actionLabel: 'Заменить',
+      isBusy: _isSaving,
+      onAction: _replaced != null && _learned != null ? _onReplace : null,
+      onSkip: () => widget.onSelected(null),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          _SpellCard(
+            label: 'Заклинание на замену',
+            spell: _replaced,
+            placeholder: 'Выберите известное заклинание',
+            onTap: _chooseReplaced,
           ),
-        ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Icon(Icons.arrow_downward, color: Colors.white54),
+          ),
+          _SpellCard(
+            label: 'Новое заклинание',
+            spell: _learned,
+            placeholder: _replaced == null
+                ? 'Сначала выберите заклинание на замену'
+                : _replaced!.slot == SpellSlot.conspiracy
+                    ? 'Выберите заговор'
+                    : 'Выберите заклинание до ${_newSlots.last.index} уровня',
+            onTap: _replaced == null ? null : _chooseLearned,
+          ),
+        ],
       ),
     );
   }
@@ -177,12 +161,10 @@ class _SpellCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final spell = this.spell;
-    return Card(
-      color: spell != null ? context.customColors?.cardColor : Colors.transparent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: onTap == null ? Colors.white12 : Colors.white38),
-      ),
+    // Выбранное заклинание — цветом карточек с белой рамкой, как выбранные варианты на других шагах.
+    return SheetCard(
+      color: spell != null ? null : Colors.transparent,
+      borderColor: spell != null ? Colors.white : (onTap == null ? Colors.white12 : Colors.white38),
       child: ListTile(
         enabled: onTap != null,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -233,6 +215,7 @@ class _SpellPickerDialogState extends State<_SpellPickerDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: context.customColors?.cardColor,
       shape: const RoundedRectangleBorder(
         side: BorderSide(color: Colors.white),
         borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -280,7 +263,8 @@ class _SpellPickerDialogState extends State<_SpellPickerDialog> {
                         title: Text(spell.name),
                         subtitle: Text('${spell.slot.localizedName}, ${spell.school}'),
                         trailing: IconButton(
-                          icon: const Icon(Icons.info),
+                          tooltip: 'Описание',
+                          icon: const Icon(Icons.info_outline, color: Colors.white70),
                           onPressed: () async {
                             final loaded = (await getIt<SpellsRepository>().withDetailsIfPossible([spell])).first;
                             if (!context.mounted) return;

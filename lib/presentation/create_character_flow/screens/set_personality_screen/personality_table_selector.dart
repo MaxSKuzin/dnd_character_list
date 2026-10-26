@@ -1,3 +1,4 @@
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'dart:math';
 
 import 'package:dnd_character_list/domain/models/background.dart';
@@ -25,45 +26,56 @@ class PersonalityTableSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isOptional = table.kind == PersonalityTableKind.other;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                '${table.title}${isOptional ? ' (по желанию)' : ''}',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            IconButton(
-              tooltip: 'Бросить кость',
-              onPressed: () => onChanged(table.options[_random.nextInt(table.options.length)]),
-              icon: const Icon(Icons.casino),
-            ),
-          ],
-        ),
-        const Gap(4),
-        for (final (index, option) in table.options.indexed)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Material(
-              color: option == selected ? context.customColors?.cardColor : Colors.transparent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: option == selected ? Colors.white : Colors.white24),
-              ),
+    final primary = context.theme.colorScheme.primary;
+    return SheetSection(
+      icon: Icons.theater_comedy_outlined,
+      title: table.title,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isOptional) const SheetBadge('по желанию'),
+          IconButton(
+            tooltip: 'Бросить кость',
+            onPressed: () => onChanged(table.options[_random.nextInt(table.options.length)]),
+            icon: const Icon(Icons.casino_outlined),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final (index, option) in table.options.indexed)
+            Material(
+              color: option == selected ? primary.withValues(alpha: 0.15) : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              clipBehavior: Clip.antiAlias,
               child: InkWell(
-                borderRadius: BorderRadius.circular(8),
                 onTap: () => onChanged(option == selected ? null : option),
                 child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text('${index + 1}. $option'),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 24,
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: option == selected ? primary : Colors.white54,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Text(option)),
+                      if (option == selected) ...[const Gap(8), Icon(Icons.check, size: 18, color: primary)],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
