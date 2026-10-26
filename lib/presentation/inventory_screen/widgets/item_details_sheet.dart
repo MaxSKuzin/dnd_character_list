@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
+import 'package:dnd_character_list/presentation/common/widgets/enter_number_dialog.dart';
 import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
 import 'package:dnd_character_list/presentation/extensions/item_texts.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
@@ -65,9 +66,28 @@ class ItemDetailsSheet extends StatelessWidget {
                           label: Text(inventoryItem.quantity == 1 ? 'Удалить' : 'Убрать один'),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text('×${inventoryItem.quantity}', style: const TextStyle(fontSize: 18)),
+                      // Нажатие на количество — ввод точного числа: «осталось 7 факелов». 0 убирает предмет.
+                      InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () async {
+                          final cubit = context.read<PlayerCubit>();
+                          final navigator = Navigator.of(context);
+                          final quantity = await EnterNumberDialog.show(
+                            context,
+                            title: ItemTexts.name(item),
+                            labelText: 'Количество (0 — убрать)',
+                          );
+                          if (quantity == null) return;
+                          await cubit.setItemQuantity(inventoryItem, quantity);
+                          if (quantity == 0) navigator.pop();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Text(
+                            '×${inventoryItem.quantity}',
+                            style: const TextStyle(fontSize: 18, decoration: TextDecoration.underline),
+                          ),
+                        ),
                       ),
                       Expanded(
                         child: OutlinedButton.icon(
@@ -138,7 +158,12 @@ class ItemDetailsSheet extends StatelessWidget {
       EquipmentPack item => [
           if (item.cost != null) row('Стоимость', '${item.cost}'),
           const Text('Содержимое:', style: TextStyle(fontWeight: FontWeight.bold)),
-          ...item.contents.map((e) => Text('• $e')),
+          ...item.contents.map((e) => Text('• ${e.text}')),
+          const Gap(8),
+          const Text(
+            'В инвентаре набор раскладывается на отдельные вещи, их количество можно менять.',
+            style: TextStyle(color: Colors.white54, fontSize: 12),
+          ),
         ],
       CustomInvetoryItem item => [if (item.description.isNotEmpty) Text(item.description)],
       _ => [],

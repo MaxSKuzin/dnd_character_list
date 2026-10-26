@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/damage_type.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
 import 'package:dnd_character_list/domain/models/gear.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
+import 'package:dnd_character_list/domain/models/starting_equipment.dart';
 import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
@@ -153,26 +154,40 @@ class TtgEquipmentMapper {
       TtgText.names(listItem['name']).$2.toLowerCase().endsWith('pack');
 
   /// «Набор путешественника включает в себя: рюкзак, спальник… и бурдюк. В набор также входит…»
+  /// Каждая вещь — ссылка на предмет и количество: «10 факелов» → 10 × `/items/torch`,
+  /// «рационы на 10 дней» → 10 × `/items/rations_(1_day)`.
   EquipmentPack pack(String link, Map<String, dynamic> json) {
     final paragraphs = html_parser
         .parseFragment(json['description'] ?? '')
         .querySelectorAll('p')
-        .map((e) => TtgText.plainText(e.innerHtml))
-        .where((e) => e.isNotEmpty && !e.endsWith(':'))
+        .map((e) => e.innerHtml.trim())
+        .where((e) => TtgText.plainText(e).isNotEmpty && !TtgText.plainText(e).endsWith(':'))
         .toList();
-    final contents = <String>[];
+    final contents = <EquipmentRef>[];
     for (final paragraph in paragraphs) {
       final extra = RegExp(r'также входит (.+?)\.?$').firstMatch(paragraph)?.group(1);
-      final text = extra ?? paragraph.replaceFirst(RegExp(r'\.$'), '');
-      contents.addAll(
-        extra != null ? [text] : TtgText.splitTopLevel(text.replaceFirst(RegExp(r' и (?!.* и )'), ', ')),
-      );
+      final html = extra ?? paragraph.replaceFirst(RegExp(r'\.$'), '');
+      final parts = extra != null ? [html] : TtgText.splitTopLevel(html.replaceFirst(RegExp(r' и (?!.* и )'), ', '));
+      contents.addAll(parts.map(_packContent).where((e) => e.text.isNotEmpty));
     }
     return EquipmentPack(
       id: TtgText.normalizeLink(link),
       name: TtgText.names(json['name']).$1,
       cost: TtgText.parseCost(json['price']),
-      contents: contents.map(TtgText.capitalize).toList(),
+      contents: contents,
+    );
+  }
+
+  /// Вещь из набора. Число в начале — количество, кроме мер длины («10 футов лески»).
+  EquipmentRef _packContent(String html) {
+    final text = TtgText.capitalize(TtgText.plainText(html));
+    final href = html_parser.parseFragment(html).querySelector('a[href]')?.attributes['href'];
+    final days = RegExp(r'на (\d+) (?:день|дня|дней)').firstMatch(text)?.group(1);
+    final isLength = RegExp(r'^\d+\s+фут').hasMatch(text);
+    return EquipmentRef(
+      id: href == null ? null : TtgText.normalizeLink(href),
+      text: text,
+      quantity: int.tryParse(days ?? '') ?? (isLength ? null : TtgText.leadingNumber(text)) ?? 1,
     );
   }
 

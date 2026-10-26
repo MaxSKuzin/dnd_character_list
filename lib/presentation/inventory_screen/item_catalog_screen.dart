@@ -53,8 +53,11 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
   _Category _category = _Category.weapons;
   String _query = '';
 
-  void _add(Object item) {
-    widget.playerCubit.addItem(InventoryItem(quantity: 1, item: item));
+  /// Набор распаковывается в отдельные вещи, чтобы расходуемые можно было считать.
+  void _add(EquipmentCatalog catalog, Object item) {
+    for (final inventoryItem in catalog.inventoryItems(item)) {
+      widget.playerCubit.addItem(inventoryItem);
+    }
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text('Добавлено: ${ItemTexts.name(item)}'), duration: const Duration(seconds: 1)));
@@ -137,8 +140,11 @@ class _ItemCatalogScreenState extends State<ItemCatalogScreen> {
                             overflow: TextOverflow.ellipsis,
                             style: context.theme.textTheme.bodySmall,
                           ),
-                          trailing: IconButton(onPressed: () => _add(item), icon: const Icon(Icons.add_circle_outline)),
-                          onTap: () => _add(item),
+                          trailing: IconButton(
+                            onPressed: () => _add(snapshot.data!, item),
+                            icon: const Icon(Icons.add_circle_outline),
+                          ),
+                          onTap: () => _add(snapshot.data!, item),
                         );
                       },
                     );

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/gear.dart';
+import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/starting_equipment.dart';
 import 'package:dnd_character_list/domain/models/tools/tool.dart';
@@ -77,6 +78,24 @@ class EquipmentCatalog {
       _ => null,
     };
     return category == null ? [] : toolsOf(category);
+  }
+
+  /// Предметы инвентаря из набора: вещи со ссылкой — предметы справочника («10 факелов» → «Факел» ×10),
+  /// остальные — текстом без количества («2 упаковки благовоний» → «Упаковки благовоний» ×2).
+  List<InventoryItem> unpack(EquipmentPack pack) => [
+        for (final ref in pack.contents)
+          InventoryItem(quantity: ref.quantity, item: (ref.id == null ? null : find(ref)) ?? _withoutQuantity(ref)),
+      ];
+
+  /// Предметы инвентаря для предмета справочника: набор распаковывается.
+  List<InventoryItem> inventoryItems(Object item, {int quantity = 1}) => item is EquipmentPack
+      ? [for (var n = 0; n < quantity; n++) ...unpack(item)]
+      : [InventoryItem(quantity: quantity, item: item)];
+
+  static String _withoutQuantity(EquipmentRef ref) {
+    if (ref.quantity == 1) return ref.text;
+    final text = ref.text.replaceFirst(RegExp(r'^[\d\s]+\s'), '').replaceFirst(RegExp(r' на \d+ (день|дня|дней)'), '');
+    return text.isEmpty ? ref.text : text[0].toUpperCase() + text.substring(1);
   }
 
   /// Находит предмет по ссылке из описания класса. Ссылки на сайте не всегда точны,

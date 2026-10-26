@@ -65,6 +65,17 @@ class Inventory {
     );
   }
 
+  /// Задаёт количество предмета; 0 убирает его из инвентаря.
+  Inventory setItemQuantity(InventoryItem item, int quantity) => copyWith(
+        items: [
+          for (final e in items)
+            if (e != item)
+              e
+            else if (quantity > 0)
+              InventoryItem(quantity: quantity, item: e.item),
+        ],
+      );
+
   Inventory addItemQuantity(InventoryItem item) {
     return copyWith(
       items: items.map((e) {
@@ -80,10 +91,16 @@ class Inventory {
     );
   }
 
+  /// Добавляет предмет; такой же предмет в инвентаре получает его количество («Факел» ×10 + ×10 = ×20).
   Inventory addItem(InventoryItem item) {
     final existingItem = items.firstWhereOrNull((e) => e.item == item.item);
     if (existingItem != null) {
-      return addItemQuantity(existingItem);
+      return copyWith(
+        items: [
+          for (final e in items)
+            e == existingItem ? InventoryItem(quantity: e.quantity + item.quantity, item: e.item) : e,
+        ],
+      );
     }
     return copyWith(
       items: [...items, item],
@@ -166,7 +183,6 @@ class InventoryItem {
           'Tool' => Tool.fromJson(json['item']),
           'Shield' => Shield.fromJson(json['item']),
           'Gear' => Gear.fromJson(json['item']),
-          'EquipmentPack' => EquipmentPack.fromJson(json['item']),
           'int' || 'double' || 'String' || 'bool' => json['item']['value'],
           _ => throw Exception('Unknown item type'),
         },

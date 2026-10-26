@@ -85,7 +85,7 @@ abstract final class ItemTexts {
         Shield item => 'КД +${item.defense}',
         Tool item => item.category.localizedName,
         Gear item => item.group,
-        EquipmentPack item => item.contents.join(', '),
+        EquipmentPack item => item.contents.map((e) => e.text).join(', '),
         CustomInvetoryItem item => item.description.isEmpty ? null : item.description,
         _ => null,
       };

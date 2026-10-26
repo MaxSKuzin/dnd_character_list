@@ -3,7 +3,6 @@ import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/combat.dart';
-import 'package:dnd_character_list/domain/models/gear.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
@@ -27,7 +26,6 @@ class InventoryScreen extends StatelessWidget {
     ('Оружие', Icons.sports_martial_arts),
     ('Доспехи и щиты', Icons.shield_outlined),
     ('Инструменты', Icons.handyman_outlined),
-    ('Наборы снаряжения', Icons.backpack_outlined),
     ('Снаряжение', Icons.inventory_2_outlined),
   ];
 
@@ -35,8 +33,7 @@ class InventoryScreen extends StatelessWidget {
         Weapon _ => 0,
         Armor _ || Shield _ => 1,
         Tool _ => 2,
-        EquipmentPack _ => 3,
-        _ => 4,
+        _ => 3,
       };
 
   @override

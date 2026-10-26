@@ -1,4 +1,5 @@
 import 'package:dnd_character_list/domain/models/balance.dart';
+import 'package:dnd_character_list/domain/models/starting_equipment.dart';
 
 /// Предмет снаряжения с https://5e14.ttg.club/items.
 class Gear {
@@ -44,12 +45,15 @@ class Gear {
       );
 }
 
-/// Набор снаряжения, например «Набор артиста»: хранится в инвентаре целиком со списком содержимого.
+/// Набор снаряжения, например «Набор артиста». В инвентарь не попадает: при добавлении распаковывается
+/// в отдельные предметы (`EquipmentCatalog.unpack`), чтобы расходуемые вещи можно было считать.
 class EquipmentPack {
   final String? id;
   final String name;
   final Balance? cost;
-  final List<String> contents;
+
+  /// Вещи набора: ссылка на предмет, текст как на сайте и количество.
+  final List<EquipmentRef> contents;
 
   const EquipmentPack({
     this.id,
@@ -68,13 +72,13 @@ class EquipmentPack {
         'id': id,
         'name': name,
         'cost': cost?.toJson(),
-        'contents': contents,
+        'contents': contents.map((e) => e.toJson()).toList(),
       };
 
   factory EquipmentPack.fromJson(Map<String, dynamic> json) => EquipmentPack(
         id: json['id'],
         name: json['name'],
         cost: json['cost'] == null ? null : Balance.fromJson(json['cost']),
-        contents: (json['contents'] as List).cast<String>(),
+        contents: (json['contents'] as List).map((e) => EquipmentRef.fromJson(e)).toList(),
       );
 }

@@ -135,6 +135,12 @@ class PlayerCubit extends Cubit<Player> {
     emit(newPlayer);
   }
 
+  Future<void> setItemQuantity(InventoryItem item, int quantity) async {
+    final newPlayer = state.setItemQuantity(item, quantity);
+    await _source.savePlayer(newPlayer);
+    emit(newPlayer);
+  }
+
   Future<void> addItemQuantity(InventoryItem item) async {
     final newPlayer = state.addItemQuantity(item);
     await _source.savePlayer(newPlayer);

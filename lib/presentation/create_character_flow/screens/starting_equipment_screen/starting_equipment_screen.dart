@@ -65,8 +65,11 @@ class _StartingEquipmentScreenState extends State<StartingEquipmentScreen> {
           for (final (index, ref) in widget.choices[choice].options[_options[choice]!].items.indexed)
             if (ref.isChoice)
               for (var n = 0; n < ref.quantity; n++) InventoryItem(quantity: 1, item: _picks[(choice, index, n)]!)
+            else if (catalog.find(ref) case final item?)
+              // Набор распаковывается в отдельные вещи, чтобы расходуемые можно было считать.
+              ...catalog.inventoryItems(item, quantity: ref.quantity)
             else
-              InventoryItem(quantity: ref.quantity, item: catalog.find(ref) ?? _capitalize(ref.text)),
+              InventoryItem(quantity: ref.quantity, item: _capitalize(ref.text)),
       ];
 
   static String _capitalize(String text) => text.isEmpty ? text : text[0].toUpperCase() + text.substring(1);

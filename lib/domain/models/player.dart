@@ -698,6 +698,12 @@ class Player {
     )._unequipMissing();
   }
 
+  Player setItemQuantity(InventoryItem item, int quantity) {
+    return copyWith(
+      inventory: inventory.setItemQuantity(item, quantity),
+    )._unequipMissing();
+  }
+
   Player addItemQuantity(InventoryItem item) {
     return copyWith(
       inventory: inventory.addItemQuantity(item),
