@@ -111,6 +111,12 @@ class AppRouter extends RootStackRouter {
             AdaptiveRoute(
               page: SelectFightingStyleRoute.page,
             ),
+            AdaptiveRoute(
+              page: SelectOptionRoute.page,
+            ),
+            AdaptiveRoute(
+              page: SelectMetamagicRoute.page,
+            ),
           ],
         ),
       ];

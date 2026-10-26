@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -33,7 +34,7 @@ class PlayerCubit extends Cubit<Player> {
   }
 
   void longRest() {
-    emit(state.healFull());
+    emit(state.longRest());
   }
 
   void levelUp<T extends Specialization>(T spec) {
@@ -44,12 +45,24 @@ class PlayerCubit extends Cubit<Player> {
     emit(state.addClass(spec));
   }
 
-  void spendMana(int mana) {
-    emit(state.spendMana(mana));
+  void spendSpellSlot(SpellSlot slot) {
+    emit(state.spendSpellSlot(slot));
   }
 
-  void recoverMana(int mana) {
-    emit(state.recoverMana(mana));
+  void restoreSpellSlot(SpellSlot slot) {
+    emit(state.restoreSpellSlot(slot));
+  }
+
+  void spendSorceryPoints(int points) {
+    emit(state.spendSorceryPoints(points));
+  }
+
+  void convertSpellSlotToSorceryPoints(SpellSlot slot) {
+    emit(state.convertSpellSlotToSorceryPoints(slot));
+  }
+
+  void createSpellSlot(SpellSlot slot) {
+    emit(state.createSpellSlot(slot));
   }
 
   void changeDeadThrow({int? death, int? life}) {

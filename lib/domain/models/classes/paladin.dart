@@ -16,7 +16,8 @@ final class Paladin extends Specialization {
   ClassKind get classKind => ClassKind.paladin;
 
   @override
-  List<ArmorProficiency> get armorProficiencies => const [ArmorProficiency.light, ArmorProficiency.medium, ArmorProficiency.heavy, ArmorProficiency.shields];
+  List<ArmorProficiency> get armorProficiencies =>
+      const [ArmorProficiency.light, ArmorProficiency.medium, ArmorProficiency.heavy, ArmorProficiency.shields];
 
   @override
   WeaponProficiency get weaponProficiency => const WeaponProficiency(simple: true, martial: true);
@@ -160,7 +161,7 @@ final class Paladin extends Specialization {
         baseAbilities: [
           ...abilities,
           Peculiarity(
-            manaRequired: SpellSlot.level1,
+            requiredSlot: SpellSlot.level1,
             name: 'БОЖЕСТВЕННАЯ КАРА',
             description:
                 '''Если вы попадаете по существу рукопашной атакой оружием, вы можете потратить одну ячейку заклинаний любого своего класса для причинения цели урона излучением, который добавится к урону от оружия. Дополнительный урон равен <b>2к8</b> за ячейку 1-го уровня и ещё 1к8 за каждый уровень ячейки выше первого до максимума в <b>5к8</b>. Если цель — Нежить или Исчадие, урон увеличивается на <b>1к8</b> с максимумом <b>6к8</b>.''',

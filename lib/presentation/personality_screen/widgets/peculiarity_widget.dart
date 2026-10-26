@@ -60,21 +60,13 @@ class _DialogInfo extends StatefulWidget {
 }
 
 class _DialogInfoState extends State<_DialogInfo> {
-  late SpellSlot? _slot = widget.classAbility.manaRequired;
+  late SpellSlot? _slot = widget.classAbility.requiredSlot;
 
   @override
   Widget build(BuildContext context) {
-    final availableSlots = widget.classAbility.manaRequired != null
-        ? context
-            .read<PlayerCubit>()
-            .state
-            .spellCells
-            .entries
-            .where(
-              (e) => e.key.index >= widget.classAbility.manaRequired!.index && e.value > 0,
-            )
-            .map((e) => e.key)
-            .toList()
+    final requiredSlot = widget.classAbility.requiredSlot;
+    final availableSlots = requiredSlot != null
+        ? context.read<PlayerCubit>().state.spellSlotLevels.where((e) => e.index >= requiredSlot.index).toList()
         : <SpellSlot>[];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -88,7 +80,7 @@ class _DialogInfoState extends State<_DialogInfo> {
               fontWeight: FontWeight.w700,
             ),
           ),
-          if (widget.classAbility.manaRequired != null && availableSlots.length > 1) ...[
+          if (widget.classAbility.requiredSlot != null && availableSlots.length > 1) ...[
             const Gap(8),
             const Text('Ячейка'),
             const Gap(8),
@@ -145,15 +137,15 @@ class _DialogInfoState extends State<_DialogInfo> {
                 children: [
                   const Gap(8),
                   OutlinedButton(
-                    onPressed: state.currentMana >= _slot!.mana
+                    onPressed: (state.currentSpellSlots[_slot!] ?? 0) > 0
                         ? () {
-                            context.read<PlayerCubit>().spendMana(
-                                  _slot!.mana,
-                                );
+                            context.read<PlayerCubit>().spendSpellSlot(_slot!);
                             Navigator.pop(context);
                           }
                         : null,
-                    child: Text('Использовать (${_slot!.mana} маны)'),
+                    child: Text(
+                      'Использовать ячейку ${_slot!.level} уровня (осталось ${state.currentSpellSlots[_slot!] ?? 0})',
+                    ),
                   ),
                 ],
               ),

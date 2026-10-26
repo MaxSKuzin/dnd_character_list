@@ -31,9 +31,9 @@ enum ClassKind {
   /// Персонажа этого класса можно создать: для него есть описание на ttg.club и механики в коде.
   bool get canCreate => ttgLink != null;
 
-  /// Повышение уровня реализовано (у чародея пока нет).
+  /// Повышение уровня реализовано.
   bool get canLevelUp => switch (this) {
-        ClassKind.bard || ClassKind.barbarian || ClassKind.paladin || ClassKind.thief => true,
+        ClassKind.bard || ClassKind.barbarian || ClassKind.paladin || ClassKind.thief || ClassKind.sorcerer => true,
         _ => false,
       };
 

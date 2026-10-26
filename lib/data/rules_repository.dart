@@ -4,6 +4,7 @@ import 'package:dnd_character_list/data/ttg/ttg_class_mapper.dart';
 import 'package:dnd_character_list/data/ttg/ttg_client.dart';
 import 'package:dnd_character_list/data/ttg/ttg_equipment_mapper.dart';
 import 'package:dnd_character_list/data/ttg/ttg_feats_mapper.dart';
+import 'package:dnd_character_list/data/ttg/ttg_options_mapper.dart';
 import 'package:dnd_character_list/data/ttg/ttg_text.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
@@ -11,11 +12,12 @@ import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/equipment_catalog.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/gear.dart';
+import 'package:dnd_character_list/domain/models/metamagic.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 import 'package:injectable/injectable.dart';
 
-/// Классы, предыстории, черты и предметы «Книги игрока» с ttg.club.
+/// Классы, предыстории, черты и предметы «Книги игрока», метамагия официальных книг с ttg.club.
 @lazySingleton
 class RulesRepository {
   /// Правила меняются редко, а при недоступности сайта используется устаревший кэш.
@@ -44,11 +46,13 @@ class RulesRepository {
   final TtgBackgroundsMapper _backgroundsMapper;
   final TtgFeatsMapper _featsMapper;
   final TtgEquipmentMapper _equipmentMapper;
+  final TtgOptionsMapper _optionsMapper;
 
   final _classes = <String, Future<ClassInfo>>{};
   Future<List<Background>>? _backgrounds;
   Future<List<Feat>>? _feats;
   Future<EquipmentCatalog>? _equipment;
+  Future<List<Metamagic>>? _metamagic;
 
   RulesRepository(
     this._client,
@@ -57,6 +61,7 @@ class RulesRepository {
     this._backgroundsMapper,
     this._featsMapper,
     this._equipmentMapper,
+    this._optionsMapper,
   );
 
   /// Описание класса по ссылке, например `/classes/bard`, вместе с официальными подклассами.
@@ -101,6 +106,27 @@ class RulesRepository {
         fromJson: (json) => (json as List).map((e) => Feat.fromJson(e)).toList(),
       )
       .catchError((Object e) => throw _forget(() => _feats = null, e));
+
+  /// Варианты метамагии чародея из всех официальных книг (PHB и TCE).
+  Future<List<Metamagic>> getMetamagic() => _metamagic ??= _cache
+      .load(
+        key: 'metamagic',
+        ttl: _ttl,
+        fetch: _loadMetamagic,
+        toJson: (value) => value.map((e) => e.toJson()).toList(),
+        fromJson: (json) => (json as List).map((e) => Metamagic.fromJson(e)).toList(),
+      )
+      .catchError((Object e) => throw _forget(() => _metamagic = null, e));
+
+  Future<List<Metamagic>> _loadMetamagic() async {
+    final items = await _list('/options', filter: {
+      'classOption': ['METAMAGIC'],
+    });
+    return TtgClient.mapConcurrently(
+      items.where((e) => TtgText.isOfficial(e['source'])).map((e) => e['url'] as String).toList(),
+      (link) => _client.fetch(link, (json) => _optionsMapper.metamagic(link, json as Map<String, dynamic>)),
+    );
+  }
 
   Future<EquipmentCatalog> getEquipment() => _equipment ??= _cache
       .load(

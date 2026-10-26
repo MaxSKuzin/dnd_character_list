@@ -69,13 +69,8 @@ class ClassInfo {
   Subclass? subclass(String id) => subclasses.firstWhereOrNull((e) => e.id == id);
 
   /// Умения, которые класс даёт на указанном уровне. Опциональные умения TCE всегда включены.
-  List<ClassFeature> featuresAt(int level) => this
-      .level(level)
-      .features
-      .map((e) => feature(e.id))
-      .nonNulls
-      .where((e) => e.level == level)
-      .toList();
+  List<ClassFeature> featuresAt(int level) =>
+      this.level(level).features.map((e) => feature(e.id)).nonNulls.where((e) => e.level == level).toList();
 
   /// Значение из названия умения в таблице на этом уровне, например «к8» в «Вдохновение барда (к8)».
   String? featureValueAt(String featureId, int level) {
@@ -114,8 +109,7 @@ class ClassInfo {
         hitPointsHtml: json['hitPointsHtml'],
         proficienciesHtml: json['proficienciesHtml'],
         equipmentHtml: json['equipmentHtml'],
-        startingEquipment:
-            (json['startingEquipment'] as List).map((e) => StartingEquipmentChoice.fromJson(e)).toList(),
+        startingEquipment: (json['startingEquipment'] as List).map((e) => StartingEquipmentChoice.fromJson(e)).toList(),
         quickBuildHtml: json['quickBuildHtml'],
         savingThrows: (json['savingThrows'] as List).map((e) => StatKind.values.byName(e)).toList(),
         skillsCount: json['skillsCount'],
@@ -140,6 +134,9 @@ class ClassLevel {
   /// Ячейки заклинаний 1–9 уровней.
   final List<int> spellSlots;
 
+  /// Все столбцы таблицы класса по названиям, например «Единицы чародейства» → «2».
+  final Map<String, String> columns;
+
   const ClassLevel({
     required this.level,
     required this.proficiencyBonus,
@@ -147,7 +144,11 @@ class ClassLevel {
     required this.cantripsKnown,
     required this.spellsKnown,
     required this.spellSlots,
+    this.columns = const {},
   });
+
+  /// Число из столбца таблицы; `null`, если столбца нет или в нём прочерк.
+  int? number(String column) => int.tryParse(columns[column] ?? '');
 
   bool hasFeature(String id) => features.any((e) => e.id == id);
 
@@ -161,6 +162,7 @@ class ClassLevel {
         'cantripsKnown': cantripsKnown,
         'spellsKnown': spellsKnown,
         'spellSlots': spellSlots,
+        'columns': columns,
       };
 
   factory ClassLevel.fromJson(Map<String, dynamic> json) => ClassLevel(
@@ -170,6 +172,7 @@ class ClassLevel {
         cantripsKnown: json['cantripsKnown'],
         spellsKnown: json['spellsKnown'],
         spellSlots: (json['spellSlots'] as List).cast<int>(),
+        columns: (json['columns'] as Map).cast<String, String>(),
       );
 }
 
@@ -248,8 +251,7 @@ class Subclass {
   List<SubclassFeature> featuresAt(int level) => features.where((e) => e.level == level).toList();
 
   /// Заклинания подкласса, полученные к [level] уровню класса.
-  List<String> spellsUpTo(int level) =>
-      spells.entries.where((e) => e.key <= level).expand((e) => e.value).toList();
+  List<String> spellsUpTo(int level) => spells.entries.where((e) => e.key <= level).expand((e) => e.value).toList();
 
   Map<String, dynamic> toJson() => {
         'id': id,

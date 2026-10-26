@@ -4,9 +4,10 @@ import 'package:dnd_character_list/presentation/battle_screen/widgets/death_thro
 import 'package:dnd_character_list/presentation/battle_screen/widgets/health_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/hit_dices.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/initiative_widget.dart';
-import 'package:dnd_character_list/presentation/battle_screen/widgets/mana_section.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/long_rest_button.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/protection_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/speed_widget.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/spell_slots_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/spells_stats_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/weapons_section.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
@@ -65,6 +66,7 @@ class _BattleScreenState extends State<BattleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const LongRestButton(),
             LayoutBuilder(
               builder: (context, constraints) {
                 final dimension = constraints.maxWidth / 3 - 24;
@@ -91,7 +93,6 @@ class _BattleScreenState extends State<BattleScreen> {
             const Gap(16),
             LayoutBuilder(
               builder: (context, constraints) {
-                final mana = PlayerModel.mana(context);
                 final extras = PlayerModel.extras(context);
                 return SizedBox(
                   height: constraints.maxWidth / 2 + 10,
@@ -111,7 +112,6 @@ class _BattleScreenState extends State<BattleScreen> {
                       const HealthSection(),
                       const HitDices(),
                       const DeathThrowsWidget(),
-                      if (mana.max > 0) ManaSection(mana),
                       ...extras.entries.map(
                         (e) => ClassExtraWidget(
                           extra: e.key,
@@ -131,6 +131,8 @@ class _BattleScreenState extends State<BattleScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // Без ячеек секция пустая и не занимает места.
+                      const SpellSlotsSection(),
                       const Text(
                         'ОРУЖИЕ',
                         textAlign: TextAlign.center,

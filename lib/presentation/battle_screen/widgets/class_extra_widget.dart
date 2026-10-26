@@ -1,5 +1,7 @@
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/font_of_magic_actions.dart';
+import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
 import 'package:dnd_character_list/presentation/common/widgets/labeled_border.dart';
 import 'package:dnd_character_list/presentation/extensions/context_extensions.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
@@ -40,16 +42,20 @@ class ClassExtraWidget extends StatelessWidget {
 
           showDialog(
             context: context,
-            builder: (_) => Dialog(
-              shape: const RoundedRectangleBorder(
-                side: BorderSide(
-                  color: Colors.white,
+            builder: (_) => BlocProvider.value(
+              // Действия ресурса (например, «Источник магии») меняют персонажа прямо из диалога.
+              value: context.read<PlayerCubit>(),
+              child: Dialog(
+                shape: const RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: Colors.white,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-              ),
-              child: _DescriptionDialog(
-                extra: extra,
-                description: description(extra),
+                child: _DescriptionDialog(
+                  extra: extra,
+                  description: description(extra),
+                ),
               ),
             ),
           );
@@ -98,6 +104,12 @@ class _DescriptionDialog extends StatelessWidget {
     required this.description,
   });
 
+  /// Действия, которые есть только у некоторых ресурсов классов.
+  List<Widget> get _actions => switch (extra) {
+        ClassExtras.sorceryPoints => const [FontOfMagicActions(), Gap(16)],
+        _ => const [],
+      };
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -120,9 +132,9 @@ class _DescriptionDialog extends StatelessWidget {
             child: ListView(
               shrinkWrap: true,
               children: [
-                Text(
-                  description,
-                ),
+                ..._actions,
+                // Описания умений с ttg.club (вдохновение барда, единицы чародейства) — html.
+                if (description.trimLeft().startsWith('<')) HtmlContent(description) else Text(description),
               ],
             ),
           ),

@@ -1,12 +1,15 @@
 import 'package:dnd_character_list/data/ttg/ttg_class_mapper.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
+import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/combat.dart';
+import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
+import 'package:dnd_character_list/domain/models/metamagic.dart';
 import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/races/race.dart';
@@ -130,7 +133,8 @@ void main() {
     final sorcerer = _sorcerer(originId: Sorcerer.lunarSorcery, originSpells: [shield]);
     final player = _player(sorcerer);
 
-    expect(player.spells.values.single.map((e) => e.link), ['/spells/fire_bolt', '/spells/magic_missile', '/spells/shield']);
+    expect(player.spells.values.single.map((e) => e.link),
+        ['/spells/fire_bolt', '/spells/magic_missile', '/spells/shield']);
     expect(sorcerer.chosenSpells, hasLength(2));
   });
 
@@ -144,6 +148,100 @@ void main() {
     expect(sorcerer.originId, Sorcerer.draconicBloodline);
     expect(sorcerer.chosenSpells.map((e) => e.link), ['/spells/fire_bolt', '/spells/magic_missile']);
     expect(restored.maxHits, player.maxHits);
+  });
+
+  test('level 4 sorcerer: metamagic, ability score improvement and sorcery points', () {
+    const careful = Metamagic(
+      link: '/options/careful_spell',
+      name: 'Аккуратное заклинание',
+      source: 'Книга игрока',
+      descriptionHtml: '<p>Аккуратно.</p>',
+    );
+    const twinned = Metamagic(
+      link: '/options/twinned_spell',
+      name: 'Удвоенное заклинание',
+      source: 'Книга игрока',
+      descriptionHtml: '<p>Дважды.</p>',
+    );
+    final sorcerer = _sorcerer().copyWith(
+      level: 4,
+      metamagic: [careful, twinned],
+      improvements: [
+        const AbilityScoreImprovement(level: 4, stats: {StatKind.charisma: 2}),
+      ],
+      sorceryPoints: 4,
+    );
+    final player = _player(sorcerer);
+
+    expect(player.charisma.value, 15 + 2 + 2);
+    expect(player.maxExtras, {ClassExtras.sorceryPoints: 4});
+    expect(
+      sorcerer.abilities.map((e) => e.name),
+      ['МЕТАМАГИЯ: АККУРАТНОЕ ЗАКЛИНАНИЕ', 'МЕТАМАГИЯ: УДВОЕННОЕ ЗАКЛИНАНИЕ'],
+    );
+    expect(sorcerer.abilities.first.isHtml, isTrue);
+    // До 2 уровня единиц чародейства нет.
+    expect(_player(_sorcerer()).maxExtras, isEmpty);
+
+    final restored = Player.fromJson(player.toJson()).classes.single as Sorcerer;
+    expect(restored.metamagic, [careful, twinned]);
+    expect(restored.metamagic.first.descriptionHtml, '<p>Аккуратно.</p>');
+    expect(restored.improvements.single.stats, {StatKind.charisma: 2});
+    expect(restored.sorceryPoints, 4);
+  });
+
+  test('spell slots are spent and restored by level', () {
+    final player = _player(_sorcerer().copyWith(level: 3));
+
+    expect(player.spellCells, {SpellSlot.level1: 4, SpellSlot.level2: 2});
+    expect(player.currentSpellSlots, player.spellCells);
+
+    final spent =
+        player.spendSpellSlot(SpellSlot.level2).spendSpellSlot(SpellSlot.level2).spendSpellSlot(SpellSlot.level2);
+    expect(spent.currentSpellSlots[SpellSlot.level2], 0);
+    expect(spent.availableSpellSlots(SpellSlot.level1), [SpellSlot.level1]);
+    expect(spent.availableSpellSlots(SpellSlot.level2), isEmpty);
+
+    // Восстановить можно только до максимума по таблице.
+    final restored =
+        spent.restoreSpellSlot(SpellSlot.level2).restoreSpellSlot(SpellSlot.level2).restoreSpellSlot(SpellSlot.level2);
+    expect(restored.currentSpellSlots[SpellSlot.level2], 2);
+    expect(spent.takeDamage(3).longRest().currentSpellSlots, player.spellCells);
+
+    // Отдых нужен, только когда что-то ниже максимума; созданные сверх максимума ячейки не в счёт.
+    expect(player.canRestOnLongRest, isFalse);
+    expect(spent.canRestOnLongRest, isTrue);
+    expect(player.takeDamage(1).canRestOnLongRest, isTrue);
+    expect(spent.longRest().canRestOnLongRest, isFalse);
+  });
+
+  test('font of magic converts spell slots and sorcery points', () {
+    final player = _player(_sorcerer().copyWith(level: 3, sorceryPoints: 3));
+    expect(player.currentSorceryPoints, 3);
+
+    // Единиц не может стать больше максимума.
+    expect(player.canConvertToSorceryPoints(SpellSlot.level1), isFalse);
+
+    final created = player.createSpellSlot(SpellSlot.level1);
+    expect(created.currentSorceryPoints, 1);
+    expect(created.currentSpellSlots[SpellSlot.level1], 5);
+    expect(created.canCreateSpellSlot(SpellSlot.level1), isFalse);
+
+    final converted = created.convertSpellSlotToSorceryPoints(SpellSlot.level2);
+    expect(converted.currentSorceryPoints, 3);
+    expect(converted.currentSpellSlots[SpellSlot.level2], 1);
+
+    final afterMetamagic = converted.spendSorceryPoints(2);
+    expect(afterMetamagic.currentSorceryPoints, 1);
+    expect(afterMetamagic.spendSorceryPoints(2).currentSorceryPoints, 1);
+
+    // После продолжительного отдыха созданные ячейки исчезают, единицы восстанавливаются.
+    // Ячейка сверх максимума отдыха не требует, а потраченные единицы — требуют.
+    expect(created.canRestOnLongRest, isTrue);
+    final rested = afterMetamagic.longRest();
+    expect(rested.currentSpellSlots, player.spellCells);
+    expect(rested.currentSorceryPoints, 3);
+    expect(Sorcerer.spellSlotCost.keys.last, SpellSlot.level5);
   });
 
   group('origin spells', () {
@@ -183,6 +281,11 @@ void main() {
         ['/spells/bless'],
       );
       expect(Sorcerer.originSpellLinks(info, 1, originId: Sorcerer.lunarSorcery), contains('/spells/sacred_flame'));
+      expect(Sorcerer.originSpellLinks(info, 1, originId: Sorcerer.lunarSorcery), hasLength(4));
+      expect(Sorcerer.originSpellLinks(info, 3, originId: Sorcerer.lunarSorcery), hasLength(7));
+      expect(Sorcerer.originSpellLinks(info, 9, originId: Sorcerer.lunarSorcery), hasLength(16));
+      expect(Sorcerer.originSpellLinks(info, 2, originId: Sorcerer.shadowMagic), isEmpty);
+      expect(Sorcerer.originSpellLinks(info, 3, originId: Sorcerer.shadowMagic), ['/spells/darkness']);
       expect(Sorcerer.spellListsFor(Sorcerer.divineSoul), [ClassKind.sorcerer, ClassKind.cliric]);
     });
 

@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/domain/bloc/level_up_cubit.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
@@ -10,10 +9,10 @@ import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
-import 'package:dnd_character_list/domain/models/spell/spell_replacement.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart';
+import 'package:dnd_character_list/presentation/level_up_flow/level_up_steps.dart';
 import 'package:dnd_character_list/router.gr.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +49,7 @@ class BardLevelUp {
     final multiclassSkills = <Skill>[];
     final multiclassTools = <String>[];
     if (bard == null) {
-      final skills = await _ask<List<Skill>>(
+      final skills = await context.ask<List<Skill>>(
         (done) => SelectSkillsRoute(
           title: 'Владение навыками',
           description: 'Мультиклассирование в барда: выберите 1 навык на ваш выбор.',
@@ -61,7 +60,7 @@ class BardLevelUp {
       );
       if (skills == null) return false;
       multiclassSkills.addAll(skills);
-      final tools = await _ask<List<String>>(
+      final tools = await context.ask<List<String>>(
         (done) => ProficienciesRoute(
           title: 'Владение инструментами',
           description: 'Мультиклассирование в барда: один музыкальный инструмент на ваш выбор.',
@@ -86,7 +85,7 @@ class BardLevelUp {
     var fightingStyle = bard?.fightingStyle;
     var collegeSkills = bard?.collegeSkills ?? const <Skill>[];
     if (level == info.subclassLevel && collegeId == null) {
-      final college = await _ask<Subclass>(
+      final college = await context.ask<Subclass>(
         (done) => SelectSubclassRoute(title: 'Коллегия бардов', subclasses: info.subclasses, onSelected: done),
       );
       if (college == null) return false;
@@ -94,7 +93,7 @@ class BardLevelUp {
       collegeName = college.name;
 
       if (collegeId == Bard.swordsCollege) {
-        fightingStyle = await _ask<FightingStyle>(
+        fightingStyle = await context.ask<FightingStyle>(
           (done) => SelectFightingStyleRoute(
             styles: const [FightingStyle.dueling, FightingStyle.twoWeaponFighting],
             onStyleSelected: done,
@@ -103,10 +102,11 @@ class BardLevelUp {
         if (fightingStyle == null) return false;
       }
       if (collegeId == Bard.loreCollege) {
-        final skills = await _ask<List<Skill>>(
+        final skills = await context.ask<List<Skill>>(
           (done) => SelectSkillsRoute(
             title: 'Владение навыками',
-            description: 'Коллегия знаний, «Дополнительные навыки»: выберите ${Bard.loreSkillsCount} навыка на ваш выбор.',
+            description:
+                'Коллегия знаний, «Дополнительные навыки»: выберите ${Bard.loreSkillsCount} навыка на ваш выбор.',
             maxSkills: Bard.loreSkillsCount,
             availableSkills: Skill.values.where((e) => !proficientSkills.contains(e)).toList(),
             onSkillsSelected: done,
@@ -120,7 +120,7 @@ class BardLevelUp {
 
     final expertise = [...?bard?.expertise];
     if (row.hasFeature(Bard.expertiseFeature)) {
-      final skills = await _ask<List<Skill>>(
+      final skills = await context.ask<List<Skill>>(
         (done) => SelectSkillsRoute(
           title: 'Компетентность',
           description: 'Выберите ${Bard.expertiseCount} навыка из тех, которыми владеете: '
@@ -136,7 +136,7 @@ class BardLevelUp {
 
     final improvements = [...?bard?.improvements];
     if (row.hasFeature(Bard.abilityScoreImprovement)) {
-      final improvement = await _ask<AbilityScoreImprovement>(
+      final improvement = await context.ask<AbilityScoreImprovement>(
         (done) => AbilityScoreImprovementRoute(player: player, level: level, onSelected: done),
       );
       if (improvement == null) return false;
@@ -154,7 +154,7 @@ class BardLevelUp {
 
     final learned = <Spell>[];
     if (newCantrips > 0 || newSpells > 0) {
-      final spells = await _ask<List<Spell>>(
+      final spells = await context.ask<List<Spell>>(
         (done) => SelectSpellsRoute(
           classKind: ClassKind.bard,
           description: 'Бард $level уровня узнаёт новые заклинания из списка барда'
@@ -170,7 +170,7 @@ class BardLevelUp {
       learned.addAll(spells);
     }
     if (secrets + loreSecrets > 0) {
-      final spells = await _ask<List<Spell>>(
+      final spells = await context.ask<List<Spell>>(
         (done) => SelectSpellsRoute(
           title: 'Тайны магии',
           classKind: null,
@@ -208,7 +208,7 @@ class BardLevelUp {
         ),
     ];
     for (final step in replacements.where((e) => e.replaceable.isNotEmpty)) {
-      final result = await _ask<_Replacement>(
+      final result = await context.ask<OptionalReplacement>(
         (done) => ReplaceSpellRoute(
           title: step.title,
           description: step.description,
@@ -216,7 +216,7 @@ class BardLevelUp {
           classKind: ClassKind.bard,
           newSpellSlots: step.slots,
           knownSpells: known,
-          onSelected: (replacement) => done(_Replacement(replacement)),
+          onSelected: (replacement) => done(OptionalReplacement(replacement)),
         ),
       );
       if (result == null) return false;
@@ -248,18 +248,4 @@ class BardLevelUp {
     if (multiclassTools.isNotEmpty) cubit.setTools(multiclassTools);
     return true;
   }
-
-  /// Открывает экран выбора и ждёт результат; `null` — пользователь вернулся назад.
-  /// Чтобы отличить возврат назад от пропуска шага, необязательный выбор оборачивается в [_Replacement].
-  Future<T?> _ask<T>(PageRouteInfo Function(void Function(T value) done) route) {
-    if (!context.mounted) return Future.value();
-    return context.pushRoute<T>(route((value) => context.maybePop(value)));
-  }
-}
-
-/// Результат необязательного шага замены: `value == null` — шаг пропущен.
-class _Replacement {
-  final SpellReplacement? value;
-
-  const _Replacement(this.value);
 }

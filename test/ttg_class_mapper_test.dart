@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/data/ttg/ttg_class_mapper.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
+import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
@@ -89,6 +90,20 @@ void main() {
       expect(focus.isChoice, isTrue);
       final daggers = info.startingEquipment.last.options.single.items.single;
       expect((daggers.id, daggers.quantity), ('/weapons/dagger', 2));
+    });
+
+    test('reads sorcery points, metamagic and level-up features from the table', () {
+      expect(info.level(2).columns[Sorcerer.sorceryPointsColumn], '2');
+      expect(Sorcerer.sorceryPointsAt(info, 1), 0);
+      expect(Sorcerer.sorceryPointsAt(info, 5), 5);
+      expect(Sorcerer.metamagicCountAt(info, 2), 0);
+      expect(Sorcerer.metamagicCountAt(info, 3), 2);
+      expect(Sorcerer.metamagicCountAt(info, 9), 2);
+      expect(Sorcerer.metamagicCountAt(info, 10), 3);
+      expect(Sorcerer.metamagicCountAt(info, 20), 4);
+      expect(info.level(4).hasFeature(Sorcerer.abilityScoreImprovement), isTrue);
+      expect(info.level(8).hasFeature(Sorcerer.abilityScoreImprovement), isTrue);
+      expect(info.feature(Sorcerer.sorcerousVersatility)?.isOptional, isTrue);
     });
   });
 }

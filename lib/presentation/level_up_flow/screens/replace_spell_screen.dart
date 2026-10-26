@@ -27,6 +27,9 @@ class ReplaceSpellScreen extends StatefulWidget {
   /// Класс, из списка которого берётся новое заклинание.
   final ClassKind classKind;
 
+  /// Дополнительные списки, например список жреца у «Божественной души».
+  final List<ClassKind> additionalClassKinds;
+
   /// Уровни нового заклинания; заговор меняется только на заговор (это задаёт вызывающий код).
   final List<SpellSlot> newSpellSlots;
 
@@ -41,6 +44,7 @@ class ReplaceSpellScreen extends StatefulWidget {
     required this.description,
     required this.replaceableSpells,
     required this.classKind,
+    this.additionalClassKinds = const [],
     required this.newSpellSlots,
     required this.knownSpells,
     required this.onSelected,
@@ -86,7 +90,10 @@ class _ReplaceSpellScreenState extends State<ReplaceSpellScreen> {
       selected: _learned,
       load: () async => (await _repository.getSpells())
           .where(
-            (e) => e.isAvailableFor(widget.classKind) && slots.contains(e.slot) && !widget.knownSpells.contains(e),
+            (e) =>
+                [widget.classKind, ...widget.additionalClassKinds].any(e.isAvailableFor) &&
+                slots.contains(e.slot) &&
+                !widget.knownSpells.contains(e),
           )
           .sorted((a, b) => a.slot != b.slot ? a.slot.compareTo(b.slot) : a.name.compareTo(b.name)),
     );
@@ -277,7 +284,7 @@ class _SpellPickerDialogState extends State<_SpellPickerDialog> {
                           onPressed: () async {
                             final loaded = (await getIt<SpellsRepository>().withDetailsIfPossible([spell])).first;
                             if (!context.mounted) return;
-                            await SpellInfoDialog.show(context, spell: loaded, canDrainMana: false);
+                            await SpellInfoDialog.show(context, spell: loaded, canSpendSlot: false);
                           },
                         ),
                         onTap: () => Navigator.of(context).pop(spell),

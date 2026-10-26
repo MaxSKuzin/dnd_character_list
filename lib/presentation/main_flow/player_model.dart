@@ -28,7 +28,6 @@ enum PlayerAspect {
   mainRangeWeapon,
   secondRangeWeapon,
   inventory,
-  mana,
   spellKinds,
   deathThrows,
   extras,
@@ -67,9 +66,6 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
       update |= oldWidget.player.currentHits != player.currentHits ||
           oldWidget.player.maxHits != player.maxHits ||
           oldWidget.player.isDead != player.isDead;
-    }
-    if (dependencies.contains(PlayerAspect.mana)) {
-      update |= oldWidget.player.currentMana != player.currentMana || oldWidget.player.maxMana != player.maxMana;
     }
     if (dependencies.contains(PlayerAspect.skills)) {
       update |= !oldWidget.player.skills.equals(player.skills);
@@ -160,11 +156,6 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
   static CurMax<int> health(BuildContext context) {
     final player = InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.health)!.player;
     return CurMax(current: player.currentHits, max: player.maxHits);
-  }
-
-  static CurMax<int> mana(BuildContext context) {
-    final player = InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.mana)!.player;
-    return CurMax(current: player.currentMana, max: player.maxMana);
   }
 
   static bool isDead(BuildContext context) {

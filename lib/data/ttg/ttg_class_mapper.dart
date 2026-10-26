@@ -135,6 +135,7 @@ class TtgClassMapper {
         cantripsKnown: number(values, cantripsColumn),
         spellsKnown: number(values, spellsColumn),
         spellSlots: (row['spellSlots'] as List? ?? const []).map((e) => int.tryParse('$e') ?? 0).toList(),
+        columns: {for (final (index, name) in columns.indexed) TtgText.cleanText(name): '${values[index]}'},
       );
     }).toList();
   }

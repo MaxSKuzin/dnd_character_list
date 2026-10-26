@@ -350,7 +350,7 @@ class _InfoButton extends StatelessWidget {
       return IconButton(
         onPressed: () => SpellInfoDialog.show(
           context,
-          canDrainMana: false,
+          canSpendSlot: false,
           spell: spell,
         ),
         icon: const Icon(Icons.info),

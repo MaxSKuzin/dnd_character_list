@@ -7,6 +7,7 @@ import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/combat.dart';
+import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
@@ -40,7 +41,10 @@ class Player {
   final List<Specialization> classes;
   late final List<Skill> chosenSkills;
   late final int currentHits;
-  late final int currentMana;
+
+  /// Оставшиеся ячейки заклинаний по уровням. Ячейки, созданные из единиц чародейства, могут превышать
+  /// максимум до продолжительного отдыха.
+  late final Map<SpellSlot, int> currentSpellSlots;
   final Armor? armor;
   final Shield? shield;
   final Weapon? mainWeapon;
@@ -91,7 +95,7 @@ class Player {
     Map<ClassExtras, int>? classExtras,
     DeathThrows? deathThrows,
     int? hits,
-    int? mana,
+    Map<SpellSlot, int>? spellSlots,
     this.isDead = false,
   })  : assert(classes.isNotEmpty),
         _additionalLanguages = knownLanguages,
@@ -168,7 +172,7 @@ class Player {
       kind: StatKind.charisma,
     );
     currentHits = hits ?? maxHits;
-    currentMana = mana ?? maxMana;
+    currentSpellSlots = spellSlots ?? spellCells;
     currentExtras = classExtras ?? maxExtras;
   }
 
@@ -240,7 +244,7 @@ class Player {
     return copyWith(
       classes: newClasses,
       currentHits: () => null,
-      currentMana: () => null,
+      currentSpellSlots: () => null,
       classExtras: () => null,
     );
   }
@@ -253,7 +257,7 @@ class Player {
     return copyWith(
       classes: [...classes, spec],
       currentHits: () => null,
-      currentMana: () => null,
+      currentSpellSlots: () => null,
       classExtras: () => null,
     );
   }
@@ -347,6 +351,7 @@ class Player {
     return classes.fold(0, (prev, e) => prev + e.additionalDamage(this));
   }
 
+  /// Ячейки заклинаний по таблице заклинателя (уровни без ячеек не включаются).
   Map<SpellSlot, int> get spellCells {
     final magicLevel = classes.fold(
       0,
@@ -355,19 +360,16 @@ class Player {
     if (magicLevel == 0) {
       return {};
     }
-    return spellSlotsTable[magicLevel]!;
+    return Map.fromEntries(spellSlotsTable[magicLevel]!.entries.where((e) => e.value > 0));
   }
 
-  int get maxMana {
-    final cells = spellCells;
-    if (cells.isEmpty) {
-      return 0;
-    }
-    return cells.entries.fold(
-      0,
-      (prev, entry) => prev + entry.key.mana * entry.value,
-    );
-  }
+  /// Уровни ячеек, которые есть у персонажа: по таблице или созданные из единиц чародейства.
+  List<SpellSlot> get spellSlotLevels =>
+      SpellSlot.values.where((e) => (spellCells[e] ?? 0) > 0 || (currentSpellSlots[e] ?? 0) > 0).toList();
+
+  /// Ячейки, которыми можно наложить заклинание [level] уровня: того же уровня и выше, с остатком.
+  List<SpellSlot> availableSpellSlots(SpellSlot level) =>
+      spellSlotLevels.where((e) => e.index >= level.index && (currentSpellSlots[e] ?? 0) > 0).toList();
 
   List<SpellStat> get spellKinds => classes
       .where((e) => e.spellKind != null)
@@ -381,15 +383,77 @@ class Player {
       .whereNotNull()
       .toList();
 
-  Player spendMana(int value) {
+  Player spendSpellSlot(SpellSlot slot) {
+    final current = currentSpellSlots[slot] ?? 0;
+    if (current == 0) return this;
+    return copyWith(currentSpellSlots: () => {...currentSpellSlots, slot: current - 1});
+  }
+
+  /// Возвращает потраченную ячейку, но не выше максимума по таблице.
+  Player restoreSpellSlot(SpellSlot slot) {
+    final current = currentSpellSlots[slot] ?? 0;
+    if (current >= (spellCells[slot] ?? 0)) return this;
+    return copyWith(currentSpellSlots: () => {...currentSpellSlots, slot: current + 1});
+  }
+
+  /// Продолжительный отдых что-то восстановит: хиты, ячейки заклинаний или ресурсы классов ниже максимума.
+  /// Созданные из единиц чародейства ячейки сверх максимума не в счёт.
+  bool get canRestOnLongRest =>
+      currentHits < maxHits ||
+      spellCells.entries.any((e) => (currentSpellSlots[e.key] ?? 0) < e.value) ||
+      maxExtras.entries.any((e) => (currentExtras[e.key] ?? 0) < e.value);
+
+  /// Продолжительный отдых: хиты, ячейки заклинаний и ресурсы классов восстанавливаются,
+  /// созданные из единиц чародейства ячейки исчезают.
+  Player longRest() => copyWith(
+        currentHits: () => maxHits,
+        deathThrows: () => null,
+        isDead: false,
+        currentSpellSlots: () => null,
+        classExtras: () => null,
+      );
+
+  int get currentSorceryPoints => currentExtras[ClassExtras.sorceryPoints] ?? 0;
+
+  int get maxSorceryPoints => maxExtras[ClassExtras.sorceryPoints] ?? 0;
+
+  /// Тратит единицы чародейства, например на метамагию.
+  Player spendSorceryPoints(int points) {
+    if (points <= 0 || points > currentSorceryPoints) return this;
     return copyWith(
-      currentMana: () => max(0, currentMana - value),
+      classExtras: () => {...currentExtras, ClassExtras.sorceryPoints: currentSorceryPoints - points},
     );
   }
 
-  Player recoverMana(int value) {
+  /// «Источник магии»: ячейку можно превратить в единицы чародейства по её уровню,
+  /// но единиц не может стать больше максимума.
+  bool canConvertToSorceryPoints(SpellSlot slot) =>
+      maxSorceryPoints > 0 &&
+      (currentSpellSlots[slot] ?? 0) > 0 &&
+      currentSorceryPoints + slot.level <= maxSorceryPoints;
+
+  Player convertSpellSlotToSorceryPoints(SpellSlot slot) {
+    if (!canConvertToSorceryPoints(slot)) return this;
     return copyWith(
-      currentMana: () => min(maxMana, currentMana + value),
+      currentSpellSlots: () => {...currentSpellSlots, slot: currentSpellSlots[slot]! - 1},
+      classExtras: () => {...currentExtras, ClassExtras.sorceryPoints: currentSorceryPoints + slot.level},
+    );
+  }
+
+  /// «Источник магии»: ячейку 1–5 уровня можно создать за единицы чародейства.
+  bool canCreateSpellSlot(SpellSlot slot) {
+    final cost = Sorcerer.spellSlotCost[slot];
+    return cost != null && maxSorceryPoints > 0 && currentSorceryPoints >= cost;
+  }
+
+  Player createSpellSlot(SpellSlot slot) {
+    if (!canCreateSpellSlot(slot)) return this;
+    return copyWith(
+      currentSpellSlots: () => {...currentSpellSlots, slot: (currentSpellSlots[slot] ?? 0) + 1},
+      classExtras: () => {
+        ...currentExtras,
+        ClassExtras.sorceryPoints: currentSorceryPoints - Sorcerer.spellSlotCost[slot]!,
+      },
     );
   }
 
@@ -469,7 +533,8 @@ class Player {
           (prev, e) => [...prev, ...e.abilities],
         ),
         ...feats.map(
-          (e) => Peculiarity(name: 'ЧЕРТА: ${e.feat.name.toUpperCase()}', description: e.feat.descriptionHtml, isHtml: true),
+          (e) => Peculiarity(
+              name: 'ЧЕРТА: ${e.feat.name.toUpperCase()}', description: e.feat.descriptionHtml, isHtml: true),
         ),
       ];
 
@@ -628,7 +693,7 @@ class Player {
     isEqual &= secondWeapon == other.secondWeapon;
     isEqual &= mainRangeWeapon == other.mainRangeWeapon;
     isEqual &= secondRangeWeapon == other.secondRangeWeapon;
-    isEqual &= currentMana == other.currentMana;
+    isEqual &= const MapEquality<SpellSlot, int>().equals(currentSpellSlots, other.currentSpellSlots);
     isEqual &= deathThrows == other.deathThrows;
     isEqual &= race == other.race;
     isEqual &= inventory == other.inventory;
@@ -659,7 +724,7 @@ class Player {
         secondWeapon,
         mainRangeWeapon,
         secondRangeWeapon,
-        currentMana,
+        const MapEquality<SpellSlot, int>().hash(currentSpellSlots),
         deathThrows,
         currentExtras,
         race,
@@ -679,7 +744,7 @@ class Player {
     bool? isDead,
     Armor? Function()? armor,
     Shield? Function()? shield,
-    int? Function()? currentMana,
+    Map<SpellSlot, int>? Function()? currentSpellSlots,
     DeathThrows? Function()? deathThrows,
     Map<ClassExtras, int>? Function()? classExtras,
     Weapon? Function()? mainWeapon,
@@ -705,7 +770,7 @@ class Player {
         isDead: isDead ?? this.isDead,
         armor: armor != null ? armor() : this.armor,
         shield: shield != null ? shield() : this.shield,
-        mana: currentMana != null ? currentMana() : this.currentMana,
+        spellSlots: currentSpellSlots != null ? currentSpellSlots() : this.currentSpellSlots,
         deathThrows: deathThrows != null ? deathThrows() : this.deathThrows,
         classExtras: classExtras != null ? classExtras() : currentExtras,
         mainWeapon: mainWeapon != null ? mainWeapon() : this.mainWeapon,

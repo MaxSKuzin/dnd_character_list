@@ -1,20 +1,16 @@
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 
 enum SpellSlot {
-  conspiracy(0),
-  level1(2),
-  level2(3),
-  level3(5),
-  level4(6),
-  level5(7),
-  level6(9),
-  level7(10),
-  level8(11),
-  level9(13);
-
-  final int mana;
-
-  const SpellSlot(this.mana);
+  conspiracy,
+  level1,
+  level2,
+  level3,
+  level4,
+  level5,
+  level6,
+  level7,
+  level8,
+  level9;
 
   /// Уровень заклинания: 0 для заговоров.
   int get level => index;
@@ -31,7 +27,9 @@ enum SpellSlot {
     if (magicLevel == 0) {
       return {};
     }
-    return Map.fromEntries(spellSlotsTable[magicLevel]!.entries.where((element) => element.value > 0,));
+    return Map.fromEntries(spellSlotsTable[magicLevel]!.entries.where(
+          (element) => element.value > 0,
+        ));
   }
 }
 

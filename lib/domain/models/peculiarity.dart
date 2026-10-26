@@ -5,7 +5,7 @@ class Peculiarity {
   final String name;
   final String description;
   final String? _magicDescription;
-  final SpellSlot? manaRequired;
+  final SpellSlot? requiredSlot;
   final Dice? valueDice;
   final int? startDiceCount;
   final int? dicePerLevel;
@@ -19,7 +19,7 @@ class Peculiarity {
     required this.description,
     this.isHtml = false,
     String? magicDescription,
-    this.manaRequired,
+    this.requiredSlot,
     this.valueDice,
     this.startDiceCount,
     this.dicePerLevel,
@@ -27,7 +27,7 @@ class Peculiarity {
   }) : _magicDescription = magicDescription;
 
   String magicDescription(SpellSlot slotToUse) {
-    if (_magicDescription == null || manaRequired == null || startDiceCount == null || valueDice == null) {
+    if (_magicDescription == null || requiredSlot == null || startDiceCount == null || valueDice == null) {
       return description;
     }
 
@@ -57,7 +57,7 @@ class Peculiarity {
   Map<String, dynamic> toJson() => {
         'name': name,
         'description': description,
-        'spellSlot': manaRequired?.name,
+        'spellSlot': requiredSlot?.name,
         'valueDice': valueDice?.toJson(),
         'startDiceCount': startDiceCount,
         'dicePerLevel': dicePerLevel,
@@ -69,7 +69,7 @@ class Peculiarity {
   factory Peculiarity.fromJson(Map<String, dynamic> json) => Peculiarity(
         name: json['name'],
         description: json['description'],
-        manaRequired: json['spellSlot'] != null ? SpellSlot.values.byName(json['spellSlot']) : null,
+        requiredSlot: json['spellSlot'] != null ? SpellSlot.values.byName(json['spellSlot']) : null,
         valueDice: json['valueDice'] != null ? Dice.fromJson(json['valueDice']) : null,
         startDiceCount: json['startDiceCount'],
         dicePerLevel: json['dicePerLevel'],

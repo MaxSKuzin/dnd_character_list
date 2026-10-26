@@ -14,7 +14,7 @@ class SpellInfoDialog extends StatefulWidget {
   static Future<void> show(
     BuildContext context, {
     required Spell spell,
-    bool canDrainMana = true,
+    bool canSpendSlot = true,
     bool canChangeSlot = true,
   }) async {
     await showDialog(
@@ -30,10 +30,10 @@ class SpellInfoDialog extends StatefulWidget {
           child: SpellInfoDialog(
             spell: spell,
             canChangeSlot: canChangeSlot,
-            canDrainMana: canDrainMana,
+            canSpendSlot: canSpendSlot,
           ),
         );
-        return canDrainMana
+        return canSpendSlot
             ? BlocProvider.value(
                 value: context.read<PlayerCubit>(),
                 child: child,
@@ -44,13 +44,13 @@ class SpellInfoDialog extends StatefulWidget {
   }
 
   final Spell spell;
-  final bool canDrainMana;
+  final bool canSpendSlot;
   final bool canChangeSlot;
 
   const SpellInfoDialog({
     super.key,
     required this.spell,
-    required this.canDrainMana,
+    required this.canSpendSlot,
     this.canChangeSlot = true,
   });
 
@@ -65,17 +65,8 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final availableSlots = widget.canDrainMana
-        ? context
-            .read<PlayerCubit>()
-            .state
-            .spellCells
-            .entries
-            .where(
-              (e) => e.key.index >= spell.slot.index && e.value > 0,
-            )
-            .map((e) => e.key)
-            .toList()
+    final availableSlots = widget.canSpendSlot
+        ? context.read<PlayerCubit>().state.spellSlotLevels.where((e) => e.index >= spell.slot.index).toList()
         : <SpellSlot>[];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -95,7 +86,10 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
             textAlign: TextAlign.center,
             style: context.theme.textTheme.bodySmall,
           ),
-          if (widget.canDrainMana && spell.slot != SpellSlot.conspiracy) Text('${_slot.mana} маны'),
+          if (widget.canSpendSlot && spell.slot != SpellSlot.conspiracy)
+            BlocBuilder<PlayerCubit, Player>(
+              builder: (context, state) => Text('Ячейки ${_slot.level} уровня: ${state.currentSpellSlots[_slot] ?? 0}'),
+            ),
           if (availableSlots.length > 1 && widget.canChangeSlot) ...[
             const Gap(8),
             const Text('Ячейка'),
@@ -141,12 +135,12 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
                       'Описание не загружено с ttg.club. Обновите список заклинаний.',
                       textAlign: TextAlign.center,
                     ),
-                  if (widget.canDrainMana && spell.slot != SpellSlot.conspiracy) ...[
+                  if (widget.canSpendSlot && spell.slot != SpellSlot.conspiracy) ...[
                     const Gap(16),
                     BlocBuilder<PlayerCubit, Player>(
                       builder: (context, state) => FilledButton(
-                        onPressed: state.currentMana >= _slot.mana
-                            ? () => context.read<PlayerCubit>().spendMana(_slot.mana)
+                        onPressed: (state.currentSpellSlots[_slot] ?? 0) > 0
+                            ? () => context.read<PlayerCubit>().spendSpellSlot(_slot)
                             : null,
                         child: const Text('Использовать'),
                       ),
@@ -215,6 +209,6 @@ class _SpellDetailsView extends StatelessWidget {
     if (spell == null) return;
     final loaded = (await repository.withDetailsIfPossible([spell])).first;
     if (!context.mounted) return;
-    await SpellInfoDialog.show(context, spell: loaded, canDrainMana: false);
+    await SpellInfoDialog.show(context, spell: loaded, canSpendSlot: false);
   }
 }
