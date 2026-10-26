@@ -5,7 +5,7 @@ import 'package:dnd_character_list/presentation/session/session_sheet.dart';
 import 'package:dnd_session/dnd_session.dart';
 import 'package:flutter/material.dart';
 
-/// Кнопка сессии мастера на экране боя: показывает состояние подключения и открывает [SessionSheet].
+/// Кнопка сессии мастера в шапке экрана боя: показывает состояние подключения и открывает [SessionSheet].
 class SessionButton extends StatelessWidget {
   const SessionButton({super.key});
 
@@ -23,16 +23,10 @@ class SessionButton extends StatelessWidget {
           SessionConnecting() || SessionReconnecting() => (Icons.wifi_find, 'Подключение…'),
           SessionDisconnected() => (Icons.wifi_off, 'Сессия мастера'),
         };
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: () => SessionSheet.show(context, PlayerModel.getPlayer(context)),
-              icon: Icon(icon),
-              label: Text(label, overflow: TextOverflow.ellipsis),
-            ),
-          ),
+        return TextButton.icon(
+          onPressed: () => SessionSheet.show(context, PlayerModel.getPlayer(context)),
+          icon: Icon(icon),
+          label: Text(label, overflow: TextOverflow.ellipsis),
         );
       },
     );

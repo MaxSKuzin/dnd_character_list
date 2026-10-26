@@ -4,8 +4,8 @@ import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Продолжительный отдых вверху экрана боя. Показывается, только когда хиты, ячейки заклинаний
-/// или ресурсы классов не на максимуме.
+/// Продолжительный отдых в шапке экрана боя. Кнопка на месте всегда, чтобы экран не сдвигался, и активна,
+/// только когда хиты, ячейки заклинаний или ресурсы классов не на максимуме.
 class LongRestButton extends StatelessWidget {
   const LongRestButton({super.key});
 
@@ -55,14 +55,10 @@ class LongRestButton extends StatelessWidget {
     return BlocBuilder<PlayerCubit, Player>(
       buildWhen: (previous, current) => previous.canRestOnLongRest != current.canRestOnLongRest,
       builder: (context, player) {
-        if (!player.canRestOnLongRest) return const SizedBox();
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: OutlinedButton.icon(
-            onPressed: () => _longRest(context, context.read<PlayerCubit>().state),
-            icon: const Icon(Icons.bedtime_outlined),
-            label: const Text('Продолжительный отдых'),
-          ),
+        return TextButton.icon(
+          onPressed: player.canRestOnLongRest ? () => _longRest(context, context.read<PlayerCubit>().state) : null,
+          icon: const Icon(Icons.bedtime_outlined),
+          label: const Text('Отдых'),
         );
       },
     );

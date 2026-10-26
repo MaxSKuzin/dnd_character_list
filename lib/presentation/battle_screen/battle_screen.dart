@@ -15,165 +15,134 @@ import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/session/battle_queue_bar.dart';
 import 'package:dnd_character_list/presentation/session/session_button.dart';
 import 'package:dnd_character_list/presentation/session/statuses_bar.dart';
-import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
+/// Экран боя: шапка постоянной высоты (сессия мастера, отдых) и одна прокрутка со всем остальным — сводка,
+/// счётчики сеткой, ячейки, оружие и магия. Ничего не прячется в горизонтальную прокрутку, а кнопки, которые
+/// бывают недоступны, не исчезают, а гаснут, чтобы содержимое не прыгало.
 @RoutePage()
-class BattleScreen extends StatefulWidget {
+class BattleScreen extends StatelessWidget {
   const BattleScreen({super.key});
-
-  @override
-  State<BattleScreen> createState() => _BattleScreenState();
-}
-
-class _BattleScreenState extends State<BattleScreen> {
-  final _gridController = ScrollController();
-  final _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    // Future.delayed(
-    //   const Duration(milliseconds: 500),
-    //   () {
-    //     if (_gridController.position.maxScrollExtent == 0) return;
-    //     _gridController
-    //         .animateTo(
-    //           _gridController.position.maxScrollExtent,
-    //           duration: const Duration(seconds: 2),
-    //           curve: Curves.elasticOut,
-    //         )
-    //         .then(
-    //           (_) => _gridController.animateTo(
-    //             0,
-    //             duration: const Duration(milliseconds: 300),
-    //             curve: Curves.linear,
-    //           ),
-    //         );
-    //   },
-    // );
-  }
-
-  @override
-  void dispose() {
-    _gridController.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SessionButton(),
-            const BattleQueueBar(),
-            const StatusesBar(),
-            const KnockoutBanner(),
-            const LongRestButton(),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final dimension = constraints.maxWidth / 3 - 24;
-                return SizedBox(
-                  height: dimension,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const InitiativeWidget(),
-                      const ProtectionWidget(),
-                      const SpeedWidget(),
-                    ]
-                        .map(
-                          (e) => SizedBox(
-                            width: dimension,
-                            child: e,
-                          ),
-                        )
-                        .toList(),
-                  ),
-                );
-              },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: [
+                Expanded(child: Align(alignment: Alignment.centerLeft, child: SessionButton())),
+                LongRestButton(),
+              ],
             ),
-            const Gap(16),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final extras = PlayerModel.extras(context);
-                return SizedBox(
-                  height: constraints.maxWidth / 2 + 10,
-                  width: constraints.maxWidth,
-                  child: GridView(
-                    controller: _gridController,
-                    padding: const EdgeInsets.symmetric(vertical: 1),
-                    scrollDirection: Axis.horizontal,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.5,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                    ),
-                    shrinkWrap: true,
-                    children: [
-                      const HealthSection(),
-                      const HitDices(),
-                      const DeathThrowsWidget(),
-                      ...extras.entries.map(
-                        (e) => ClassExtraWidget(
-                          extra: e.key,
-                          count: e.value,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            const Gap(16),
-            Expanded(
-              child: FadingEdgeScrollView.fromSingleChildScrollView(
-                child: SingleChildScrollView(
-                  controller: _scrollController,
+          ),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+              children: [
+                // Бой у мастера, эффекты и нокаут бывают не всегда — появляются плавно.
+                const AnimatedSize(
+                  duration: Duration(milliseconds: 200),
+                  alignment: Alignment.topCenter,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Без ячеек секция пустая и не занимает места.
-                      const SpellSlotsSection(),
-                      const Text(
-                        'ОРУЖИЕ',
-                        textAlign: TextAlign.center,
-                      ),
-                      const Gap(8),
-                      const WeaponsSection(),
-                      Builder(
-                        builder: (context) {
-                          final spellStats = PlayerModel.spellStats(context);
-                          if (spellStats.isEmpty) {
-                            return const SizedBox();
-                          }
-                          return Column(
-                            children: [
-                              const Gap(16),
-                              const Text(
-                                'МАГИЯ',
-                                textAlign: TextAlign.center,
-                              ),
-                              const Gap(8),
-                              SpellsStatsSection(spellStats),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
+                    children: [BattleQueueBar(), StatusesBar(), KnockoutBanner()],
                   ),
                 ),
-              ),
+                const _Summary(),
+                const Gap(16),
+                const _Counters(),
+                const Gap(24),
+                // Без ячеек секция пустая и не занимает места.
+                const SpellSlotsSection(),
+                const _SectionTitle('ОРУЖИЕ'),
+                const WeaponsSection(),
+                Builder(
+                  builder: (context) {
+                    final spellStats = PlayerModel.spellStats(context);
+                    if (spellStats.isEmpty) return const SizedBox();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [const Gap(16), const _SectionTitle('МАГИЯ'), SpellsStatsSection(spellStats)],
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+/// Инициатива, КД и скорость — три квадрата в ряд.
+class _Summary extends StatelessWidget {
+  const _Summary();
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final dimension = constraints.maxWidth / 3 - 24;
+        return SizedBox(
+          height: dimension,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              for (final widget in const [InitiativeWidget(), ProtectionWidget(), SpeedWidget()])
+                SizedBox(width: dimension, child: widget),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Хиты, кубы здоровья, спасброски от смерти и ресурсы классов — сеткой в две колонки, все видны сразу.
+class _Counters extends StatelessWidget {
+  static const _spacing = 16.0;
+
+  const _Counters();
+
+  @override
+  Widget build(BuildContext context) {
+    final extras = PlayerModel.extras(context);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = (constraints.maxWidth - _spacing) / 2;
+        // Пропорции плиток прежние: вдвое шире, чем выше.
+        final height = width / 2;
+        return Wrap(
+          spacing: _spacing,
+          runSpacing: _spacing,
+          children: [
+            const HealthSection(),
+            const HitDices(),
+            const DeathThrowsWidget(),
+            for (final extra in extras.entries) ClassExtraWidget(extra: extra.key, count: extra.value),
+          ].map((e) => SizedBox(width: width, height: height, child: e)).toList(),
+        );
+      },
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String text;
+
+  const _SectionTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(text, textAlign: TextAlign.center),
     );
   }
 }
