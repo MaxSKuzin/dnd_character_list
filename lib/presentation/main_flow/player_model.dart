@@ -146,8 +146,15 @@ class PlayerModel extends InheritedModel<PlayerAspect> {
     return InheritedModel.inheritFrom<PlayerModel>(context, aspect: PlayerAspect.saveThrows)!.player.saveThrows;
   }
 
+  /// Игрок без подписки на изменения — для обработчиков нажатий.
   static Player getPlayer(BuildContext context) {
     return context.getInheritedWidgetOfExactType<PlayerModel>()!.player;
+  }
+
+  /// Игрок с подпиской на любые его изменения — для виджетов, которые показывают значения,
+  /// зависящие от многих полей: атаки, инициатива, скорость, пассивное восприятие.
+  static Player watch(BuildContext context) {
+    return InheritedModel.inheritFrom<PlayerModel>(context)!.player;
   }
 
   static CurMax<int> health(BuildContext context) {

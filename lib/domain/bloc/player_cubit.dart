@@ -2,6 +2,7 @@ import 'package:dnd_character_list/data/sp_source.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
@@ -63,26 +64,14 @@ class PlayerCubit extends Cubit<Player> {
     emit(state.restoreExtra(extra));
   }
 
-  Future<void> equipMainWeapon(Weapon weapon) async {
-    final newPlayer = state.equipMainWeapon(weapon);
+  Future<void> equipWeapon(Weapon weapon, WeaponSlot slot) async {
+    final newPlayer = state.equipWeapon(weapon, slot);
     await _source.savePlayer(newPlayer);
     emit(newPlayer);
   }
 
-  Future<void> equipSecondaryWeapon(Weapon weapon) async {
-    final newPlayer = state.equipSecondaryWeapon(weapon);
-    await _source.savePlayer(newPlayer);
-    emit(newPlayer);
-  }
-
-  Future<void> unequipMainWeapon(Weapon weapon) async {
-    final newPlayer = state.unequipMainWeapon(weapon);
-    await _source.savePlayer(newPlayer);
-    emit(newPlayer);
-  }
-
-  Future<void> unequipSecondaryWeapon(Weapon weapon) async {
-    final newPlayer = state.unequipSecondaryWeapon(weapon);
+  Future<void> unequipWeapon(WeaponSlot slot) async {
+    final newPlayer = state.unequipWeapon(slot);
     await _source.savePlayer(newPlayer);
     emit(newPlayer);
   }
@@ -105,8 +94,8 @@ class PlayerCubit extends Cubit<Player> {
     emit(newPlayer);
   }
 
-  Future<void> unequipArmor(Armor armor) async {
-    final newPlayer = state.unequipArmor(armor);
+  Future<void> unequipArmor() async {
+    final newPlayer = state.unequipArmor();
     await _source.savePlayer(newPlayer);
     emit(newPlayer);
   }

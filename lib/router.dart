@@ -51,7 +51,7 @@ class AppRouter extends RootStackRouter {
               page: SelectSkillsRoute.page,
             ),
             AdaptiveRoute(
-              page: SelectWeaponsRoute.page,
+              page: StartingEquipmentRoute.page,
             ),
             AdaptiveRoute(
               page: SetPersonalityRoute.page,
@@ -66,6 +66,9 @@ class AppRouter extends RootStackRouter {
         ),
         AdaptiveRoute(
           page: InventoryAddItemRoute.page,
+        ),
+        AdaptiveRoute(
+          page: ItemCatalogRoute.page,
         ),
         AdaptiveRoute(
           initial: true,

@@ -1,5 +1,5 @@
 import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
-import 'dart:math';
+import 'package:dnd_character_list/domain/models/combat.dart';
 
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
@@ -62,15 +62,21 @@ final class Barbarian extends Specialization {
         StatKind.constitution,
       ];
 
+  /// «Защита без доспехов»: 10 + Ловкость + Телосложение, щит разрешён.
   @override
-  int getProtection(Player player) {
+  ArmorClass armorClass(Player player) {
     if (player.armor == null) {
-      final dexterityBonus = max(0, player.dexterity.bonus);
-      final constitutionBonus = max(0, player.constitution.bonus);
-      return 10 + dexterityBonus + constitutionBonus;
+      return ArmorClass.of([
+        ('Защита без доспехов', 10),
+        ('Ловкость', player.dexterity.bonus),
+        ('Телосложение', player.constitution.bonus),
+      ]);
     }
-    return super.getProtection(player);
+    return super.armorClass(player);
   }
+
+  @override
+  WeaponProficiency get weaponProficiency => const WeaponProficiency(simple: true, martial: true);
 
   @override
   Map<String, dynamic> toJson() => {

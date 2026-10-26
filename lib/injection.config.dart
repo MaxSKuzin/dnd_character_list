@@ -15,6 +15,8 @@ import 'package:dnd_character_list/data/dnd_su/dnd_su_cache.dart' as _i263;
 import 'package:dnd_character_list/data/dnd_su/dnd_su_class_parser.dart'
     as _i364;
 import 'package:dnd_character_list/data/dnd_su/dnd_su_client.dart' as _i914;
+import 'package:dnd_character_list/data/dnd_su/dnd_su_equipment_parser.dart'
+    as _i107;
 import 'package:dnd_character_list/data/dnd_su/dnd_su_feats_parser.dart'
     as _i487;
 import 'package:dnd_character_list/data/dnd_su/dnd_su_spells_parser.dart'
@@ -57,6 +59,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i674.DndSuBackgroundsParser());
     gh.lazySingleton<_i487.DndSuFeatsParser>(() => _i487.DndSuFeatsParser());
     gh.lazySingleton<_i263.DndSuCache>(() => _i263.DndSuCache());
+    gh.lazySingleton<_i107.DndSuEquipmentParser>(
+        () => _i107.DndSuEquipmentParser());
     gh.factoryParam<_i571.PlayerCubit, _i747.Player, dynamic>((
       player,
       _,
@@ -65,19 +69,20 @@ extension GetItInjectableX on _i174.GetIt {
           player,
           gh<_i895.SpSource>(),
         ));
-    gh.lazySingleton<_i809.SpellsRepository>(() => _i809.SpellsRepository(
-          gh<_i914.DndSuClient>(),
-          gh<_i987.DndSuSpellsParser>(),
-        ));
-    gh.factory<_i716.CreatedCharactersCubit>(
-        () => _i716.CreatedCharactersCubit(gh<_i895.SpSource>()));
     gh.lazySingleton<_i890.RulesRepository>(() => _i890.RulesRepository(
           gh<_i914.DndSuClient>(),
           gh<_i263.DndSuCache>(),
           gh<_i364.DndSuClassParser>(),
           gh<_i674.DndSuBackgroundsParser>(),
           gh<_i487.DndSuFeatsParser>(),
+          gh<_i107.DndSuEquipmentParser>(),
         ));
+    gh.lazySingleton<_i809.SpellsRepository>(() => _i809.SpellsRepository(
+          gh<_i914.DndSuClient>(),
+          gh<_i987.DndSuSpellsParser>(),
+        ));
+    gh.factory<_i716.CreatedCharactersCubit>(
+        () => _i716.CreatedCharactersCubit(gh<_i895.SpSource>()));
     gh.factoryParam<_i876.LevelUpCubit, _i747.Player, dynamic>((
       player,
       _,

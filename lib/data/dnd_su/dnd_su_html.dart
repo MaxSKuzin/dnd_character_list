@@ -65,6 +65,8 @@ abstract final class DndSuHtml {
     'три': 3,
     'четыре': 4,
     'пять': 5,
+    'десять': 10,
+    'двадцать': 20,
   };
 
   /// Число в начале текста: «Три музыкальных инструмента», «Два на ваш выбор».
@@ -154,7 +156,7 @@ abstract final class DndSuHtml {
     for (final part in splitTopLevel(element.innerHtml)) {
       final fragment = html_parser.parseFragment(part);
       final text = cleanText(fragment.text ?? '').replaceAll(RegExp(r'[.;]$'), '');
-      if (text.isEmpty) continue;
+      if (text.isEmpty || text.toLowerCase() == 'нет') continue;
       final code = fragment.querySelector('[tooltip-for^="tools."]')?.attributes['tooltip-for'];
       final lower = text.toLowerCase();
       final category = _toolCodes[code] ??

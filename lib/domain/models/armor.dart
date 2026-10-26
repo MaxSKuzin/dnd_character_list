@@ -1,164 +1,82 @@
 import 'package:dnd_character_list/domain/models/armor_kind.dart';
+import 'package:dnd_character_list/domain/models/balance.dart';
 
+/// Доспех из таблицы https://dnd.su/articles/inventory/95-armor_and_shields/ или созданный игроком.
 class Armor {
+  final String? id;
   final String name;
+
+  /// Базовый класс доспеха.
   final int protection;
+
+  /// Максимальный бонус Ловкости к КД; `null` — без ограничения, 0 — Ловкость не учитывается.
   final int? dexterityLimit;
   final int weight;
   final ArmorKind kind;
   final bool stealthDisadvantage;
 
+  /// Минимальная Сила; без неё скорость уменьшается на 10 футов.
+  final int? strengthRequirement;
+  final Balance? cost;
+
   const Armor({
+    this.id,
     required this.kind,
     required this.weight,
     required this.name,
     required this.protection,
     required this.dexterityLimit,
     this.stealthDisadvantage = false,
+    this.strengthRequirement,
+    this.cost,
   });
 
   @override
   operator ==(Object other) {
     return other is Armor &&
+        other.id == id &&
         other.name == name &&
         other.protection == protection &&
         other.dexterityLimit == dexterityLimit &&
         other.kind == kind &&
         other.stealthDisadvantage == stealthDisadvantage &&
+        other.strengthRequirement == strengthRequirement &&
         other.weight == weight;
   }
 
   @override
   int get hashCode => Object.hashAll([
+        id,
         name,
         protection,
         dexterityLimit,
         weight,
         kind,
         stealthDisadvantage,
+        strengthRequirement,
       ]);
 
   Map<String, dynamic> toJson() => {
-        'kind': kind.index,
+        'id': id,
+        'kind': kind.name,
         'weight': weight,
         'name': name,
         'protection': protection,
         'dexterityLimit': dexterityLimit,
         'stealthDisadvantage': stealthDisadvantage,
+        'strengthRequirement': strengthRequirement,
+        'cost': cost?.toJson(),
       };
 
   factory Armor.fromJson(Map<String, dynamic> json) => Armor(
-        kind: ArmorKind.values[json['kind']],
+        id: json['id'],
+        kind: ArmorKind.values.byName(json['kind']),
         weight: json['weight'],
         name: json['name'],
         protection: json['protection'],
         dexterityLimit: json['dexterityLimit'],
         stealthDisadvantage: json['stealthDisadvantage'],
-      );
-
-  //light armor
-  factory Armor.quilted() => const Armor(
-        name: 'Стеганый',
-        kind: ArmorKind.light,
-        protection: 11,
-        weight: 8,
-        dexterityLimit: null,
-        stealthDisadvantage: true,
-      );
-
-  factory Armor.leather() => const Armor(
-        name: 'Кожаный',
-        kind: ArmorKind.light,
-        protection: 11,
-        weight: 10,
-        dexterityLimit: null,
-      );
-
-  factory Armor.studdedLeather() => const Armor(
-        name: 'Проклёпанный кожаный',
-        kind: ArmorKind.light,
-        protection: 12,
-        weight: 13,
-        dexterityLimit: null,
-      );
-
-  // medium armor
-  factory Armor.fur() => const Armor(
-        name: 'Шкурный',
-        kind: ArmorKind.medium,
-        protection: 12,
-        weight: 12,
-        dexterityLimit: 2,
-      );
-
-  factory Armor.mailShirt() => const Armor(
-        name: 'Кольчужная рубаха',
-        kind: ArmorKind.medium,
-        protection: 14,
-        weight: 20,
-        dexterityLimit: 2,
-      );
-
-  factory Armor.scaly() => const Armor(
-        name: 'Чешуйчатый',
-        kind: ArmorKind.medium,
-        protection: 14,
-        weight: 45,
-        dexterityLimit: 2,
-        stealthDisadvantage: true,
-      );
-
-  factory Armor.cuirass() => const Armor(
-        name: 'Кираса',
-        kind: ArmorKind.medium,
-        protection: 14,
-        weight: 20,
-        dexterityLimit: 2,
-      );
-
-  factory Armor.halfArmor() => const Armor(
-        name: 'Полулаты',
-        kind: ArmorKind.medium,
-        protection: 15,
-        weight: 40,
-        dexterityLimit: 2,
-        stealthDisadvantage: true,
-      );
-
-  // heavy armor
-  factory Armor.ringed() => const Armor(
-        name: 'Колечный',
-        kind: ArmorKind.heavy,
-        protection: 14,
-        weight: 55,
-        dexterityLimit: 0,
-        stealthDisadvantage: true,
-      );
-
-  factory Armor.chainmail() => const Armor(
-        name: 'Кольчуга',
-        kind: ArmorKind.heavy,
-        protection: 16,
-        weight: 55,
-        dexterityLimit: 0,
-        stealthDisadvantage: true,
-      );
-
-  factory Armor.stacked() => const Armor(
-        name: 'Наборный',
-        kind: ArmorKind.heavy,
-        protection: 17,
-        weight: 60,
-        dexterityLimit: 0,
-        stealthDisadvantage: true,
-      );
-
-  factory Armor.plate() => const Armor(
-        name: 'Латы',
-        kind: ArmorKind.heavy,
-        protection: 18,
-        weight: 65,
-        dexterityLimit: 0,
-        stealthDisadvantage: true,
+        strengthRequirement: json['strengthRequirement'],
+        cost: json['cost'] == null ? null : Balance.fromJson(json['cost']),
       );
 }

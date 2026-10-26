@@ -33,7 +33,7 @@ class SpeedWidget extends StatelessWidget {
                 Expanded(
                   child: Center(
                     child: Text(
-                      '${PlayerModel.getPlayer(context).speed}',
+                      '${PlayerModel.watch(context).speed}',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,

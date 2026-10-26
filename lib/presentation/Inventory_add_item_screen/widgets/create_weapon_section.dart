@@ -12,6 +12,7 @@ import 'package:dnd_character_list/presentation/extensions/context_extensions.da
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 class CreateWeaponSection extends StatefulWidget {
   final Function(CreateItemController controller) onControllerReady;
@@ -218,7 +219,7 @@ class _CreateWeaponSectionState extends State<CreateWeaponSection> with CreateIt
                                               _elementalDamageNotifier.value = oldList;
                                             },
                                             child: Chip(
-                                              label: Text(e.name),
+                                              label: Text(e.localizedName),
                                               color: WidgetStatePropertyAll(
                                                 item.type == e ? context.customColors?.cardColor : Colors.transparent,
                                               ),
@@ -351,7 +352,7 @@ class _CreateWeaponSectionState extends State<CreateWeaponSection> with CreateIt
                         child: GestureDetector(
                           onTap: () => _damageTypeNotifier.value = e,
                           child: Chip(
-                            label: Text(e.name),
+                            label: Text(e.localizedName),
                             color: WidgetStatePropertyAll(
                               value == e ? context.customColors?.cardColor : Colors.transparent,
                             ),
@@ -381,7 +382,7 @@ class _CreateWeaponSectionState extends State<CreateWeaponSection> with CreateIt
                         child: GestureDetector(
                           onTap: () => _kindNotifier.value = e,
                           child: Chip(
-                            label: Text(e.name),
+                            label: Text(e.localizedName),
                             color: WidgetStatePropertyAll(
                               value == e ? context.customColors?.cardColor : Colors.transparent,
                             ),
@@ -411,7 +412,7 @@ class _CreateWeaponSectionState extends State<CreateWeaponSection> with CreateIt
                         child: GestureDetector(
                           onTap: () => _typeNotifier.value = e,
                           child: Chip(
-                            label: Text(e.name),
+                            label: Text(e.localizedName),
                             color: WidgetStatePropertyAll(
                               value == e ? context.customColors?.cardColor : Colors.transparent,
                             ),
@@ -441,7 +442,7 @@ class _CreateWeaponSectionState extends State<CreateWeaponSection> with CreateIt
                         child: GestureDetector(
                           onTap: () => _weaponWeightNotifier.value = e,
                           child: Chip(
-                            label: Text(e.name),
+                            label: Text(e.localizedName),
                             color: WidgetStatePropertyAll(
                               value == e ? context.customColors?.cardColor : Colors.transparent,
                             ),

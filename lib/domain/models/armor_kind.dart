@@ -1,16 +1,13 @@
+import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
+
 enum ArmorKind {
   light,
   medium,
   heavy;
 
-  String get name {
-    switch (this) {
-      case ArmorKind.light:
-        return 'Лёгкая';
-      case ArmorKind.medium:
-        return 'Средняя';
-      case ArmorKind.heavy:
-        return 'Тяжёлая';
-    }
-  }
+  ArmorProficiency get proficiency => switch (this) {
+        ArmorKind.light => ArmorProficiency.light,
+        ArmorKind.medium => ArmorProficiency.medium,
+        ArmorKind.heavy => ArmorProficiency.heavy,
+      };
 }

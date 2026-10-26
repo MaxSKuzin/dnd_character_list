@@ -6,6 +6,7 @@ import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/death_throws.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
@@ -282,7 +283,8 @@ class Player {
   int get initiative =>
       dexterity.bonus + unskilledCheckBonus + feats.fold(0, (previous, e) => previous + e.feat.initiativeBonus);
 
-  int get speed => 30 + feats.fold(0, (previous, e) => previous + e.feat.speedBonus);
+  /// Без нужной Силы тяжёлый доспех уменьшает скорость на 10 футов.
+  int get speed => 30 + feats.fold<int>(0, (previous, e) => previous + e.feat.speedBonus) - (isArmorTooHeavy ? 10 : 0);
 
   int get _passiveBonus => feats.fold(0, (previous, e) => previous + e.feat.passiveBonus);
 
@@ -339,19 +341,7 @@ class Player {
     return throws.toList();
   }
 
-  int get protection {
-    var maxProtection = 0;
-    for (var spec in classes) {
-      maxProtection = max(maxProtection, spec.getProtection(this));
-    }
-    if (shield != null) {
-      maxProtection += shield!.defense;
-    }
-    if (armor != null && fightingStyles.contains(FightingStyle.defence)) {
-      maxProtection++;
-    }
-    return maxProtection;
-  }
+  int get protection => armorClass.value;
 
   int get additionalDamage {
     return classes.fold(0, (prev, e) => prev + e.additionalDamage(this));
@@ -491,79 +481,53 @@ class Player {
         ...feats.expand((e) => e.languages),
       }.toList();
 
-  Player equipMainWeapon(Weapon weapon) {
-    final isMelee = weapon.kind.isMelee;
-    final isTwoHanded = switch (weapon.type) {
-      WeaponType.oneHanded => false,
-      WeaponType.universal => !canUseTwoWeapons,
-      WeaponType.twoHanded => true,
+  /// Берёт оружие в слот. Двуручное оружие освобождает вторую руку, рукопашное оружие
+  /// во второй руке занимает место щита. После смены основного оружия оружие во второй руке
+  /// снимается, если с новым основным сражаться двумя оружиями нельзя.
+  Player equipWeapon(Weapon weapon, WeaponSlot slot) => _equipWeapon(weapon, slot)._dropInvalidOffHand();
+
+  Player _dropInvalidOffHand() {
+    var player = this;
+    for (final slot in [WeaponSlot.secondHand, WeaponSlot.secondRange]) {
+      final weapon = player.weaponIn(slot);
+      if (weapon != null && player.cannotEquip(weapon, slot) != null) player = player.unequipWeapon(slot);
+    }
+    return player;
+  }
+
+  Player _equipWeapon(Weapon weapon, WeaponSlot slot) {
+    final isTwoHanded = weapon.type == WeaponType.twoHanded;
+    return switch (slot) {
+      WeaponSlot.mainHand => copyWith(
+          mainWeapon: () => weapon,
+          secondWeapon: () => isTwoHanded ? null : secondWeapon,
+          shield: () => isTwoHanded ? null : shield,
+        ),
+      WeaponSlot.secondHand => copyWith(secondWeapon: () => weapon, shield: () => null),
+      WeaponSlot.mainRange => copyWith(
+          mainRangeWeapon: () => weapon,
+          secondRangeWeapon: () => isTwoHanded ? null : secondRangeWeapon,
+        ),
+      WeaponSlot.secondRange => copyWith(secondRangeWeapon: () => weapon),
     };
-    if (isMelee) {
-      return copyWith(
-        mainWeapon: () => weapon,
-        secondWeapon: () => isTwoHanded ? null : secondWeapon,
-      );
-    } else {
-      return copyWith(
-        mainRangeWeapon: () => weapon,
-        secondRangeWeapon: () => isTwoHanded ? null : secondRangeWeapon,
-      );
-    }
   }
 
-  Player equipSecondaryWeapon(Weapon weapon) {
-    final isMelee = weapon.kind.isMelee;
-    final isTwoHanded = switch (weapon.type) {
-      WeaponType.oneHanded => false,
-      WeaponType.universal => !canUseTwoWeapons,
-      WeaponType.twoHanded => true,
-    };
-    if (isMelee) {
-      return copyWith(
-        mainWeapon: () => isTwoHanded ? weapon : mainWeapon,
-        secondWeapon: () => isTwoHanded ? null : weapon,
-      );
-    } else {
-      return copyWith(
-        mainRangeWeapon: () => isTwoHanded ? weapon : mainRangeWeapon,
-        secondRangeWeapon: () => isTwoHanded ? null : weapon,
-      );
-    }
-  }
+  /// Берёт оружие в основную руку рукопашного или дальнобойного комплекта.
+  Player equipMainWeapon(Weapon weapon) =>
+      equipWeapon(weapon, weapon.kind.isMelee ? WeaponSlot.mainHand : WeaponSlot.mainRange);
 
-  Player unequipMainWeapon(Weapon weapon) {
-    final isMelee = weapon.kind.isMelee;
-    if (isMelee) {
-      return copyWith(
-        mainWeapon: () => null,
-        secondWeapon: () => secondWeapon,
-      );
-    } else {
-      return copyWith(
-        mainRangeWeapon: () => null,
-        secondRangeWeapon: () => secondRangeWeapon,
-      );
-    }
-  }
+  Player unequipWeapon(WeaponSlot slot) => switch (slot) {
+        WeaponSlot.mainHand => copyWith(mainWeapon: () => secondWeapon, secondWeapon: () => null),
+        WeaponSlot.secondHand => copyWith(secondWeapon: () => null),
+        WeaponSlot.mainRange => copyWith(mainRangeWeapon: () => secondRangeWeapon, secondRangeWeapon: () => null),
+        WeaponSlot.secondRange => copyWith(secondRangeWeapon: () => null),
+      };
 
-  Player unequipSecondaryWeapon(Weapon weapon) {
-    final isMelee = weapon.kind.isMelee;
-    if (isMelee) {
-      return copyWith(
-        mainWeapon: () => mainWeapon,
-        secondWeapon: () => null,
-      );
-    } else {
-      return copyWith(
-        mainRangeWeapon: () => mainRangeWeapon,
-        secondRangeWeapon: () => null,
-      );
-    }
-  }
-
+  /// Щит занимает вторую руку.
   Player equipShield(Shield shield) {
     return copyWith(
       shield: () => shield,
+      secondWeapon: () => null,
     );
   }
 
@@ -579,10 +543,27 @@ class Player {
     );
   }
 
-  Player unequipArmor(Armor armor) {
+  Player unequipArmor() {
     return copyWith(
       armor: () => null,
     );
+  }
+
+  /// Снимает предмет, если его больше не осталось в инвентаре.
+  Player _unequipMissing() {
+    bool has(Object item) => inventory.items.any((e) => e.item == item);
+    final weapons = {for (final slot in WeaponSlot.values) slot: weaponIn(slot)};
+    var player = this;
+    for (final slot in WeaponSlot.values.reversed) {
+      final weapon = weapons[slot];
+      if (weapon == null) continue;
+      final count = inventory.items.firstWhereOrNull((e) => e.item == weapon)?.quantity ?? 0;
+      final used = weapons.values.where((e) => e == weapon).length;
+      if (count < used) player = player.unequipWeapon(slot);
+    }
+    if (armor != null && !has(armor!)) player = player.unequipArmor();
+    if (shield != null && !has(shield!)) player = player.unequipShield();
+    return player;
   }
 
   Player spendBalance(Balance balance) {
@@ -600,7 +581,7 @@ class Player {
   Player removeItem(InventoryItem item) {
     return copyWith(
       inventory: inventory.removeItem(item),
-    );
+    )._unequipMissing();
   }
 
   Player addItemQuantity(InventoryItem item) {

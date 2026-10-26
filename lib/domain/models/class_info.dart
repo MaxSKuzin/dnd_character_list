@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
+import 'package:dnd_character_list/domain/models/starting_equipment.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart';
 
@@ -13,6 +14,9 @@ class ClassInfo {
   final String hitPointsHtml;
   final String proficienciesHtml;
   final String equipmentHtml;
+
+  /// Стартовое снаряжение: в каждой строке выбирается один вариант.
+  final List<StartingEquipmentChoice> startingEquipment;
 
   /// Рекомендации из раздела «Быстрое создание».
   final String? quickBuildHtml;
@@ -37,6 +41,7 @@ class ClassInfo {
     required this.hitPointsHtml,
     required this.proficienciesHtml,
     required this.equipmentHtml,
+    required this.startingEquipment,
     required this.quickBuildHtml,
     required this.savingThrows,
     required this.skillsCount,
@@ -79,6 +84,7 @@ class ClassInfo {
         'hitPointsHtml': hitPointsHtml,
         'proficienciesHtml': proficienciesHtml,
         'equipmentHtml': equipmentHtml,
+        'startingEquipment': startingEquipment.map((e) => e.toJson()).toList(),
         'quickBuildHtml': quickBuildHtml,
         'savingThrows': savingThrows.map((e) => e.name).toList(),
         'skillsCount': skillsCount,
@@ -96,6 +102,8 @@ class ClassInfo {
         hitPointsHtml: json['hitPointsHtml'],
         proficienciesHtml: json['proficienciesHtml'],
         equipmentHtml: json['equipmentHtml'],
+        startingEquipment:
+            (json['startingEquipment'] as List).map((e) => StartingEquipmentChoice.fromJson(e)).toList(),
         quickBuildHtml: json['quickBuildHtml'],
         savingThrows: (json['savingThrows'] as List).map((e) => StatKind.values.byName(e)).toList(),
         skillsCount: json['skillsCount'],

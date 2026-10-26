@@ -25,7 +25,7 @@ class _PlayerStatsListState extends State<PlayerStatsList> {
   @override
   Widget build(BuildContext context) {
     final stats = PlayerModel.stats(context);
-    final passivePerception = PlayerModel.getPlayer(context).passivePerception;
+    final passivePerception = PlayerModel.watch(context).passivePerception;
     return FadingEdgeScrollView.fromSingleChildScrollView(
       child: SingleChildScrollView(
         controller: _scrollController,

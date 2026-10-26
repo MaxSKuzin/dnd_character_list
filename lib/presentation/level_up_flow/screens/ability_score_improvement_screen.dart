@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dnd_character_list/data/rules_repository.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/combat.dart';
+import 'package:dnd_character_list/domain/models/equipment_catalog.dart';
 import 'package:dnd_character_list/domain/models/feat.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
@@ -8,6 +10,7 @@ import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
+import 'package:dnd_character_list/domain/models/weapon.dart';
 import 'package:dnd_character_list/injection.dart';
 import 'package:dnd_character_list/presentation/common/widgets/html_content.dart';
 import 'package:dnd_character_list/presentation/common/widgets/loading_error.dart';
@@ -59,6 +62,10 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
   StatKind? _increasedStat;
   final _skills = <Skill>[];
   final _languages = <Language>[];
+  final _weapons = <Weapon>[];
+
+  /// Оружие для «Мастера оружия» загружается, только когда черта выбрана.
+  late Future<EquipmentCatalog> _equipment = _repository.getEquipment();
   ClassKind? _spellsClass;
   List<Spell> _spells = [];
 
@@ -71,6 +78,7 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
         _increasedStat = _feat?.statIncreaseOptions.length == 1 ? _feat!.statIncreaseOptions.first : null;
         _skills.clear();
         _languages.clear();
+        _weapons.clear();
         _spellsClass = null;
         _spells = [];
       });
@@ -81,6 +89,7 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
     return (feat.statIncreaseOptions.isEmpty || _increasedStat != null) &&
         _skills.length == feat.skillChoices &&
         _languages.length == feat.languageChoices &&
+        _weapons.length == feat.weaponChoices &&
         (!feat.grantsMagicInitiate || _spells.length == 3);
   }
 
@@ -93,6 +102,7 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
                   increasedStat: _increasedStat,
                   skills: [..._skills],
                   languages: [..._languages],
+                  weapons: _weapons.map((e) => e.proficiencyKey).toList(),
                   spellsClass: _spellsClass,
                   spells: _spells,
                 ),
@@ -267,6 +277,34 @@ class _AbilityScoreImprovementScreenState extends State<AbilityScoreImprovementS
                         onSelected: (_) => setState(() => _toggle(_languages, language, feat.languageChoices)),
                       ))
                   .toList(),
+            ),
+            const Gap(8),
+          ],
+          if (feat.weaponChoices > 0) ...[
+            Text('Владение оружием: ${_weapons.length}/${feat.weaponChoices}'),
+            FutureBuilder(
+              future: _equipment,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return LoadingError(
+                    message: 'Не удалось загрузить оружие с dnd.su.',
+                    error: snapshot.error!,
+                    onRetry: () => setState(() => _equipment = _repository.getEquipment()),
+                  );
+                }
+                if (!snapshot.hasData) return const LinearProgressIndicator();
+                return Wrap(
+                  spacing: 8,
+                  children: snapshot.data!.weapons
+                      .where((e) => !_player.isProficientWith(e))
+                      .map((weapon) => FilterChip(
+                            label: Text(weapon.name),
+                            selected: _weapons.contains(weapon),
+                            onSelected: (_) => setState(() => _toggle(_weapons, weapon, feat.weaponChoices)),
+                          ))
+                      .toList(),
+                );
+              },
             ),
             const Gap(8),
           ],

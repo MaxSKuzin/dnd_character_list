@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
+import 'package:dnd_character_list/domain/models/gear.dart';
 import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/tools/tool.dart';
 import 'package:dnd_character_list/domain/models/weapon.dart';
@@ -59,7 +60,7 @@ class Inventory {
             }
             return e;
           })
-          .whereNotNull()
+          .nonNulls
           .toList(),
     );
   }
@@ -164,6 +165,8 @@ class InventoryItem {
           'Armor' => Armor.fromJson(json['item']),
           'Tool' => Tool.fromJson(json['item']),
           'Shield' => Shield.fromJson(json['item']),
+          'Gear' => Gear.fromJson(json['item']),
+          'EquipmentPack' => EquipmentPack.fromJson(json['item']),
           'int' || 'double' || 'String' || 'bool' => json['item']['value'],
           _ => throw Exception('Unknown item type'),
         },

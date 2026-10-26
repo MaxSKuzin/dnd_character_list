@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
@@ -14,6 +15,12 @@ final class Thief extends Specialization {
 
   @override
   List<ArmorProficiency> get armorProficiencies => const [ArmorProficiency.light];
+
+  @override
+  WeaponProficiency get weaponProficiency => const WeaponProficiency(
+        simple: true,
+        weapons: {'weapon.crossbow-hand', 'weapon.longsword', 'weapon.rapier', 'weapon.shortsword'},
+      );
 
   @override
   final Map<StatKind, int> statBonuses;

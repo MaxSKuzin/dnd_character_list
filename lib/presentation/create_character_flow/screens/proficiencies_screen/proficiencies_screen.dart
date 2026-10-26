@@ -1,4 +1,8 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/data/rules_repository.dart';
+import 'package:dnd_character_list/domain/models/equipment_catalog.dart';
+import 'package:dnd_character_list/injection.dart';
+import 'package:dnd_character_list/presentation/common/widgets/loading_error.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart';
 import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
@@ -19,6 +23,9 @@ class ProficienciesScreen extends StatefulWidget {
   /// Инструменты, которыми персонаж уже владеет: их нельзя выбрать повторно.
   final List<String> knownTools;
 
+  /// Каталог предметов; по умолчанию загружается с dnd.su.
+  final EquipmentCatalog? catalog;
+
   /// Получает названия инструментов (указанных и выбранных) и выбранные языки.
   final void Function(List<String> tools, List<Language> languages) onSelected;
 
@@ -31,6 +38,7 @@ class ProficienciesScreen extends StatefulWidget {
     this.languagesCount = 0,
     this.knownLanguages = const [],
     this.knownTools = const [],
+    this.catalog,
   });
 
   @override
@@ -38,6 +46,11 @@ class ProficienciesScreen extends StatefulWidget {
 }
 
 class _ProficienciesScreenState extends State<ProficienciesScreen> {
+  late Future<EquipmentCatalog> _catalog = _loadCatalog();
+
+  Future<EquipmentCatalog> _loadCatalog() =>
+      widget.catalog != null ? Future.value(widget.catalog) : getIt<RulesRepository>().getEquipment();
+
   late final _choices = widget.tools.where((e) => e.isChoice).toList();
   late final _selectedTools = {for (final option in _choices) option: <String>[]};
   final _selectedLanguages = <Language>[];
@@ -84,62 +97,77 @@ class _ProficienciesScreenState extends State<ProficienciesScreen> {
               ],
               const Gap(16),
               Expanded(
-                child: ListView(
-                  children: [
-                    if (fixedTools.isNotEmpty) ...[
-                      const _Header('Вы получаете владение инструментами'),
-                      Text(fixedTools.join(', ')),
-                      const Gap(16),
-                    ],
-                    for (final option in _choices) ...[
-                      _Header(
-                        'Выберите ${option.category!.localizedName.toLowerCase()} '
-                        '(${_selectedTools[option]!.length}/${option.choose})',
-                        subtitle: [
-                          'Владение инструментами: ${option.title.toLowerCase()}',
-                          if (widget.knownTools.isNotEmpty) 'Уже владеете: ${widget.knownTools.join(', ')}',
-                        ].join('\n'),
-                      ),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: option.category!.tools
-                            .map(
-                              (tool) => FilterChip(
-                                label: Text(tool.name),
-                                selected: _selectedTools[option]!.contains(tool.name),
-                                onSelected: _isTaken(option, tool.name)
-                                    ? null
-                                    : (_) => _toggle(_selectedTools[option]!, tool.name, option.choose),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                      const Gap(16),
-                    ],
-                    if (widget.languagesCount > 0) ...[
-                      _Header(
-                        'Выберите языки (${_selectedLanguages.length}/${widget.languagesCount})',
-                        subtitle: widget.knownLanguages.isEmpty
-                            ? null
-                            : 'Уже знаете: ${widget.knownLanguages.map((e) => e.localizedName).join(', ')}',
-                      ),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: Language.values
-                            .where((e) => !widget.knownLanguages.contains(e))
-                            .map(
-                              (language) => FilterChip(
-                                label: Text(language.localizedName),
-                                selected: _selectedLanguages.contains(language),
-                                onSelected: (_) => _toggle(_selectedLanguages, language, widget.languagesCount),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ],
-                  ],
+                child: FutureBuilder(
+                  future: _catalog,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return LoadingError(
+                        message: 'Не удалось загрузить инструменты с dnd.su.',
+                        error: snapshot.error!,
+                        onRetry: () => setState(() => _catalog = _loadCatalog()),
+                      );
+                    }
+                    if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                    final catalog = snapshot.data!;
+                    return ListView(
+                      children: [
+                        if (fixedTools.isNotEmpty) ...[
+                          const _Header('Вы получаете владение инструментами'),
+                          Text(fixedTools.join(', ')),
+                          const Gap(16),
+                        ],
+                        for (final option in _choices) ...[
+                          _Header(
+                            'Выберите ${option.category!.localizedName.toLowerCase()} '
+                            '(${_selectedTools[option]!.length}/${option.choose})',
+                            subtitle: [
+                              'Владение инструментами: ${option.title.toLowerCase()}',
+                              if (widget.knownTools.isNotEmpty) 'Уже владеете: ${widget.knownTools.join(', ')}',
+                            ].join('\n'),
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: catalog
+                                .toolsOf(option.category!)
+                                .map(
+                                  (tool) => FilterChip(
+                                    label: Text(tool.name),
+                                    selected: _selectedTools[option]!.contains(tool.name),
+                                    onSelected: _isTaken(option, tool.name)
+                                        ? null
+                                        : (_) => _toggle(_selectedTools[option]!, tool.name, option.choose),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                          const Gap(16),
+                        ],
+                        if (widget.languagesCount > 0) ...[
+                          _Header(
+                            'Выберите языки (${_selectedLanguages.length}/${widget.languagesCount})',
+                            subtitle: widget.knownLanguages.isEmpty
+                                ? null
+                                : 'Уже знаете: ${widget.knownLanguages.map((e) => e.localizedName).join(', ')}',
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: Language.values
+                                .where((e) => !widget.knownLanguages.contains(e))
+                                .map(
+                                  (language) => FilterChip(
+                                    label: Text(language.localizedName),
+                                    selected: _selectedLanguages.contains(language),
+                                    onSelected: (_) => _toggle(_selectedLanguages, language, widget.languagesCount),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ],
+                      ],
+                    );
+                  },
                 ),
               ),
               const Gap(16),

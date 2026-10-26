@@ -5,6 +5,7 @@ import 'package:dnd_character_list/presentation/extensions/context_extensions.da
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 
 class CreateArmorSection extends StatefulWidget {
   final Function(CreateItemController controller) onControllerReady;
@@ -86,7 +87,7 @@ class _CreateArmorSectionState extends State<CreateArmorSection> with CreateItem
                         child: GestureDetector(
                           onTap: () => _kingNotifier.value = e,
                           child: Chip(
-                            label: Text(e.name),
+                            label: Text(e.localizedName),
                             color: WidgetStatePropertyAll(
                               value == e ? context.customColors?.cardColor : Colors.transparent,
                             ),

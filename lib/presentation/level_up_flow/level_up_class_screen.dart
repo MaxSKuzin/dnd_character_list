@@ -42,7 +42,7 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
 
     final link = classKind.dndSuLink;
     final bool passed;
-    if (link != null) {
+    if (classKind == ClassKind.bard && link != null) {
       final ClassInfo info;
       setState(() => _isLoading = true);
       try {
@@ -67,7 +67,7 @@ class _LevelUpClassScreenState extends State<LevelUpClassScreen> {
     if (passed) cubit.levelUp();
   }
 
-  /// Классы, которые ещё не переведены на описание с dnd.su.
+  /// Классы, повышение уровня которых ещё не переведено на описание с dnd.su.
   Future<bool> _levelUpLegacy(Player player, ClassKind classKind, Specialization? selectedClass) async {
     final classes = player.classes;
     final stats = player.stats;

@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
+import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
@@ -145,6 +146,21 @@ final class Bard extends Specialization {
         if (collegeId == valorCollege || collegeId == swordsCollege) ArmorProficiency.medium,
         if (collegeId == valorCollege) ArmorProficiency.shields,
       ];
+
+  /// Простое оружие, длинные и короткие мечи, рапиры, ручные арбалеты; коллегия доблести даёт
+  /// воинское оружие, коллегия мечей — скимитары.
+  @override
+  WeaponProficiency get weaponProficiency => WeaponProficiency(
+        simple: true,
+        martial: collegeId == valorCollege,
+        weapons: {
+          'weapon.longsword',
+          'weapon.shortsword',
+          'weapon.rapier',
+          'weapon.crossbow-hand',
+          if (collegeId == swordsCollege) 'weapon.scimitar',
+        },
+      );
 
   @override
   bool get hasJackOfAllTrades => level >= 2;

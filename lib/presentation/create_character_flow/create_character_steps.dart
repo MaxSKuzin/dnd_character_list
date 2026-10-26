@@ -153,8 +153,9 @@ abstract final class CreateCharacterSteps {
           },
         );
       case CreateCharacterStep.equipment:
-        return SelectWeaponsRoute(
-          startEquip: classKind.equipment,
+        return StartingEquipmentRoute(
+          title: 'Снаряжение класса «${classInfo!.name}»',
+          choices: classInfo.startingEquipment,
           onSelected: (items) {
             cubit.setInventoryItems(items);
             next();

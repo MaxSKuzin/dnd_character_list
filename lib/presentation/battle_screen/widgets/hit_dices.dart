@@ -9,7 +9,7 @@ class HitDices extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PlayerModel.health(context);
-    final hitDices = PlayerModel.getPlayer(context).hitDices;
+    final hitDices = PlayerModel.watch(context).hitDices;
     return LabeledBorder(
       backgroundColor: context.customColors?.cardColor,
       text: 'КУБЫ ЗДОРОВЬЯ',

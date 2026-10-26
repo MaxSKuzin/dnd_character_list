@@ -1,5 +1,7 @@
+import 'package:dnd_character_list/domain/models/armor_kind.dart';
 import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
+import 'package:dnd_character_list/domain/models/damage_type.dart';
 import 'package:dnd_character_list/domain/models/language.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
@@ -7,6 +9,10 @@ import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_time.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
+import 'package:dnd_character_list/domain/models/weapon.dart';
+import 'package:dnd_character_list/domain/models/weapon_kind.dart';
+import 'package:dnd_character_list/domain/models/weapon_type.dart';
+import 'package:dnd_character_list/domain/models/weapon_weight.dart';
 
 extension ClassKindLocalization on ClassKind {
   String get localizedName => switch (this) {
@@ -135,5 +141,60 @@ extension ArmorProficiencyLocalization on ArmorProficiency {
         ArmorProficiency.medium => 'средние',
         ArmorProficiency.heavy => 'тяжёлые',
         ArmorProficiency.shields => 'щиты',
+      };
+}
+
+extension WeaponKindLocalization on WeaponKind {
+  String get localizedName => switch (this) {
+        WeaponKind.simpleMelee => 'Простое рукопашное',
+        WeaponKind.martialMelee => 'Воинское рукопашное',
+        WeaponKind.simpleRanged => 'Простое дальнобойное',
+        WeaponKind.martialRanged => 'Воинское дальнобойное',
+      };
+}
+
+extension WeaponTypeLocalization on WeaponType {
+  String get localizedName => switch (this) {
+        WeaponType.oneHanded => 'Одноручное',
+        WeaponType.twoHanded => 'Двуручное',
+        WeaponType.universal => 'Универсальное',
+      };
+}
+
+extension WeaponWeightLocalization on WeaponWeight {
+  String get localizedName => switch (this) {
+        WeaponWeight.light => 'Лёгкое',
+        WeaponWeight.regular => 'Обычное',
+        WeaponWeight.heavy => 'Тяжёлое',
+      };
+}
+
+extension DamageTypeLocalization on DamageType {
+  String get localizedName => switch (this) {
+        DamageType.pricking => 'Колющий',
+        DamageType.crushing => 'Дробящий',
+        DamageType.chopping => 'Рубящий',
+      };
+}
+
+extension ArmorKindLocalization on ArmorKind {
+  String get localizedName => switch (this) {
+        ArmorKind.light => 'Лёгкий доспех',
+        ArmorKind.medium => 'Средний доспех',
+        ArmorKind.heavy => 'Тяжёлый доспех',
+      };
+}
+
+extension ElementalTypeLocalization on ElementalType {
+  String get localizedName => switch (this) {
+        ElementalType.fire => 'Огонь',
+        ElementalType.cold => 'Холод',
+        ElementalType.acid => 'Кислота',
+        ElementalType.lightning => 'Молния',
+        ElementalType.thunder => 'Гром',
+        ElementalType.poison => 'Яд',
+        ElementalType.necrotic => 'Некротический',
+        ElementalType.radiant => 'Лучистый',
+        ElementalType.psychic => 'Психический',
       };
 }

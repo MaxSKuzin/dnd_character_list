@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:dnd_character_list/data/dnd_su/dnd_su_client.dart';
 import 'package:dnd_character_list/data/dnd_su/dnd_su_html.dart';
 import 'package:dnd_character_list/domain/models/class_info.dart';
+import 'package:dnd_character_list/domain/models/starting_equipment.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:injectable/injectable.dart';
@@ -34,6 +35,11 @@ class DndSuClassParser {
       hitPointsHtml: DndSuHtml.outerHtml(sections['ХИТЫ'] ?? []),
       proficienciesHtml: DndSuHtml.outerHtml(proficiencies),
       equipmentHtml: DndSuHtml.outerHtml(sections['СНАРЯЖЕНИЕ'] ?? []),
+      startingEquipment: (sections['СНАРЯЖЕНИЕ'] ?? [])
+          .where((e) => e.localName == 'ul')
+          .expand((e) => e.querySelectorAll('li'))
+          .map(_parseEquipmentChoice)
+          .toList(),
       quickBuildHtml: _quickBuild(article),
       savingThrows: savingThrows == null ? [] : DndSuHtml.statsIn(DndSuHtml.withoutLabel(savingThrows).text),
       skillsCount: DndSuHtml.leadingNumber(skillsText.replaceFirst(RegExp(r'^Выберите\s+'), '')) ?? 0,
@@ -63,6 +69,38 @@ class DndSuClassParser {
       }
     }
     return sections;
+  }
+
+  /// Категории, из которых предмет выбирает игрок: «любое простое оружие», «два воинских оружия».
+  static const _categoryIds = {'weapon.simple', 'weapon.martial', 'tools.music', 'tools.gaming'};
+
+  /// «а) рапира, б) длинный меч или в) любое простое оружие» → три варианта.
+  StartingEquipmentChoice _parseEquipmentChoice(Element item) {
+    final parts = item.innerHtml.split(RegExp(r'(?:^|\s)[абвгд]\)\s*')).map((e) => e.trim()).where((e) => e.isNotEmpty);
+    return StartingEquipmentChoice(
+      options: parts.map((part) {
+        final html = part.replaceFirst(RegExp(r'(,|\s+или)\s*$'), '');
+        return StartingEquipmentOption(
+          text: DndSuHtml.cleanText(html_parser.parseFragment(html).text ?? ''),
+          items: DndSuHtml.splitTopLevel(html.replaceAll(RegExp(r'\s+и\s+'), ', ')).map(_parseEquipmentRef).toList(),
+        );
+      }).toList(),
+    );
+  }
+
+  /// «два ручных топора» → 2 × weapon.axe-hand; «колчан с 20 стрелами» → equipment.arrow.
+  EquipmentRef _parseEquipmentRef(String html) {
+    final fragment = html_parser.parseFragment(html);
+    final text = DndSuHtml.cleanText(fragment.text ?? '');
+    final link = fragment.querySelector('a[href*="#"], [tooltip-for]');
+    final id = link?.attributes['tooltip-for'] ?? link?.attributes['href']?.split('#').last;
+    final lower = text.toLowerCase();
+    return EquipmentRef(
+      id: id,
+      text: text,
+      quantity: DndSuHtml.leadingNumber(text) ?? 1,
+      isChoice: _categoryIds.contains(id) || lower.startsWith('люб'),
+    );
   }
 
   String? _quickBuild(Element article) {

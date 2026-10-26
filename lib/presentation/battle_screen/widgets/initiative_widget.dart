@@ -7,7 +7,7 @@ class InitiativeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initiative = PlayerModel.getPlayer(context).initiative;
+    final initiative = PlayerModel.watch(context).initiative;
 
     return DecoratedBox(
       decoration: ShapeDecoration(

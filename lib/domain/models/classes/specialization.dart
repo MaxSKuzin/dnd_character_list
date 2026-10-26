@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/barbarian.dart';
 import 'package:dnd_character_list/domain/models/classes/bard.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
@@ -34,22 +35,21 @@ abstract class Specialization {
 
   int get healthPerLevel;
 
-  int getProtection(Player player) {
-    if (player.armor == null) {
-      return 10 + max(player.dexterity.bonus, 0);
-    }
-
-    var protection = player.armor!.protection;
-    final limit = player.armor!.dexterityLimit;
-    final dexterityBonus = max(0, player.dexterity.bonus);
-    if (limit != null) {
-      protection += min(dexterityBonus, limit);
-    } else {
-      protection += dexterityBonus;
-    }
-
-    return protection;
+  /// КД без щита: 10 + Ловкость без доспеха; лёгкий доспех + Ловкость; средний + Ловкость (не больше 2);
+  /// тяжёлый — без Ловкости.
+  ArmorClass armorClass(Player player) {
+    final dexterity = player.dexterity.bonus;
+    final armor = player.armor;
+    if (armor == null) return ArmorClass.of([('Без доспеха', 10), ('Ловкость', dexterity)]);
+    final limit = armor.dexterityLimit;
+    return ArmorClass.of([
+      (armor.name, armor.protection),
+      if (limit != 0) ('Ловкость', limit == null ? dexterity : min(dexterity, limit)),
+    ]);
   }
+
+  /// Владение оружием.
+  WeaponProficiency get weaponProficiency => WeaponProficiency.none;
 
   int additionalDamage(Player player) => 0;
 

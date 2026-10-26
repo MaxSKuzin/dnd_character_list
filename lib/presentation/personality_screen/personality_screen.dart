@@ -21,7 +21,7 @@ class PersonalityScreen extends StatefulWidget {
 class _PersonalityScreenState extends State<PersonalityScreen> {
   @override
   Widget build(BuildContext context) {
-    final player = PlayerModel.getPlayer(context);
+    final player = PlayerModel.watch(context);
     final languages = player.knownLanguages;
     final abilities = player.abilities;
     final personality = player.personality;

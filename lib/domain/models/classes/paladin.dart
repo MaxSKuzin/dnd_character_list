@@ -1,5 +1,6 @@
 import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/dice.dart';
@@ -16,6 +17,9 @@ final class Paladin extends Specialization {
 
   @override
   List<ArmorProficiency> get armorProficiencies => const [ArmorProficiency.light, ArmorProficiency.medium, ArmorProficiency.heavy, ArmorProficiency.shields];
+
+  @override
+  WeaponProficiency get weaponProficiency => const WeaponProficiency(simple: true, martial: true);
 
   @override
   final Map<StatKind, int> statBonuses;

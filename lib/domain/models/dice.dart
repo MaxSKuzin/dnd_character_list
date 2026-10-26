@@ -21,7 +21,8 @@ class Dice {
 
   static List<Dice> values = [k4, k6, k8, k10, k12, k20];
 
-  String get name => 'k$value';
+  /// Обозначение как в книгах: «к8».
+  String get name => 'к$value';
 
   int roll() => _random.nextInt(value) + 1;
 

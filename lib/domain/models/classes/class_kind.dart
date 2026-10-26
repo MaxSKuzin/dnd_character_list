@@ -1,16 +1,7 @@
 import 'dart:math';
 
-import 'package:dnd_character_list/domain/models/armor.dart';
-import 'package:dnd_character_list/domain/models/equipment_kits.dart';
-import 'package:dnd_character_list/domain/models/inventory.dart';
-import 'package:dnd_character_list/domain/models/shield.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
-import 'package:dnd_character_list/domain/models/start_equipment.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
-import 'package:dnd_character_list/domain/models/tools/musical_instruments.dart';
-import 'package:dnd_character_list/domain/models/tools/thieves_tools.dart';
-import 'package:dnd_character_list/domain/models/weapon.dart';
-import 'package:dnd_character_list/domain/models/weapon_kind.dart';
 
 enum ClassKind {
   bard,
@@ -27,145 +18,12 @@ enum ClassKind {
   ranger,
   sorcerer;
 
-  StartEquipment get equipment => switch (this) {
-        ClassKind.bard => StartEquipment(
-            [
-              EquipmentToSelect(
-                quantity: 1,
-                items: [
-                  Weapon.rapier(),
-                  Weapon.longSword(),
-                  ...availableWeapons.where(
-                    (element) => element.kind == WeaponKind.simpleMelee || element.kind == WeaponKind.simpleRanged,
-                  ),
-                ].map((e) => InventoryItem(quantity: 1, item: e)).toList(),
-              ),
-              EquipmentToSelect(
-                quantity: 1,
-                items: musicalInstruments.map((e) => InventoryItem(quantity: 1, item: e)).toList(),
-              ),
-              EquipmentToSelect(
-                quantity: 2,
-                items: [
-                  Armor.leather(),
-                  Weapon.dagger(),
-                ].map((e) => InventoryItem(quantity: 1, item: e)).toList(),
-              ),
-            ],
-            [
-              artistSet,
-              diplomaSet,
-            ],
-          ),
-        ClassKind.paladin => StartEquipment(
-            [
-              EquipmentToSelect(
-                quantity: 2,
-                items: [
-                  ...availableWeapons.where(
-                    (element) => element.kind == WeaponKind.martialMelee || element.kind == WeaponKind.martialRanged,
-                  ),
-                  Shield.regular(),
-                ]
-                    .map(
-                      (e) => InventoryItem(quantity: 1, item: e),
-                    )
-                    .toList(),
-              ),
-              EquipmentToSelect(
-                quantity: 1,
-                items: [
-                  InventoryItem(
-                    quantity: 5,
-                    item: Weapon.throwingSpear(),
-                  ),
-                  ...availableWeapons
-                      .where(
-                        (element) => element.kind == WeaponKind.simpleMelee && element != Weapon.throwingSpear(),
-                      )
-                      .map(
-                        (e) => InventoryItem(quantity: 1, item: e),
-                      ),
-                ],
-              ),
-              EquipmentToSelect(
-                quantity: 2,
-                items: [
-                  InventoryItem(
-                    quantity: 1,
-                    item: Armor.chainmail(),
-                  ),
-                  InventoryItem(
-                    quantity: 1,
-                    item: 'Священный символ',
-                  ),
-                ],
-              ),
-            ],
-            [
-              travellersSet,
-              priestSet,
-            ],
-          ),
-        ClassKind.thief => StartEquipment(
-            [
-              EquipmentToSelect(
-                quantity: 1,
-                items: [
-                  InventoryItem(
-                    quantity: 1,
-                    item: Weapon.rapier(),
-                  ),
-                  InventoryItem(
-                    quantity: 1,
-                    item: Weapon.shortSword(),
-                  ),
-                ],
-              ),
-              EquipmentToSelect(
-                quantity: 2,
-                items: [
-                  InventoryItem(
-                    quantity: 1,
-                    item: Weapon.shortBow(),
-                  ),
-                  InventoryItem(
-                    quantity: 20,
-                    item: 'Стрела',
-                  ),
-                  InventoryItem(
-                    quantity: 1,
-                    item: Weapon.shortSword(),
-                  ),
-                ],
-              ),
-              EquipmentToSelect(
-                quantity: 3,
-                items: [
-                  InventoryItem(
-                    quantity: 1,
-                    item: Armor.leather(),
-                  ),
-                  InventoryItem(quantity: 1, item: thievesTools.first),
-                  InventoryItem(
-                    quantity: 2,
-                    item: Weapon.dagger(),
-                  ),
-                ],
-              ),
-            ],
-            [
-              dungeonExplorerSet,
-              bulgartSet,
-              travellersSet,
-            ],
-          ),
-        _ => throw UnimplementedError(),
-      };
-
-  /// Страница класса на dnd.su. Классы без ссылки пока описаны только в коде.
+  /// Страница класса на dnd.su. Классы без ссылки пока не поддерживаются.
   String? get dndSuLink => switch (this) {
         ClassKind.bard => '/class/88-bard/',
+        ClassKind.barbarian => '/class/87-barbarian/',
+        ClassKind.paladin => '/class/94-paladin/',
+        ClassKind.thief => '/class/99-rogue/',
         _ => null,
       };
 

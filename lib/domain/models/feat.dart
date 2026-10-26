@@ -46,6 +46,9 @@ class Feat {
   /// «Языковед»: три языка на выбор.
   int get languageChoices => slug == 'linguist' ? 3 : 0;
 
+  /// «Мастер оружия»: владение четырьмя видами простого или воинского оружия.
+  int get weaponChoices => slug == 'weapon-master' ? 4 : 0;
+
   /// «Посвящённый в магию»: два заговора и заклинание 1 уровня выбранного класса.
   bool get grantsMagicInitiate => slug == 'magic-initiate';
 
@@ -138,6 +141,9 @@ class ChosenFeat {
   final List<Skill> skills;
   final List<Language> languages;
 
+  /// Виды оружия «Мастера оружия» по [Weapon.proficiencyKey].
+  final List<String> weapons;
+
   /// Класс, из списка которого взяты заклинания «Посвящённого в магию».
   final ClassKind? spellsClass;
   final List<Spell> spells;
@@ -147,6 +153,7 @@ class ChosenFeat {
     this.increasedStat,
     this.skills = const [],
     this.languages = const [],
+    this.weapons = const [],
     this.spellsClass,
     this.spells = const [],
   });
@@ -159,6 +166,7 @@ class ChosenFeat {
         'increasedStat': increasedStat?.name,
         'skills': skills.map((e) => e.name).toList(),
         'languages': languages.map((e) => e.name).toList(),
+        'weapons': weapons,
         'spellsClass': spellsClass?.name,
         'spells': spells.map((e) => e.toJson()).toList(),
       };
@@ -168,6 +176,7 @@ class ChosenFeat {
         increasedStat: json['increasedStat'] == null ? null : StatKind.values.byName(json['increasedStat']),
         skills: (json['skills'] as List).map((e) => Skill.values.byName(e)).toList(),
         languages: (json['languages'] as List).map((e) => Language.values.byName(e)).toList(),
+        weapons: (json['weapons'] as List).cast<String>(),
         spellsClass: json['spellsClass'] == null ? null : ClassKind.values.byName(json['spellsClass']),
         spells: (json['spells'] as List).map((e) => Spell.fromJson(e)).toList(),
       );
