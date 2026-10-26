@@ -13,6 +13,10 @@ import 'package:dnd_character_list/domain/models/personality.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/races/race.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
+import 'package:dnd_character_list/domain/models/spell/spell.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_component.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_replacement.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/stat_kind.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -195,5 +199,25 @@ void main() {
     expect(restored.personality.traits, player.personality.traits);
     expect(restored.toolProficiencies, player.toolProficiencies);
     expect((restored.classes.single as Bard).expertise, [Skill.performance]);
+  });
+
+  test('spell replacement keeps order and swaps only the replaced spell', () {
+    Spell spell(String slug) => Spell(
+          link: '/spells/$slug',
+          name: slug,
+          nameEn: slug,
+          slot: SpellSlot.level1,
+          school: 'очарование',
+          isConcentration: false,
+          isRitual: false,
+          components: const [SpellComponent.verbal],
+          allowedSpecializations: const [],
+        );
+    final replacement = SpellReplacement(replaced: spell('charm_person'), learned: spell('sleep'));
+
+    expect(
+      replacement.applyTo([spell('heroism'), spell('charm_person'), spell('thunderwave')]).map((e) => e.link),
+      ['/spells/heroism', '/spells/sleep', '/spells/thunderwave'],
+    );
   });
 }

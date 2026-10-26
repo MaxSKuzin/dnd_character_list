@@ -27,6 +27,9 @@ final class Bard extends Specialization {
   static const abilityScoreImprovement = 'c6';
   static const magicalSecrets = 'c9';
 
+  /// «Бардовская разносторонность» (TCE): на уровнях «Увеличения характеристик» можно заменить заговор.
+  static const bardicVersatility = 'c288';
+
   static const valorCollege = 'valor';
   static const loreCollege = 'lore';
   static const swordsCollege = 'swords';

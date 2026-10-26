@@ -10,6 +10,7 @@ import 'package:dnd_character_list/domain/models/fighting_style.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/domain/models/skill.dart';
 import 'package:dnd_character_list/domain/models/spell/spell.dart';
+import 'package:dnd_character_list/domain/models/spell/spell_replacement.dart';
 import 'package:dnd_character_list/domain/models/spell/spell_slot.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_category.dart';
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart';
@@ -156,6 +157,8 @@ class BardLevelUp {
       final spells = await _ask<List<Spell>>(
         (done) => SelectSpellsRoute(
           classKind: ClassKind.bard,
+          description: 'Бард $level уровня узнаёт новые заклинания из списка барда'
+              '${newSpells > 0 ? ' — не выше ${spellLevels.last.index} уровня' : ''}.',
           maxConspiracies: newCantrips,
           maxSpells: newSpells,
           availableSlots: [if (newCantrips > 0) SpellSlot.conspiracy, if (newSpells > 0) ...spellLevels],
@@ -183,13 +186,54 @@ class BardLevelUp {
       learned.addAll(spells);
     }
 
+    // Замена известных заклинаний: одного заклинания 1 уровня и выше — на каждом уровне, а заговора —
+    // по «Бардовской разносторонности» на уровнях «Увеличения характеристик». Заменить можно только то,
+    // что бард знал до этого уровня; новыми не могут быть уже известные заклинания.
+    var bardSpells = [...?bard?.knownSpells];
+    final known = [...knownSpells, ...learned];
+    final replacements = [
+      (
+        title: 'Замена заклинания',
+        description: 'Получая уровень барда, можно заменить одно известное заклинание другим из списка барда. '
+            'Уровень нового — не выше ${spellLevels.last.index}.',
+        replaceable: bardSpells.where((e) => e.slot != SpellSlot.conspiracy).toList(),
+        slots: spellLevels,
+      ),
+      if (row.hasFeature(Bard.abilityScoreImprovement) && info.feature(Bard.bardicVersatility) != null)
+        (
+          title: 'Бардовская разносторонность',
+          description: 'Можно заменить один известный заговор другим заговором из списка барда.',
+          replaceable: bardSpells.where((e) => e.slot == SpellSlot.conspiracy).toList(),
+          slots: const [SpellSlot.conspiracy],
+        ),
+    ];
+    for (final step in replacements.where((e) => e.replaceable.isNotEmpty)) {
+      final result = await _ask<_Replacement>(
+        (done) => ReplaceSpellRoute(
+          title: step.title,
+          description: step.description,
+          replaceableSpells: step.replaceable,
+          classKind: ClassKind.bard,
+          newSpellSlots: step.slots,
+          knownSpells: known,
+          onSelected: (replacement) => done(_Replacement(replacement)),
+        ),
+      );
+      if (result == null) return false;
+      final replacement = result.value;
+      if (replacement != null) {
+        bardSpells = replacement.applyTo(bardSpells);
+        known.add(replacement.learned);
+      }
+    }
+
     if (!context.mounted) return false;
     final cubit = context.read<LevelUpCubit>();
     cubit.setSpecialization(
       Bard(
         level: level,
         isMain: bard?.isMain ?? false,
-        knownSpells: [...?bard?.knownSpells, ...learned],
+        knownSpells: [...bardSpells, ...learned],
         features: [...?bard?.features, ...Bard.featuresAt(info, level, collegeId: collegeId)],
         inspirationDice: Bard.inspirationDiceAt(info, level),
         collegeId: collegeId,
@@ -206,8 +250,16 @@ class BardLevelUp {
   }
 
   /// Открывает экран выбора и ждёт результат; `null` — пользователь вернулся назад.
+  /// Чтобы отличить возврат назад от пропуска шага, необязательный выбор оборачивается в [_Replacement].
   Future<T?> _ask<T>(PageRouteInfo Function(void Function(T value) done) route) {
     if (!context.mounted) return Future.value();
     return context.pushRoute<T>(route((value) => context.maybePop(value)));
   }
+}
+
+/// Результат необязательного шага замены: `value == null` — шаг пропущен.
+class _Replacement {
+  final SpellReplacement? value;
+
+  const _Replacement(this.value);
 }

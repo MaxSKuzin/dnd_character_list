@@ -97,6 +97,9 @@ class AppRouter extends RootStackRouter {
               page: SelectSubclassRoute.page,
             ),
             AdaptiveRoute(
+              page: ReplaceSpellRoute.page,
+            ),
+            AdaptiveRoute(
               page: AbilityScoreImprovementRoute.page,
             ),
             AdaptiveRoute(
