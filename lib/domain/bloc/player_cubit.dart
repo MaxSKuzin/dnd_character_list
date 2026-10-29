@@ -4,6 +4,7 @@ import 'package:dnd_character_list/domain/models/appearance.dart';
 import 'package:dnd_character_list/domain/models/armor.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
 import 'package:dnd_character_list/domain/models/inventory.dart';
@@ -25,8 +26,32 @@ class PlayerCubit extends Cubit<Player> {
     this._source,
   );
 
-  void takeDamage(int value) {
-    emit(state.takeDamage(value));
+  /// Любое изменение сохраняется сразу — и текущие хиты, ячейки и ресурсы: приложение могут закрыть посреди
+  /// сессии.
+  @override
+  void onChange(Change<Player> change) {
+    super.onChange(change);
+    _source.savePlayer(change.nextState);
+  }
+
+  void takeDamage(int value, {bool critical = false}) {
+    emit(state.takeDamage(value, critical: critical));
+  }
+
+  void gainTempHits(int value) {
+    emit(state.gainTempHits(value));
+  }
+
+  void concentrate(String spell) {
+    emit(state.concentrate(spell));
+  }
+
+  void endConcentration() {
+    emit(state.endConcentration());
+  }
+
+  void setInspiration(bool value) {
+    emit(state.setInspiration(value));
   }
 
   void heal(int health) {
@@ -37,8 +62,8 @@ class PlayerCubit extends Cubit<Player> {
     emit(state.wakeUp());
   }
 
-  void shortRest(int health) {
-    emit(state.shortRest(health));
+  void shortRest(int health, {Map<ClassKind, int> dice = const {}}) {
+    emit(state.shortRest(health, dice: dice));
   }
 
   void longRest() {

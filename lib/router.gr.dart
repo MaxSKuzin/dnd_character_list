@@ -9,32 +9,33 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i43;
+import 'dart:async' as _i44;
 
 import 'package:auto_route/auto_route.dart' as _i28;
-import 'package:dnd_character_list/domain/bloc/player_cubit.dart' as _i33;
-import 'package:dnd_character_list/domain/models/background.dart' as _i46;
-import 'package:dnd_character_list/domain/models/class_info.dart' as _i45;
-import 'package:dnd_character_list/domain/models/class_option.dart' as _i41;
+import 'package:collection/collection.dart' as _i33;
+import 'package:dnd_character_list/domain/bloc/player_cubit.dart' as _i34;
+import 'package:dnd_character_list/domain/models/background.dart' as _i47;
+import 'package:dnd_character_list/domain/models/class_info.dart' as _i46;
+import 'package:dnd_character_list/domain/models/class_option.dart' as _i42;
 import 'package:dnd_character_list/domain/models/classes/class_kind.dart'
-    as _i38;
+    as _i39;
 import 'package:dnd_character_list/domain/models/equipment_catalog.dart'
-    as _i36;
+    as _i37;
 import 'package:dnd_character_list/domain/models/feat.dart' as _i31;
-import 'package:dnd_character_list/domain/models/fighting_style.dart' as _i42;
-import 'package:dnd_character_list/domain/models/inventory.dart' as _i48;
-import 'package:dnd_character_list/domain/models/language.dart' as _i34;
+import 'package:dnd_character_list/domain/models/fighting_style.dart' as _i43;
+import 'package:dnd_character_list/domain/models/inventory.dart' as _i49;
+import 'package:dnd_character_list/domain/models/language.dart' as _i35;
 import 'package:dnd_character_list/domain/models/player.dart' as _i30;
-import 'package:dnd_character_list/domain/models/skill.dart' as _i44;
-import 'package:dnd_character_list/domain/models/spell/spell.dart' as _i37;
+import 'package:dnd_character_list/domain/models/skill.dart' as _i45;
+import 'package:dnd_character_list/domain/models/spell/spell.dart' as _i38;
 import 'package:dnd_character_list/domain/models/spell/spell_replacement.dart'
-    as _i40;
-import 'package:dnd_character_list/domain/models/spell/spell_slot.dart' as _i39;
+    as _i41;
+import 'package:dnd_character_list/domain/models/spell/spell_slot.dart' as _i40;
 import 'package:dnd_character_list/domain/models/starting_equipment.dart'
-    as _i47;
+    as _i48;
 import 'package:dnd_character_list/domain/models/stat_kind.dart' as _i32;
 import 'package:dnd_character_list/domain/models/tools/tool_proficiency_option.dart'
-    as _i35;
+    as _i36;
 import 'package:dnd_character_list/presentation/battle_screen/battle_screen.dart'
     as _i2;
 import 'package:dnd_character_list/presentation/create_character_flow/create_character_flow.dart'
@@ -59,7 +60,7 @@ import 'package:dnd_character_list/presentation/create_character_flow/screens/se
     as _i25;
 import 'package:dnd_character_list/presentation/create_character_flow/screens/starting_equipment_screen/starting_equipment_screen.dart'
     as _i27;
-import 'package:dnd_character_list/presentation/Inventory_add_item_screen/inventory_add_item_screen.dart'
+import 'package:dnd_character_list/presentation/Inventory_add_item_screen/Inventory_add_item_screen.dart'
     as _i5;
 import 'package:dnd_character_list/presentation/inventory_screen/inventory_screen.dart'
     as _i6;
@@ -102,15 +103,15 @@ class AbilityScoreImprovementRoute
     required void Function(_i31.AbilityScoreImprovement) onSelected,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         AbilityScoreImprovementRoute.name,
-         args: AbilityScoreImprovementRouteArgs(
-           key: key,
-           player: player,
-           level: level,
-           onSelected: onSelected,
-         ),
-         initialChildren: children,
-       );
+          AbilityScoreImprovementRoute.name,
+          args: AbilityScoreImprovementRouteArgs(
+            key: key,
+            player: player,
+            level: level,
+            onSelected: onSelected,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'AbilityScoreImprovementRoute';
 
@@ -148,13 +149,23 @@ class AbilityScoreImprovementRouteArgs {
   String toString() {
     return 'AbilityScoreImprovementRouteArgs{key: $key, player: $player, level: $level, onSelected: $onSelected}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! AbilityScoreImprovementRouteArgs) return false;
+    return key == other.key && player == other.player && level == other.level;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ player.hashCode ^ level.hashCode;
 }
 
 /// generated route for
 /// [_i2.BattleScreen]
 class BattleRoute extends _i28.PageRouteInfo<void> {
   const BattleRoute({List<_i28.PageRouteInfo>? children})
-    : super(BattleRoute.name, initialChildren: children);
+      : super(BattleRoute.name, initialChildren: children);
 
   static const String name = 'BattleRoute';
 
@@ -170,7 +181,7 @@ class BattleRoute extends _i28.PageRouteInfo<void> {
 /// [_i3.CreateCharacterFlow]
 class CreateCharacterRoute extends _i28.PageRouteInfo<void> {
   const CreateCharacterRoute({List<_i28.PageRouteInfo>? children})
-    : super(CreateCharacterRoute.name, initialChildren: children);
+      : super(CreateCharacterRoute.name, initialChildren: children);
 
   static const String name = 'CreateCharacterRoute';
 
@@ -198,21 +209,21 @@ class FillStatsRoute extends _i28.PageRouteInfo<FillStatsRouteArgs> {
     required void Function(Map<_i32.StatKind, int>) onStatsFilled,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         FillStatsRoute.name,
-         args: FillStatsRouteArgs(
-           key: key,
-           title: title,
-           description: description,
-           isInitial: isInitial,
-           canSpendOnOneStat: canSpendOnOneStat,
-           maxPoints: maxPoints,
-           initialStats: initialStats,
-           forbiddenStats: forbiddenStats,
-           quickBuildHtml: quickBuildHtml,
-           onStatsFilled: onStatsFilled,
-         ),
-         initialChildren: children,
-       );
+          FillStatsRoute.name,
+          args: FillStatsRouteArgs(
+            key: key,
+            title: title,
+            description: description,
+            isInitial: isInitial,
+            canSpendOnOneStat: canSpendOnOneStat,
+            maxPoints: maxPoints,
+            initialStats: initialStats,
+            forbiddenStats: forbiddenStats,
+            quickBuildHtml: quickBuildHtml,
+            onStatsFilled: onStatsFilled,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'FillStatsRoute';
 
@@ -274,6 +285,39 @@ class FillStatsRouteArgs {
   String toString() {
     return 'FillStatsRouteArgs{key: $key, title: $title, description: $description, isInitial: $isInitial, canSpendOnOneStat: $canSpendOnOneStat, maxPoints: $maxPoints, initialStats: $initialStats, forbiddenStats: $forbiddenStats, quickBuildHtml: $quickBuildHtml, onStatsFilled: $onStatsFilled}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! FillStatsRouteArgs) return false;
+    return key == other.key &&
+        title == other.title &&
+        description == other.description &&
+        isInitial == other.isInitial &&
+        canSpendOnOneStat == other.canSpendOnOneStat &&
+        maxPoints == other.maxPoints &&
+        const _i33.MapEquality<_i32.StatKind, int>().equals(
+          initialStats,
+          other.initialStats,
+        ) &&
+        const _i33.ListEquality<_i32.StatKind>().equals(
+          forbiddenStats,
+          other.forbiddenStats,
+        ) &&
+        quickBuildHtml == other.quickBuildHtml;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      title.hashCode ^
+      description.hashCode ^
+      isInitial.hashCode ^
+      canSpendOnOneStat.hashCode ^
+      maxPoints.hashCode ^
+      const _i33.MapEquality<_i32.StatKind, int>().hash(initialStats) ^
+      const _i33.ListEquality<_i32.StatKind>().hash(forbiddenStats) ^
+      quickBuildHtml.hashCode;
 }
 
 /// generated route for
@@ -283,17 +327,17 @@ class InventoryAddItemRoute
   InventoryAddItemRoute({
     _i29.Key? key,
     required Type itemType,
-    required _i33.PlayerCubit playerCubit,
+    required _i34.PlayerCubit playerCubit,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         InventoryAddItemRoute.name,
-         args: InventoryAddItemRouteArgs(
-           key: key,
-           itemType: itemType,
-           playerCubit: playerCubit,
-         ),
-         initialChildren: children,
-       );
+          InventoryAddItemRoute.name,
+          args: InventoryAddItemRouteArgs(
+            key: key,
+            itemType: itemType,
+            playerCubit: playerCubit,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'InventoryAddItemRoute';
 
@@ -321,19 +365,31 @@ class InventoryAddItemRouteArgs {
 
   final Type itemType;
 
-  final _i33.PlayerCubit playerCubit;
+  final _i34.PlayerCubit playerCubit;
 
   @override
   String toString() {
     return 'InventoryAddItemRouteArgs{key: $key, itemType: $itemType, playerCubit: $playerCubit}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! InventoryAddItemRouteArgs) return false;
+    return key == other.key &&
+        itemType == other.itemType &&
+        playerCubit == other.playerCubit;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ itemType.hashCode ^ playerCubit.hashCode;
 }
 
 /// generated route for
 /// [_i6.InventoryScreen]
 class InventoryRoute extends _i28.PageRouteInfo<void> {
   const InventoryRoute({List<_i28.PageRouteInfo>? children})
-    : super(InventoryRoute.name, initialChildren: children);
+      : super(InventoryRoute.name, initialChildren: children);
 
   static const String name = 'InventoryRoute';
 
@@ -350,13 +406,13 @@ class InventoryRoute extends _i28.PageRouteInfo<void> {
 class ItemCatalogRoute extends _i28.PageRouteInfo<ItemCatalogRouteArgs> {
   ItemCatalogRoute({
     _i29.Key? key,
-    required _i33.PlayerCubit playerCubit,
+    required _i34.PlayerCubit playerCubit,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         ItemCatalogRoute.name,
-         args: ItemCatalogRouteArgs(key: key, playerCubit: playerCubit),
-         initialChildren: children,
-       );
+          ItemCatalogRoute.name,
+          args: ItemCatalogRouteArgs(key: key, playerCubit: playerCubit),
+          initialChildren: children,
+        );
 
   static const String name = 'ItemCatalogRoute';
 
@@ -377,19 +433,29 @@ class ItemCatalogRouteArgs {
 
   final _i29.Key? key;
 
-  final _i33.PlayerCubit playerCubit;
+  final _i34.PlayerCubit playerCubit;
 
   @override
   String toString() {
     return 'ItemCatalogRouteArgs{key: $key, playerCubit: $playerCubit}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ItemCatalogRouteArgs) return false;
+    return key == other.key && playerCubit == other.playerCubit;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ playerCubit.hashCode;
 }
 
 /// generated route for
 /// [_i8.LevelUpClassScreen]
 class LevelUpClassRoute extends _i28.PageRouteInfo<void> {
   const LevelUpClassRoute({List<_i28.PageRouteInfo>? children})
-    : super(LevelUpClassRoute.name, initialChildren: children);
+      : super(LevelUpClassRoute.name, initialChildren: children);
 
   static const String name = 'LevelUpClassRoute';
 
@@ -409,10 +475,10 @@ class LevelUpFlowRoute extends _i28.PageRouteInfo<LevelUpFlowRouteArgs> {
     required _i30.Player player,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         LevelUpFlowRoute.name,
-         args: LevelUpFlowRouteArgs(key: key, player: player),
-         initialChildren: children,
-       );
+          LevelUpFlowRoute.name,
+          args: LevelUpFlowRouteArgs(key: key, player: player),
+          initialChildren: children,
+        );
 
   static const String name = 'LevelUpFlowRoute';
 
@@ -436,6 +502,16 @@ class LevelUpFlowRouteArgs {
   String toString() {
     return 'LevelUpFlowRouteArgs{key: $key, player: $player}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! LevelUpFlowRouteArgs) return false;
+    return key == other.key && player == other.player;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ player.hashCode;
 }
 
 /// generated route for
@@ -446,10 +522,10 @@ class MainFlowRoute extends _i28.PageRouteInfo<MainFlowRouteArgs> {
     required _i30.Player player,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         MainFlowRoute.name,
-         args: MainFlowRouteArgs(key: key, player: player),
-         initialChildren: children,
-       );
+          MainFlowRoute.name,
+          args: MainFlowRouteArgs(key: key, player: player),
+          initialChildren: children,
+        );
 
   static const String name = 'MainFlowRoute';
 
@@ -473,13 +549,23 @@ class MainFlowRouteArgs {
   String toString() {
     return 'MainFlowRouteArgs{key: $key, player: $player}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! MainFlowRouteArgs) return false;
+    return key == other.key && player == other.player;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ player.hashCode;
 }
 
 /// generated route for
 /// [_i11.MainScreen]
 class MainRoute extends _i28.PageRouteInfo<void> {
   const MainRoute({List<_i28.PageRouteInfo>? children})
-    : super(MainRoute.name, initialChildren: children);
+      : super(MainRoute.name, initialChildren: children);
 
   static const String name = 'MainRoute';
 
@@ -495,7 +581,7 @@ class MainRoute extends _i28.PageRouteInfo<void> {
 /// [_i12.PersonalityScreen]
 class PersonalityRoute extends _i28.PageRouteInfo<void> {
   const PersonalityRoute({List<_i28.PageRouteInfo>? children})
-    : super(PersonalityRoute.name, initialChildren: children);
+      : super(PersonalityRoute.name, initialChildren: children);
 
   static const String name = 'PersonalityRoute';
 
@@ -513,29 +599,29 @@ class ProficienciesRoute extends _i28.PageRouteInfo<ProficienciesRouteArgs> {
   ProficienciesRoute({
     _i29.Key? key,
     required String title,
-    required void Function(List<String>, List<_i34.Language>) onSelected,
+    required void Function(List<String>, List<_i35.Language>) onSelected,
     String? description,
-    List<_i35.ToolProficiencyOption> tools = const [],
+    List<_i36.ToolProficiencyOption> tools = const [],
     int languagesCount = 0,
-    List<_i34.Language> knownLanguages = const [],
+    List<_i35.Language> knownLanguages = const [],
     List<String> knownTools = const [],
-    _i36.EquipmentCatalog? catalog,
+    _i37.EquipmentCatalog? catalog,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         ProficienciesRoute.name,
-         args: ProficienciesRouteArgs(
-           key: key,
-           title: title,
-           onSelected: onSelected,
-           description: description,
-           tools: tools,
-           languagesCount: languagesCount,
-           knownLanguages: knownLanguages,
-           knownTools: knownTools,
-           catalog: catalog,
-         ),
-         initialChildren: children,
-       );
+          ProficienciesRoute.name,
+          args: ProficienciesRouteArgs(
+            key: key,
+            title: title,
+            onSelected: onSelected,
+            description: description,
+            tools: tools,
+            languagesCount: languagesCount,
+            knownLanguages: knownLanguages,
+            knownTools: knownTools,
+            catalog: catalog,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'ProficienciesRoute';
 
@@ -575,24 +661,58 @@ class ProficienciesRouteArgs {
 
   final String title;
 
-  final void Function(List<String>, List<_i34.Language>) onSelected;
+  final void Function(List<String>, List<_i35.Language>) onSelected;
 
   final String? description;
 
-  final List<_i35.ToolProficiencyOption> tools;
+  final List<_i36.ToolProficiencyOption> tools;
 
   final int languagesCount;
 
-  final List<_i34.Language> knownLanguages;
+  final List<_i35.Language> knownLanguages;
 
   final List<String> knownTools;
 
-  final _i36.EquipmentCatalog? catalog;
+  final _i37.EquipmentCatalog? catalog;
 
   @override
   String toString() {
     return 'ProficienciesRouteArgs{key: $key, title: $title, onSelected: $onSelected, description: $description, tools: $tools, languagesCount: $languagesCount, knownLanguages: $knownLanguages, knownTools: $knownTools, catalog: $catalog}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ProficienciesRouteArgs) return false;
+    return key == other.key &&
+        title == other.title &&
+        description == other.description &&
+        const _i33.ListEquality<_i36.ToolProficiencyOption>().equals(
+          tools,
+          other.tools,
+        ) &&
+        languagesCount == other.languagesCount &&
+        const _i33.ListEquality<_i35.Language>().equals(
+          knownLanguages,
+          other.knownLanguages,
+        ) &&
+        const _i33.ListEquality<String>().equals(
+          knownTools,
+          other.knownTools,
+        ) &&
+        catalog == other.catalog;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      title.hashCode ^
+      description.hashCode ^
+      const _i33.ListEquality<_i36.ToolProficiencyOption>().hash(tools) ^
+      languagesCount.hashCode ^
+      const _i33.ListEquality<_i35.Language>().hash(knownLanguages) ^
+      const _i33.ListEquality<String>().hash(knownTools) ^
+      catalog.hashCode;
 }
 
 /// generated route for
@@ -602,28 +722,28 @@ class ReplaceSpellRoute extends _i28.PageRouteInfo<ReplaceSpellRouteArgs> {
     _i29.Key? key,
     required String title,
     required String description,
-    required List<_i37.Spell> replaceableSpells,
-    required _i38.ClassKind classKind,
-    List<_i38.ClassKind> additionalClassKinds = const [],
-    required List<_i39.SpellSlot> newSpellSlots,
-    required List<_i37.Spell> knownSpells,
-    required void Function(_i40.SpellReplacement?) onSelected,
+    required List<_i38.Spell> replaceableSpells,
+    required _i39.ClassKind classKind,
+    List<_i39.ClassKind> additionalClassKinds = const [],
+    required List<_i40.SpellSlot> newSpellSlots,
+    required List<_i38.Spell> knownSpells,
+    required void Function(_i41.SpellReplacement?) onSelected,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         ReplaceSpellRoute.name,
-         args: ReplaceSpellRouteArgs(
-           key: key,
-           title: title,
-           description: description,
-           replaceableSpells: replaceableSpells,
-           classKind: classKind,
-           additionalClassKinds: additionalClassKinds,
-           newSpellSlots: newSpellSlots,
-           knownSpells: knownSpells,
-           onSelected: onSelected,
-         ),
-         initialChildren: children,
-       );
+          ReplaceSpellRoute.name,
+          args: ReplaceSpellRouteArgs(
+            key: key,
+            title: title,
+            description: description,
+            replaceableSpells: replaceableSpells,
+            classKind: classKind,
+            additionalClassKinds: additionalClassKinds,
+            newSpellSlots: newSpellSlots,
+            knownSpells: knownSpells,
+            onSelected: onSelected,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'ReplaceSpellRoute';
 
@@ -665,22 +785,59 @@ class ReplaceSpellRouteArgs {
 
   final String description;
 
-  final List<_i37.Spell> replaceableSpells;
+  final List<_i38.Spell> replaceableSpells;
 
-  final _i38.ClassKind classKind;
+  final _i39.ClassKind classKind;
 
-  final List<_i38.ClassKind> additionalClassKinds;
+  final List<_i39.ClassKind> additionalClassKinds;
 
-  final List<_i39.SpellSlot> newSpellSlots;
+  final List<_i40.SpellSlot> newSpellSlots;
 
-  final List<_i37.Spell> knownSpells;
+  final List<_i38.Spell> knownSpells;
 
-  final void Function(_i40.SpellReplacement?) onSelected;
+  final void Function(_i41.SpellReplacement?) onSelected;
 
   @override
   String toString() {
     return 'ReplaceSpellRouteArgs{key: $key, title: $title, description: $description, replaceableSpells: $replaceableSpells, classKind: $classKind, additionalClassKinds: $additionalClassKinds, newSpellSlots: $newSpellSlots, knownSpells: $knownSpells, onSelected: $onSelected}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ReplaceSpellRouteArgs) return false;
+    return key == other.key &&
+        title == other.title &&
+        description == other.description &&
+        const _i33.ListEquality<_i38.Spell>().equals(
+          replaceableSpells,
+          other.replaceableSpells,
+        ) &&
+        classKind == other.classKind &&
+        const _i33.ListEquality<_i39.ClassKind>().equals(
+          additionalClassKinds,
+          other.additionalClassKinds,
+        ) &&
+        const _i33.ListEquality<_i40.SpellSlot>().equals(
+          newSpellSlots,
+          other.newSpellSlots,
+        ) &&
+        const _i33.ListEquality<_i38.Spell>().equals(
+          knownSpells,
+          other.knownSpells,
+        );
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      title.hashCode ^
+      description.hashCode ^
+      const _i33.ListEquality<_i38.Spell>().hash(replaceableSpells) ^
+      classKind.hashCode ^
+      const _i33.ListEquality<_i39.ClassKind>().hash(additionalClassKinds) ^
+      const _i33.ListEquality<_i40.SpellSlot>().hash(newSpellSlots) ^
+      const _i33.ListEquality<_i38.Spell>().hash(knownSpells);
 }
 
 /// generated route for
@@ -692,10 +849,10 @@ class SelectBackgroundRoute
     required _i29.VoidCallback onContinue,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         SelectBackgroundRoute.name,
-         args: SelectBackgroundRouteArgs(key: key, onContinue: onContinue),
-         initialChildren: children,
-       );
+          SelectBackgroundRoute.name,
+          args: SelectBackgroundRouteArgs(key: key, onContinue: onContinue),
+          initialChildren: children,
+        );
 
   static const String name = 'SelectBackgroundRoute';
 
@@ -722,13 +879,23 @@ class SelectBackgroundRouteArgs {
   String toString() {
     return 'SelectBackgroundRouteArgs{key: $key, onContinue: $onContinue}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SelectBackgroundRouteArgs) return false;
+    return key == other.key && onContinue == other.onContinue;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ onContinue.hashCode;
 }
 
 /// generated route for
 /// [_i16.SelectCharacterScreen]
 class SelectCharacterRoute extends _i28.PageRouteInfo<void> {
   const SelectCharacterRoute({List<_i28.PageRouteInfo>? children})
-    : super(SelectCharacterRoute.name, initialChildren: children);
+      : super(SelectCharacterRoute.name, initialChildren: children);
 
   static const String name = 'SelectCharacterRoute';
 
@@ -746,28 +913,28 @@ class SelectClassOptionsRoute
     extends _i28.PageRouteInfo<SelectClassOptionsRouteArgs> {
   SelectClassOptionsRoute({
     _i29.Key? key,
-    required _i41.ClassOptionKind kind,
+    required _i42.ClassOptionKind kind,
     String? title,
     String? description,
     required int count,
-    List<_i41.ClassOption> known = const [],
+    List<_i42.ClassOption> known = const [],
     int? maxLevel,
-    required void Function(List<_i41.ClassOption>) onSelected,
+    required void Function(List<_i42.ClassOption>) onSelected,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         SelectClassOptionsRoute.name,
-         args: SelectClassOptionsRouteArgs(
-           key: key,
-           kind: kind,
-           title: title,
-           description: description,
-           count: count,
-           known: known,
-           maxLevel: maxLevel,
-           onSelected: onSelected,
-         ),
-         initialChildren: children,
-       );
+          SelectClassOptionsRoute.name,
+          args: SelectClassOptionsRouteArgs(
+            key: key,
+            kind: kind,
+            title: title,
+            description: description,
+            count: count,
+            known: known,
+            maxLevel: maxLevel,
+            onSelected: onSelected,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'SelectClassOptionsRoute';
 
@@ -803,7 +970,7 @@ class SelectClassOptionsRouteArgs {
 
   final _i29.Key? key;
 
-  final _i41.ClassOptionKind kind;
+  final _i42.ClassOptionKind kind;
 
   final String? title;
 
@@ -811,23 +978,49 @@ class SelectClassOptionsRouteArgs {
 
   final int count;
 
-  final List<_i41.ClassOption> known;
+  final List<_i42.ClassOption> known;
 
   final int? maxLevel;
 
-  final void Function(List<_i41.ClassOption>) onSelected;
+  final void Function(List<_i42.ClassOption>) onSelected;
 
   @override
   String toString() {
     return 'SelectClassOptionsRouteArgs{key: $key, kind: $kind, title: $title, description: $description, count: $count, known: $known, maxLevel: $maxLevel, onSelected: $onSelected}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SelectClassOptionsRouteArgs) return false;
+    return key == other.key &&
+        kind == other.kind &&
+        title == other.title &&
+        description == other.description &&
+        count == other.count &&
+        const _i33.ListEquality<_i42.ClassOption>().equals(
+          known,
+          other.known,
+        ) &&
+        maxLevel == other.maxLevel;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      kind.hashCode ^
+      title.hashCode ^
+      description.hashCode ^
+      count.hashCode ^
+      const _i33.ListEquality<_i42.ClassOption>().hash(known) ^
+      maxLevel.hashCode;
 }
 
 /// generated route for
 /// [_i18.SelectClassScreen]
 class SelectClassRoute extends _i28.PageRouteInfo<void> {
   const SelectClassRoute({List<_i28.PageRouteInfo>? children})
-    : super(SelectClassRoute.name, initialChildren: children);
+      : super(SelectClassRoute.name, initialChildren: children);
 
   static const String name = 'SelectClassRoute';
 
@@ -845,18 +1038,18 @@ class SelectFightingStyleRoute
     extends _i28.PageRouteInfo<SelectFightingStyleRouteArgs> {
   SelectFightingStyleRoute({
     _i29.Key? key,
-    required void Function(_i42.FightingStyle) onStyleSelected,
-    List<_i42.FightingStyle>? styles,
+    required void Function(_i43.FightingStyle) onStyleSelected,
+    List<_i43.FightingStyle>? styles,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         SelectFightingStyleRoute.name,
-         args: SelectFightingStyleRouteArgs(
-           key: key,
-           onStyleSelected: onStyleSelected,
-           styles: styles,
-         ),
-         initialChildren: children,
-       );
+          SelectFightingStyleRoute.name,
+          args: SelectFightingStyleRouteArgs(
+            key: key,
+            onStyleSelected: onStyleSelected,
+            styles: styles,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'SelectFightingStyleRoute';
 
@@ -882,14 +1075,29 @@ class SelectFightingStyleRouteArgs {
 
   final _i29.Key? key;
 
-  final void Function(_i42.FightingStyle) onStyleSelected;
+  final void Function(_i43.FightingStyle) onStyleSelected;
 
-  final List<_i42.FightingStyle>? styles;
+  final List<_i43.FightingStyle>? styles;
 
   @override
   String toString() {
     return 'SelectFightingStyleRouteArgs{key: $key, onStyleSelected: $onStyleSelected, styles: $styles}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SelectFightingStyleRouteArgs) return false;
+    return key == other.key &&
+        const _i33.ListEquality<_i43.FightingStyle>().equals(
+          styles,
+          other.styles,
+        );
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^ const _i33.ListEquality<_i43.FightingStyle>().hash(styles);
 }
 
 /// generated route for
@@ -900,19 +1108,19 @@ class SelectOptionRoute extends _i28.PageRouteInfo<SelectOptionRouteArgs> {
     required String title,
     String? description,
     required List<_i20.SelectOption> options,
-    required _i43.FutureOr<void> Function(int) onSelected,
+    required _i44.FutureOr<void> Function(int) onSelected,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         SelectOptionRoute.name,
-         args: SelectOptionRouteArgs(
-           key: key,
-           title: title,
-           description: description,
-           options: options,
-           onSelected: onSelected,
-         ),
-         initialChildren: children,
-       );
+          SelectOptionRoute.name,
+          args: SelectOptionRouteArgs(
+            key: key,
+            title: title,
+            description: description,
+            options: options,
+            onSelected: onSelected,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'SelectOptionRoute';
 
@@ -948,19 +1156,39 @@ class SelectOptionRouteArgs {
 
   final List<_i20.SelectOption> options;
 
-  final _i43.FutureOr<void> Function(int) onSelected;
+  final _i44.FutureOr<void> Function(int) onSelected;
 
   @override
   String toString() {
     return 'SelectOptionRouteArgs{key: $key, title: $title, description: $description, options: $options, onSelected: $onSelected}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SelectOptionRouteArgs) return false;
+    return key == other.key &&
+        title == other.title &&
+        description == other.description &&
+        const _i33.ListEquality<_i20.SelectOption>().equals(
+          options,
+          other.options,
+        );
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      title.hashCode ^
+      description.hashCode ^
+      const _i33.ListEquality<_i20.SelectOption>().hash(options);
 }
 
 /// generated route for
 /// [_i21.SelectRaceScreen]
 class SelectRaceRoute extends _i28.PageRouteInfo<void> {
   const SelectRaceRoute({List<_i28.PageRouteInfo>? children})
-    : super(SelectRaceRoute.name, initialChildren: children);
+      : super(SelectRaceRoute.name, initialChildren: children);
 
   static const String name = 'SelectRaceRoute';
 
@@ -979,22 +1207,22 @@ class SelectSkillsRoute extends _i28.PageRouteInfo<SelectSkillsRouteArgs> {
     _i29.Key? key,
     String title = 'Навыки',
     String? description,
-    required List<_i44.Skill> availableSkills,
+    required List<_i45.Skill> availableSkills,
     required int maxSkills,
-    required void Function(List<_i44.Skill>) onSkillsSelected,
+    required void Function(List<_i45.Skill>) onSkillsSelected,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         SelectSkillsRoute.name,
-         args: SelectSkillsRouteArgs(
-           key: key,
-           title: title,
-           description: description,
-           availableSkills: availableSkills,
-           maxSkills: maxSkills,
-           onSkillsSelected: onSkillsSelected,
-         ),
-         initialChildren: children,
-       );
+          SelectSkillsRoute.name,
+          args: SelectSkillsRouteArgs(
+            key: key,
+            title: title,
+            description: description,
+            availableSkills: availableSkills,
+            maxSkills: maxSkills,
+            onSkillsSelected: onSkillsSelected,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'SelectSkillsRoute';
 
@@ -1030,16 +1258,38 @@ class SelectSkillsRouteArgs {
 
   final String? description;
 
-  final List<_i44.Skill> availableSkills;
+  final List<_i45.Skill> availableSkills;
 
   final int maxSkills;
 
-  final void Function(List<_i44.Skill>) onSkillsSelected;
+  final void Function(List<_i45.Skill>) onSkillsSelected;
 
   @override
   String toString() {
     return 'SelectSkillsRouteArgs{key: $key, title: $title, description: $description, availableSkills: $availableSkills, maxSkills: $maxSkills, onSkillsSelected: $onSkillsSelected}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SelectSkillsRouteArgs) return false;
+    return key == other.key &&
+        title == other.title &&
+        description == other.description &&
+        const _i33.ListEquality<_i45.Skill>().equals(
+          availableSkills,
+          other.availableSkills,
+        ) &&
+        maxSkills == other.maxSkills;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      title.hashCode ^
+      description.hashCode ^
+      const _i33.ListEquality<_i45.Skill>().hash(availableSkills) ^
+      maxSkills.hashCode;
 }
 
 /// generated route for
@@ -1047,34 +1297,34 @@ class SelectSkillsRouteArgs {
 class SelectSpellsRoute extends _i28.PageRouteInfo<SelectSpellsRouteArgs> {
   SelectSpellsRoute({
     _i29.Key? key,
-    List<_i37.Spell> knownSpells = const [],
-    List<_i39.SpellSlot>? availableSlots,
+    List<_i38.Spell> knownSpells = const [],
+    List<_i40.SpellSlot>? availableSlots,
     String title = 'Заклинания',
     String? description,
-    List<_i38.ClassKind>? additionalClassKinds,
+    List<_i39.ClassKind>? additionalClassKinds,
     bool cantripsCountAsSpells = false,
-    required void Function(List<_i37.Spell>) onSpellsSelected,
+    required void Function(List<_i38.Spell>) onSpellsSelected,
     required int maxSpells,
     required int maxConspiracies,
-    required _i38.ClassKind? classKind,
+    required _i39.ClassKind? classKind,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         SelectSpellsRoute.name,
-         args: SelectSpellsRouteArgs(
-           key: key,
-           knownSpells: knownSpells,
-           availableSlots: availableSlots,
-           title: title,
-           description: description,
-           additionalClassKinds: additionalClassKinds,
-           cantripsCountAsSpells: cantripsCountAsSpells,
-           onSpellsSelected: onSpellsSelected,
-           maxSpells: maxSpells,
-           maxConspiracies: maxConspiracies,
-           classKind: classKind,
-         ),
-         initialChildren: children,
-       );
+          SelectSpellsRoute.name,
+          args: SelectSpellsRouteArgs(
+            key: key,
+            knownSpells: knownSpells,
+            availableSlots: availableSlots,
+            title: title,
+            description: description,
+            additionalClassKinds: additionalClassKinds,
+            cantripsCountAsSpells: cantripsCountAsSpells,
+            onSpellsSelected: onSpellsSelected,
+            maxSpells: maxSpells,
+            maxConspiracies: maxConspiracies,
+            classKind: classKind,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'SelectSpellsRoute';
 
@@ -1116,30 +1366,68 @@ class SelectSpellsRouteArgs {
 
   final _i29.Key? key;
 
-  final List<_i37.Spell> knownSpells;
+  final List<_i38.Spell> knownSpells;
 
-  final List<_i39.SpellSlot>? availableSlots;
+  final List<_i40.SpellSlot>? availableSlots;
 
   final String title;
 
   final String? description;
 
-  final List<_i38.ClassKind>? additionalClassKinds;
+  final List<_i39.ClassKind>? additionalClassKinds;
 
   final bool cantripsCountAsSpells;
 
-  final void Function(List<_i37.Spell>) onSpellsSelected;
+  final void Function(List<_i38.Spell>) onSpellsSelected;
 
   final int maxSpells;
 
   final int maxConspiracies;
 
-  final _i38.ClassKind? classKind;
+  final _i39.ClassKind? classKind;
 
   @override
   String toString() {
     return 'SelectSpellsRouteArgs{key: $key, knownSpells: $knownSpells, availableSlots: $availableSlots, title: $title, description: $description, additionalClassKinds: $additionalClassKinds, cantripsCountAsSpells: $cantripsCountAsSpells, onSpellsSelected: $onSpellsSelected, maxSpells: $maxSpells, maxConspiracies: $maxConspiracies, classKind: $classKind}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SelectSpellsRouteArgs) return false;
+    return key == other.key &&
+        const _i33.ListEquality<_i38.Spell>().equals(
+          knownSpells,
+          other.knownSpells,
+        ) &&
+        const _i33.ListEquality<_i40.SpellSlot>().equals(
+          availableSlots,
+          other.availableSlots,
+        ) &&
+        title == other.title &&
+        description == other.description &&
+        const _i33.ListEquality<_i39.ClassKind>().equals(
+          additionalClassKinds,
+          other.additionalClassKinds,
+        ) &&
+        cantripsCountAsSpells == other.cantripsCountAsSpells &&
+        maxSpells == other.maxSpells &&
+        maxConspiracies == other.maxConspiracies &&
+        classKind == other.classKind;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      const _i33.ListEquality<_i38.Spell>().hash(knownSpells) ^
+      const _i33.ListEquality<_i40.SpellSlot>().hash(availableSlots) ^
+      title.hashCode ^
+      description.hashCode ^
+      const _i33.ListEquality<_i39.ClassKind>().hash(additionalClassKinds) ^
+      cantripsCountAsSpells.hashCode ^
+      maxSpells.hashCode ^
+      maxConspiracies.hashCode ^
+      classKind.hashCode;
 }
 
 /// generated route for
@@ -1149,20 +1437,20 @@ class SelectSubclassRoute extends _i28.PageRouteInfo<SelectSubclassRouteArgs> {
     _i29.Key? key,
     required String title,
     String? description,
-    required List<_i45.Subclass> subclasses,
-    required _i43.FutureOr<void> Function(_i45.Subclass) onSelected,
+    required List<_i46.Subclass> subclasses,
+    required _i44.FutureOr<void> Function(_i46.Subclass) onSelected,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         SelectSubclassRoute.name,
-         args: SelectSubclassRouteArgs(
-           key: key,
-           title: title,
-           description: description,
-           subclasses: subclasses,
-           onSelected: onSelected,
-         ),
-         initialChildren: children,
-       );
+          SelectSubclassRoute.name,
+          args: SelectSubclassRouteArgs(
+            key: key,
+            title: title,
+            description: description,
+            subclasses: subclasses,
+            onSelected: onSelected,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'SelectSubclassRoute';
 
@@ -1196,14 +1484,34 @@ class SelectSubclassRouteArgs {
 
   final String? description;
 
-  final List<_i45.Subclass> subclasses;
+  final List<_i46.Subclass> subclasses;
 
-  final _i43.FutureOr<void> Function(_i45.Subclass) onSelected;
+  final _i44.FutureOr<void> Function(_i46.Subclass) onSelected;
 
   @override
   String toString() {
     return 'SelectSubclassRouteArgs{key: $key, title: $title, description: $description, subclasses: $subclasses, onSelected: $onSelected}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SelectSubclassRouteArgs) return false;
+    return key == other.key &&
+        title == other.title &&
+        description == other.description &&
+        const _i33.ListEquality<_i46.Subclass>().equals(
+          subclasses,
+          other.subclasses,
+        );
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      title.hashCode ^
+      description.hashCode ^
+      const _i33.ListEquality<_i46.Subclass>().hash(subclasses);
 }
 
 /// generated route for
@@ -1211,13 +1519,13 @@ class SelectSubclassRouteArgs {
 class SetPersonalityRoute extends _i28.PageRouteInfo<SetPersonalityRouteArgs> {
   SetPersonalityRoute({
     _i29.Key? key,
-    List<_i46.PersonalityTable> tables = const [],
+    List<_i47.PersonalityTable> tables = const [],
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         SetPersonalityRoute.name,
-         args: SetPersonalityRouteArgs(key: key, tables: tables),
-         initialChildren: children,
-       );
+          SetPersonalityRoute.name,
+          args: SetPersonalityRouteArgs(key: key, tables: tables),
+          initialChildren: children,
+        );
 
   static const String name = 'SetPersonalityRoute';
 
@@ -1237,19 +1545,35 @@ class SetPersonalityRouteArgs {
 
   final _i29.Key? key;
 
-  final List<_i46.PersonalityTable> tables;
+  final List<_i47.PersonalityTable> tables;
 
   @override
   String toString() {
     return 'SetPersonalityRouteArgs{key: $key, tables: $tables}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! SetPersonalityRouteArgs) return false;
+    return key == other.key &&
+        const _i33.ListEquality<_i47.PersonalityTable>().equals(
+          tables,
+          other.tables,
+        );
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      const _i33.ListEquality<_i47.PersonalityTable>().hash(tables);
 }
 
 /// generated route for
 /// [_i26.SpellsScreen]
 class SpellsRoute extends _i28.PageRouteInfo<void> {
   const SpellsRoute({List<_i28.PageRouteInfo>? children})
-    : super(SpellsRoute.name, initialChildren: children);
+      : super(SpellsRoute.name, initialChildren: children);
 
   static const String name = 'SpellsRoute';
 
@@ -1268,21 +1592,21 @@ class StartingEquipmentRoute
   StartingEquipmentRoute({
     _i29.Key? key,
     required String title,
-    required List<_i47.StartingEquipmentChoice> choices,
-    required void Function(List<_i48.InventoryItem>) onSelected,
-    _i36.EquipmentCatalog? catalog,
+    required List<_i48.StartingEquipmentChoice> choices,
+    required void Function(List<_i49.InventoryItem>) onSelected,
+    _i37.EquipmentCatalog? catalog,
     List<_i28.PageRouteInfo>? children,
   }) : super(
-         StartingEquipmentRoute.name,
-         args: StartingEquipmentRouteArgs(
-           key: key,
-           title: title,
-           choices: choices,
-           onSelected: onSelected,
-           catalog: catalog,
-         ),
-         initialChildren: children,
-       );
+          StartingEquipmentRoute.name,
+          args: StartingEquipmentRouteArgs(
+            key: key,
+            title: title,
+            choices: choices,
+            onSelected: onSelected,
+            catalog: catalog,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'StartingEquipmentRoute';
 
@@ -1314,14 +1638,34 @@ class StartingEquipmentRouteArgs {
 
   final String title;
 
-  final List<_i47.StartingEquipmentChoice> choices;
+  final List<_i48.StartingEquipmentChoice> choices;
 
-  final void Function(List<_i48.InventoryItem>) onSelected;
+  final void Function(List<_i49.InventoryItem>) onSelected;
 
-  final _i36.EquipmentCatalog? catalog;
+  final _i37.EquipmentCatalog? catalog;
 
   @override
   String toString() {
     return 'StartingEquipmentRouteArgs{key: $key, title: $title, choices: $choices, onSelected: $onSelected, catalog: $catalog}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! StartingEquipmentRouteArgs) return false;
+    return key == other.key &&
+        title == other.title &&
+        const _i33.ListEquality<_i48.StartingEquipmentChoice>().equals(
+          choices,
+          other.choices,
+        ) &&
+        catalog == other.catalog;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      title.hashCode ^
+      const _i33.ListEquality<_i48.StartingEquipmentChoice>().hash(choices) ^
+      catalog.hashCode;
 }

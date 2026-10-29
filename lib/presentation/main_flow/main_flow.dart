@@ -5,6 +5,7 @@ import 'package:dnd_character_list/data/session/session_source.dart';
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
 import 'package:dnd_character_list/injection.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/concentration_banner.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/session/initiative_prompt.dart';
 import 'package:dnd_character_list/presentation/session/write_note.dart';
@@ -61,13 +62,18 @@ class _MainFlowState extends State<MainFlow> {
     // Урон и лечение от мастера меняют персонажа как обычно — новые хиты уходят мастеру через listener ниже.
     _hitsChanges = _session.hitsChanges.listen((delta) {
       if (!_session.isJoined(_cubit.state) || delta == 0) return;
+      final before = _cubit.state;
       if (delta < 0) {
         _cubit.takeDamage(-delta);
         HapticFeedback.mediumImpact();
       } else {
         _cubit.heal(delta);
       }
-      _notify(delta < 0 ? 'Мастер: урон ${-delta}' : 'Мастер: лечение $delta');
+      final concentration = delta < 0 ? concentrationNotice(before, _cubit.state, -delta) : null;
+      _notify([
+        delta < 0 ? 'Мастер: урон ${-delta}' : 'Мастер: лечение $delta',
+        if (concentration != null) concentration
+      ].join('. '));
     });
     _revivals = _session.revivals.listen((by) {
       if (!_session.isJoined(_cubit.state) || !_cubit.state.isKnockedOut) return;

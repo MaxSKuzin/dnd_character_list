@@ -6,6 +6,7 @@ import 'package:dnd_character_list/domain/models/armor_proficiency.dart';
 import 'package:dnd_character_list/domain/models/background.dart';
 import 'package:dnd_character_list/domain/models/balance.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/combat.dart';
 import 'package:dnd_character_list/domain/models/classes/sorcerer.dart';
 import 'package:dnd_character_list/domain/models/classes/specialization.dart';
@@ -52,6 +53,18 @@ class Player {
   final Weapon? mainRangeWeapon;
   final Weapon? secondRangeWeapon;
   final DeathThrows deathThrows;
+
+  /// Временные хиты: тратятся раньше обычных, не складываются, пропадают после продолжительного отдыха.
+  final int tempHits;
+
+  /// Потраченные кости хитов по классам; у каждого класса своя кость.
+  final Map<ClassKind, int> spentHitDice;
+
+  /// Заклинание, на котором персонаж держит концентрацию; `null` — концентрации нет.
+  final String? concentration;
+
+  /// Вдохновение от мастера.
+  final bool inspiration;
   final Inventory inventory;
   late final Map<ClassExtras, int> currentExtras;
   final Personality personality;
@@ -102,6 +115,10 @@ class Player {
     Map<SpellSlot, int>? spellSlots,
     this.isDead = false,
     this.isKnockedOut = false,
+    this.tempHits = 0,
+    this.spentHitDice = const {},
+    this.concentration,
+    this.inspiration = false,
   })  : assert(classes.isNotEmpty),
         _additionalLanguages = knownLanguages,
         _rawStrength = strength,
@@ -207,16 +224,51 @@ class Player {
       classes.fold(0, (previous, spec) => previous + spec.hitPoints(this)) +
       feats.fold(0, (previous, e) => previous + e.feat.hitPointsPerLevel * level);
 
-  /// Урон по персонажу в нокауте снова опускает его к смерти: нокаут снимается, спасброски начинаются заново.
-  Player takeDamage(int value) {
-    bool isDead = currentHits - value <= -maxHits;
+  /// Урон сначала снимает временные хиты. Персонаж на 0 хитах получает провал спасброска от смерти
+  /// (от критического попадания — два), а урон не меньше максимума хитов убивает сразу. Урон по персонажу
+  /// в нокауте снова опускает его к смерти: нокаут снимается, спасброски начинаются заново.
+  /// На 0 хитах концентрация прерывается.
+  Player takeDamage(int value, {bool critical = false}) {
+    if (isDead || value <= 0) return this;
+    final absorbed = min(tempHits, value);
+    final damage = value - absorbed;
+    final temp = tempHits - absorbed;
+    if (damage == 0) return copyWith(tempHits: temp);
+    if (currentHits == 0) {
+      final failures = damage >= maxHits ? 3 : min(3, deathThrows.death + (critical ? 2 : 1));
+      return copyWith(
+        tempHits: temp,
+        deathThrows: () => DeathThrows(death: failures, life: deathThrows.life),
+        isDead: failures == 3,
+        concentration: () => null,
+      );
+    }
+    final killed = currentHits - damage <= -maxHits;
+    final hits = max(0, currentHits - damage);
     return copyWith(
-      currentHits: () => max(0, currentHits - value),
-      deathThrows: () => isDead ? const DeathThrows(death: 3, life: 0) : null,
-      isDead: isDead,
+      currentHits: () => hits,
+      tempHits: temp,
+      deathThrows: () => killed ? const DeathThrows(death: 3, life: 0) : null,
+      isDead: killed,
       isKnockedOut: false,
+      concentration: hits == 0 ? () => null : null,
     );
   }
+
+  /// Новые временные хиты не складываются с прежними: остаётся большее значение. 0 — убрать временные хиты.
+  Player gainTempHits(int value) => copyWith(tempHits: value == 0 ? 0 : max(tempHits, value));
+
+  /// Сл спасброска Телосложения для концентрации после урона: 10 или половина урона, если она больше.
+  static int concentrationSaveDc(int damage) => max(10, damage ~/ 2);
+
+  Player concentrate(String spell) => copyWith(concentration: () => spell);
+
+  Player endConcentration() => copyWith(concentration: () => null);
+
+  Player setInspiration(bool value) => copyWith(inspiration: value);
+
+  /// Оставшиеся кости хитов класса.
+  int hitDiceLeft(Specialization spec) => spec.level - (spentHitDice[spec.classKind] ?? 0);
 
   /// Лечение приводит в чувство и из нокаута.
   Player heal(int health) {
@@ -240,7 +292,26 @@ class Player {
   /// Союзник или мастер привели персонажа в чувство: нокаут снимается, хиты остаются.
   Player wakeUp() => isKnockedOut ? copyWith(isKnockedOut: false) : this;
 
-  String get hitDices => classes.map((e) => '${e.level}${e.hitDice.name}').join(', ');
+  /// Оставшиеся кости хитов по классам: «3к8, 1к10».
+  String get hitDices => classes.map((e) => '${hitDiceLeft(e)}${e.hitDice.name}').join(', ');
+
+  /// Все кости хитов по классам: «5к8, 1к10».
+  String get maxHitDices => classes.map((e) => '${e.level}${e.hitDice.name}').join(', ');
+
+  /// После продолжительного отдыха возвращается половина всех костей хитов (не меньше одной), сначала большие.
+  Map<ClassKind, int> get _hitDiceAfterLongRest {
+    var restore = max(1, level ~/ 2);
+    final spent = Map.of(spentHitDice);
+    for (final spec in [...classes]..sort((a, b) => b.hitDice.value.compareTo(a.hitDice.value))) {
+      final back = min(restore, spent[spec.classKind] ?? 0);
+      spent[spec.classKind] = (spent[spec.classKind] ?? 0) - back;
+      restore -= back;
+    }
+    return {
+      for (final MapEntry(:key, :value) in spent.entries)
+        if (value > 0) key: value,
+    };
+  }
 
   int get level => classes.fold(0, (previous, spec) => previous + spec.level);
 
@@ -427,11 +498,14 @@ class Player {
   /// Созданные из единиц чародейства ячейки сверх максимума не в счёт.
   bool get canRestOnLongRest =>
       currentHits < maxHits ||
+      spentHitDice.isNotEmpty ||
       spellCells.entries.any((e) => (currentSpellSlots[e.key] ?? 0) < e.value) ||
       maxExtras.entries.any((e) => (currentExtras[e.key] ?? 0) < e.value);
 
   /// Продолжительный отдых: хиты, ячейки заклинаний и ресурсы классов восстанавливаются,
   /// созданные из единиц чародейства ячейки исчезают.
+  /// Продолжительный отдых: всё восстанавливается, кроме половины потраченных костей хитов; временные хиты
+  /// и концентрация пропадают.
   Player longRest() => copyWith(
         currentHits: () => maxHits,
         deathThrows: () => null,
@@ -439,6 +513,9 @@ class Player {
         isKnockedOut: false,
         currentSpellSlots: () => null,
         classExtras: () => null,
+        tempHits: 0,
+        concentration: () => null,
+        spentHitDice: _hitDiceAfterLongRest,
       );
 
   /// Ресурсы классов, которые восстанавливаются и коротким отдыхом (очки ци, вдохновение барда с 5 уровня).
@@ -449,12 +526,17 @@ class Player {
   bool get canRestOnShortRest =>
       currentHits < maxHits || shortRestExtras.any((e) => (currentExtras[e] ?? 0) < maxExtras[e]!);
 
-  /// Короткий отдых: хиты, восстановленные костями хитов (их бросают вживую, вводится сумма),
-  /// и ресурсы классов из [shortRestExtras].
-  Player shortRest(int health) {
+  /// Короткий отдых: хиты, восстановленные костями хитов (их бросают вживую, вводится сумма; [dice] — сколько
+  /// костей каждого класса потрачено), и ресурсы классов из [shortRestExtras].
+  Player shortRest(int health, {Map<ClassKind, int> dice = const {}}) {
     final healed = health > 0 ? heal(health) : this;
     return healed.copyWith(
       classExtras: () => {...currentExtras, for (final extra in shortRestExtras) extra: maxExtras[extra]!},
+      spentHitDice: {
+        for (final spec in classes)
+          if ((spentHitDice[spec.classKind] ?? 0) + (dice[spec.classKind] ?? 0) case final spent when spent > 0)
+            spec.classKind: min(spec.level, spent),
+      },
     );
   }
 
@@ -749,6 +831,10 @@ class Player {
     isEqual &= inventory == other.inventory;
     // Иначе кубит не выпустит состояние с новым аватаром: bloc пропускает равные состояния.
     isEqual &= personality == other.personality;
+    isEqual &= tempHits == other.tempHits;
+    isEqual &= const MapEquality<ClassKind, int>().equals(spentHitDice, other.spentHitDice);
+    isEqual &= concentration == other.concentration;
+    isEqual &= inspiration == other.inspiration;
     currentExtras.forEach((key, value) {
       if (other.currentExtras[key] != value) {
         isEqual = false;
@@ -783,6 +869,10 @@ class Player {
         race,
         inventory,
         personality,
+        tempHits,
+        const MapEquality<ClassKind, int>().hash(spentHitDice),
+        concentration,
+        inspiration,
       ]);
 
   Player copyWith({
@@ -810,6 +900,10 @@ class Player {
     Map<SpellSlot, Spell>? raceSpells,
     List<String>? toolProficiencies,
     Personality? personality,
+    int? tempHits,
+    Map<ClassKind, int>? spentHitDice,
+    String? Function()? concentration,
+    bool? inspiration,
   }) =>
       Player(
         inventory: inventory ?? this.inventory,
@@ -839,6 +933,10 @@ class Player {
         race: race,
         background: background,
         knownLanguages: _additionalLanguages,
+        tempHits: tempHits ?? this.tempHits,
+        spentHitDice: spentHitDice ?? this.spentHitDice,
+        concentration: concentration != null ? concentration() : this.concentration,
+        inspiration: inspiration ?? this.inspiration,
       );
 
   Map<String, dynamic> toJson() => {
@@ -868,6 +966,19 @@ class Player {
             value.toJson(),
           ),
         ),
+        // Текущее состояние: приложение могут закрыть посреди сессии, а приключенческий день — продолжиться
+        // на следующей встрече.
+        'currentHits': currentHits,
+        'tempHits': tempHits,
+        'spellSlots': {for (final MapEntry(:key, :value) in currentSpellSlots.entries) key.name: value},
+        // У `ClassExtras` свой `name` — русское название, поэтому имя значения берётся через `EnumName`.
+        'classExtras': {for (final MapEntry(:key, :value) in currentExtras.entries) EnumName(key).name: value},
+        'deathThrows': {'death': deathThrows.death, 'life': deathThrows.life},
+        'isDead': isDead,
+        'isKnockedOut': isKnockedOut,
+        'spentHitDice': {for (final MapEntry(:key, :value) in spentHitDice.entries) key.name: value},
+        'concentration': concentration,
+        'inspiration': inspiration,
       };
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
@@ -896,5 +1007,18 @@ class Player {
                 (key, value) => MapEntry(SpellSlot.values.byName(key), Spell.fromJson(value)),
               )
             : {},
+        hits: json['currentHits'],
+        tempHits: json['tempHits'],
+        spellSlots:
+            (json['spellSlots'] as Map).map((key, value) => MapEntry(SpellSlot.values.byName(key), value as int)),
+        classExtras:
+            (json['classExtras'] as Map).map((key, value) => MapEntry(ClassExtras.values.byName(key), value as int)),
+        deathThrows: DeathThrows(death: json['deathThrows']['death'], life: json['deathThrows']['life']),
+        isDead: json['isDead'],
+        isKnockedOut: json['isKnockedOut'],
+        spentHitDice:
+            (json['spentHitDice'] as Map).map((key, value) => MapEntry(ClassKind.values.byName(key), value as int)),
+        concentration: json['concentration'],
+        inspiration: json['inspiration'],
       );
 }

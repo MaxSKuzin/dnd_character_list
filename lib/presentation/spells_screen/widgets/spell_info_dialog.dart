@@ -56,6 +56,9 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
 
   bool get _canSpend => widget.canSpendSlot && spell.slot != SpellSlot.conspiracy;
 
+  /// Заговор с концентрацией ячейку не тратит, но концентрацию отметить можно.
+  bool get _canConcentrate => widget.canSpendSlot && spell.isConcentration;
+
   @override
   Widget build(BuildContext context) {
     final details = spell.details;
@@ -85,20 +88,22 @@ class _SpellInfoDialogState extends State<SpellInfoDialog> {
             ),
           ),
         ),
-        if (_canSpend)
+        if (_canSpend || _canConcentrate)
           // Панель не прокручивается вместе с описанием: использовать заклинание можно, не листая до конца.
           DecoratedBox(
             decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.white24))),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: BlocBuilder<PlayerCubit, Player>(
-                builder: (context, player) => _SlotPanel(
-                  player: player,
-                  minSlot: spell.slot,
-                  slot: _slot,
-                  // Расовое заклинание накладывается только своим уровнем.
-                  onSelected: widget.canChangeSlot ? (slot) => setState(() => _slot = slot) : null,
-                ),
+                builder: (context, player) => _canSpend
+                    ? _SlotPanel(
+                        player: player,
+                        spell: spell,
+                        slot: _slot,
+                        // Расовое заклинание накладывается только своим уровнем.
+                        onSelected: widget.canChangeSlot ? (slot) => setState(() => _slot = slot) : null,
+                      )
+                    : _ConcentrationPanel(player: player, spell: spell),
               ),
             ),
           ),
@@ -240,19 +245,66 @@ class _SpellDetailsView extends StatelessWidget {
   }
 }
 
-/// Выбор ячейки — плитки уровней не ниже уровня заклинания с остатком — и «Использовать».
+/// Предупреждение: концентрация на другом заклинании прервётся.
+class _ConcentrationWarning extends StatelessWidget {
+  final Player player;
+  final Spell spell;
+
+  const _ConcentrationWarning({required this.player, required this.spell});
+
+  @override
+  Widget build(BuildContext context) {
+    final current = player.concentration;
+    if (!spell.isConcentration || current == null || current == spell.name) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        'Концентрация на «$current» прервётся',
+        textAlign: TextAlign.center,
+        style: context.theme.textTheme.bodySmall?.copyWith(color: context.theme.colorScheme.error),
+      ),
+    );
+  }
+}
+
+/// Заговор с концентрацией: отметить концентрацию или прервать её.
+class _ConcentrationPanel extends StatelessWidget {
+  final Player player;
+  final Spell spell;
+
+  const _ConcentrationPanel({required this.player, required this.spell});
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<PlayerCubit>();
+    final isCurrent = player.concentration == spell.name;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _ConcentrationWarning(player: player, spell: spell),
+        isCurrent
+            ? OutlinedButton(onPressed: cubit.endConcentration, child: const Text('Прервать концентрацию'))
+            : FilledButton(onPressed: () => cubit.concentrate(spell.name), child: const Text('Концентрироваться')),
+      ],
+    );
+  }
+}
+
+/// Выбор ячейки — плитки уровней не ниже уровня заклинания с остатком — и «Использовать». Заклинание
+/// с концентрацией заодно отмечает её.
 class _SlotPanel extends StatelessWidget {
   final Player player;
-  final SpellSlot minSlot;
+  final Spell spell;
   final SpellSlot slot;
 
   /// `null` — уровень ячейки не меняется (расовое заклинание).
   final ValueChanged<SpellSlot>? onSelected;
 
-  const _SlotPanel({required this.player, required this.minSlot, required this.slot, required this.onSelected});
+  const _SlotPanel({required this.player, required this.spell, required this.slot, required this.onSelected});
 
   @override
   Widget build(BuildContext context) {
+    final minSlot = spell.slot;
     final levels = onSelected == null ? [slot] : player.spellSlotLevels.where((e) => e.index >= minSlot.index).toList();
     final left = player.currentSpellSlots[slot] ?? 0;
     return Column(
@@ -278,8 +330,14 @@ class _SlotPanel extends StatelessWidget {
           ),
         ),
         const Gap(10),
+        _ConcentrationWarning(player: player, spell: spell),
         FilledButton(
-          onPressed: left > 0 ? () => context.read<PlayerCubit>().spendSpellSlot(slot) : null,
+          onPressed: left > 0
+              ? () {
+                  final cubit = context.read<PlayerCubit>()..spendSpellSlot(slot);
+                  if (spell.isConcentration) cubit.concentrate(spell.name);
+                }
+              : null,
           child: Text(left > 0 ? 'Использовать' : 'Нет ячеек ${slot.level} уровня'),
         ),
       ],

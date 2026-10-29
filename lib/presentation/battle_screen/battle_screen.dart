@@ -1,18 +1,21 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/class_extra_widget.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/concentration_banner.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/death_throws_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/health_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/hit_dices.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/initiative_widget.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/inspiration_tile.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/knockout_banner.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/martial_arts_dice.dart';
-import 'package:dnd_character_list/presentation/battle_screen/widgets/rest_button.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/protection_widget.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/rest_button.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/speed_widget.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/spell_slots_section.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/spells_stats_section.dart';
+import 'package:dnd_character_list/presentation/battle_screen/widgets/temp_hits.dart';
 import 'package:dnd_character_list/presentation/battle_screen/widgets/weapons_section.dart';
-import 'package:dnd_character_list/domain/models/classes/monk.dart';
 import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
 import 'package:dnd_character_list/presentation/main_flow/player_model.dart';
 import 'package:dnd_character_list/presentation/session/battle_queue_bar.dart';
@@ -53,7 +56,7 @@ class BattleScreen extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [BattleQueueBar(), StatusesBar(), KnockoutBanner()],
+                    children: [BattleQueueBar(), StatusesBar(), KnockoutBanner(), ConcentrationBanner()],
                   ),
                 ),
                 SheetHeader(padding: EdgeInsets.symmetric(vertical: 16), child: _Summary()),
@@ -100,7 +103,7 @@ class _Summary extends StatelessWidget {
   }
 }
 
-/// Хиты, кубы здоровья, спасброски от смерти, кость боевых искусств монаха и ресурсы классов — карточкой с плитками
+/// Хиты, временные хиты, кубы здоровья, спасброски от смерти, вдохновение, кость боевых искусств монаха и ресурсы классов — карточкой с плитками
 /// в две колонки, все видны сразу. Плитки одного ряда — одной высоты.
 class _Counters extends StatelessWidget {
   const _Counters();
@@ -116,8 +119,10 @@ class _Counters extends StatelessWidget {
           columns: 2,
           children: [
             const HealthSection(),
+            const TempHits(),
             const HitDices(),
             const DeathThrowsWidget(),
+            const InspirationTile(),
             if (isMonk) const MartialArtsDice(),
             for (final extra in extras.entries) ClassExtraWidget(extra: extra.key, count: extra.value),
           ],

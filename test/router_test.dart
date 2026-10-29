@@ -11,7 +11,7 @@ Set<String> _routesUsedIn(List<String> paths) => {
     };
 
 Set<String> _childrenOf(String flow) =>
-    AppRouter().routes.firstWhere((e) => e.name == flow).children!.routes.map((e) => e.name).toSet();
+    AppRouter().routes.firstWhere((e) => e.name == flow).children!.map((e) => e.name).toSet();
 
 void main() {
   // Маршрут, которого нет среди дочерних маршрутов потока, падает при переходе: «Failed to navigate to …».

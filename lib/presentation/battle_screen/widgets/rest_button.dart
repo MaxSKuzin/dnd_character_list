@@ -1,9 +1,13 @@
 import 'package:dnd_character_list/domain/bloc/player_cubit.dart';
 import 'package:dnd_character_list/domain/models/class_extras.dart';
+import 'package:dnd_character_list/domain/models/classes/class_kind.dart';
 import 'package:dnd_character_list/domain/models/player.dart';
-import 'package:dnd_character_list/presentation/common/widgets/enter_number_dialog.dart';
+import 'package:dnd_character_list/presentation/common/widgets/sheet_section.dart';
+import 'package:dnd_character_list/presentation/extensions/localization_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 
 /// Отдых в шапке экрана боя: на выбор короткий или продолжительный. Кнопка на месте всегда, чтобы экран
 /// не сдвигался, и активна, только когда хиты, ячейки заклинаний или ресурсы классов не на максимуме.
@@ -35,11 +39,13 @@ class RestButton extends StatelessWidget {
   static String _longRestDescription(Player player) {
     final restored = [
       'хиты',
+      if (player.spentHitDice.isNotEmpty) 'половина костей хитов',
       if (player.spellCells.isNotEmpty) 'ячейки заклинаний',
       ...player.maxExtras.keys.map(_restoredExtra).nonNulls,
     ];
     return [
       'Восстановятся ${_list(restored)}.',
+      if (player.tempHits > 0) 'Временные хиты пропадут.',
       if (player.maxSorceryPoints > 0) 'Ячейки, созданные из единиц чародейства, исчезнут.',
     ].join(' ');
   }
@@ -77,18 +83,12 @@ class RestButton extends StatelessWidget {
     if (kind == null || !context.mounted) return;
     switch (kind) {
       case _RestKind.short:
-        // Кости хитов бросают вживую: вводится сумма с модификаторами Телосложения.
-        var health = 0;
-        if (player.currentHits < player.maxHits) {
-          final value = await EnterNumberDialog.show(
-            context,
-            title: 'Короткий отдых',
-            labelText: 'Хиты от костей хитов (0 — не тратить)',
-          );
-          if (value == null) return;
-          health = value;
-        }
-        cubit.shortRest(health);
+        final result = await showDialog<(Map<ClassKind, int>, int)>(
+          context: context,
+          builder: (_) => _ShortRestDialog(player: player),
+        );
+        if (result == null) return;
+        cubit.shortRest(result.$2, dice: result.$1);
       case _RestKind.long:
         cubit.longRest();
     }
@@ -126,6 +126,89 @@ class _RestOption extends StatelessWidget {
       title: Text(title),
       subtitle: Text(description),
       onTap: onTap,
+    );
+  }
+}
+
+/// Короткий отдых: сколько костей хитов каждого класса потрачено и сколько хитов они вернули. Кости бросают
+/// вживую, вводится сумма с модификаторами Телосложения.
+class _ShortRestDialog extends StatefulWidget {
+  final Player player;
+
+  const _ShortRestDialog({required this.player});
+
+  @override
+  State<_ShortRestDialog> createState() => _ShortRestDialogState();
+}
+
+class _ShortRestDialogState extends State<_ShortRestDialog> {
+  final _dice = <ClassKind, int>{};
+  final _health = TextEditingController();
+
+  @override
+  void dispose() {
+    _health.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final player = widget.player;
+    final needsHits = player.currentHits < player.maxHits;
+    final spent = _dice.values.fold(0, (sum, e) => sum + e);
+    return AlertDialog(
+      title: const Text('Короткий отдых'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!needsHits)
+              const Text('Хиты полные — кости хитов тратить не нужно.')
+            else ...[
+              const Text('Сколько костей хитов бросили и сколько хитов они вернули.'),
+              for (final spec in player.classes) ...[
+                const Gap(8),
+                InfoTile(
+                  label: '${spec.classKind.localizedName}: кости ${spec.hitDice.name}',
+                  value: '${_dice[spec.classKind] ?? 0}',
+                  caption: 'осталось ${player.hitDiceLeft(spec)}',
+                  onDecrease: (_dice[spec.classKind] ?? 0) > 0
+                      ? () => setState(() => _dice[spec.classKind] = _dice[spec.classKind]! - 1)
+                      : null,
+                  onIncrease: (_dice[spec.classKind] ?? 0) < player.hitDiceLeft(spec)
+                      ? () => setState(() => _dice[spec.classKind] = (_dice[spec.classKind] ?? 0) + 1)
+                      : null,
+                ),
+              ],
+              const Gap(8),
+              TextField(
+                controller: _health,
+                enabled: spent > 0,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(labelText: 'Хиты от костей'),
+                onTapOutside: (_) => FocusScope.of(context).unfocus(),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Отмена')),
+        ListenableBuilder(
+          listenable: _health,
+          builder: (context, _) {
+            final health = int.tryParse(_health.text) ?? 0;
+            // Потраченные кости должны что-то вернуть: без суммы хитов отдых не подтвердить.
+            final ready = spent == 0 || health > 0;
+            return TextButton(
+              onPressed: ready ? () => Navigator.pop(context, (Map.of(_dice), spent == 0 ? 0 : health)) : null,
+              child: const Text('Отдохнуть'),
+            );
+          },
+        ),
+      ],
     );
   }
 }
